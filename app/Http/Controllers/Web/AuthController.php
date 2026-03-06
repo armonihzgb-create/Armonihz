@@ -1,0 +1,271 @@
+<?php
+
+namespace App\Http\Controllers\Web;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\MusicianProfile;
+use App\Models\Genre;
+
+class AuthController extends Controller
+{
+    // ── LOGIN ─────────────────────────────────────────────────────────────────
+
+    public function showLogin()
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.login');
+    }
+
+    public function showRegister()
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        $genres = Genre::orderBy('name')->get();
+        return view('auth.register', compact('genres'));
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Ingresa un correo electrónico válido.',
+            'password.required' => 'La contraseña es obligatoria.',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if ($user && !$user->is_active) {
+            return back()->withErrors([
+                'auth' => 'Tu cuenta ha sido suspendida. Contacta al soporte.',
+            ])->onlyInput('email');
+        }
+
+        if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            if (Auth::user()->role === 'admin') {
+                return redirect()->intended(route('admin.dashboard'));
+            }
+
+            return redirect()->intended(route('dashboard'));
+        }
+
+        return back()->withErrors([
+            'auth' => 'El correo o la contraseña son incorrectos.',
+        ])->onlyInput('email');
+    }
+
+    // ── REGISTER ──────────────────────────────────────────────────────────────
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'city' => 'required|string|max:255',
+        ], [
+            'name.required' => 'El nombre artístico es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Ingresa un correo electrónico válido.',
+            'email.unique' => 'Este correo ya está registrado.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'city.required' => 'La ciudad es obligatoria.',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'musico',
+            'is_active' => true,
+            'is_verified' => false,
+        ]);
+
+        $profile = MusicianProfile::create([
+            'user_id' => $user->id,
+            'stage_name' => $request->name,
+            'location' => $request->city ?? '',
+            'bio' => null,
+            'is_verified' => false,
+        ]);
+
+        // Attach genre if one was selected and it exists in DB
+        if ($request->filled('genre_id')) {
+            $genre = Genre::find($request->genre_id);
+            if ($genre) {
+                $profile->genres()->attach($genre->id);
+            }
+        }
+
+        // Invalidate any previous session completely before logging in the new user
+        if (Auth::check()) {
+            Auth::logout();
+        }
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        // Fire the Registered event — triggers the verification email
+        event(new Registered($user));
+
+        return redirect()->route('verification.notice')
+            ->with('status', '¡Cuenta creada! Revisa tu correo para verificar tu dirección.');
+    }
+
+    // ── LOGOUT ────────────────────────────────────────────────────────────────
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login');
+    }
+
+    // ── FORGOT PASSWORD ───────────────────────────────────────────────────────
+
+    public function showForgotForm()
+    {
+        return view('auth.forgot');
+    }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Ingresa un correo electrónico válido.',
+        ]);
+
+        $status = Password::sendResetLink($request->only('email'));
+
+        // Always return success message (security: don't reveal if email exists)
+        return back()->with('status', 'Si tu correo está registrado, recibirás un enlace en breve para restablecer tu contraseña.');
+    }
+
+    // ── RESET PASSWORD ────────────────────────────────────────────────────────
+
+    public function showResetForm(Request $request, string $token)
+    {
+        return view('auth.reset', [
+            'token' => $token,
+            'email' => $request->query('email', ''),
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Ingresa un correo electrónico válido.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+            $user->forceFill([
+                'password' => Hash::make($password),
+                'remember_token' => Str::random(60),
+            ])->save();
+            event(new PasswordReset($user));
+        }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            // Log out any currently active session (could be a different user)
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->with('status', '✅ Contraseña actualizada correctamente. Ya puedes iniciar sesión con tu nueva contraseña.');
+        }
+
+        return back()->withErrors([
+            'email' => 'El enlace de restablecimiento no es válido o ha expirado. Solicita uno nuevo.',
+        ]);
+    }
+
+    // ── EMAIL VERIFICATION ────────────────────────────────────────────────────
+
+    public function showVerifyNotice()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        if (Auth::user()->hasVerifiedEmail()) {
+            return redirect()->intended(route('dashboard'));
+        }
+        return view('auth.verify');
+    }
+
+    public function verifyEmail(Request $request, $id, $hash)
+    {
+        $user = User::findOrFail($id);
+
+        if (!hash_equals((string)$hash, sha1($user->getEmailForVerification()))) {
+            abort(403, 'Enlace de verificación inválido.');
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            // Log in as the correct user anyway and go to dashboard
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            Auth::login($user);
+            $request->session()->regenerate();
+            return redirect()->route('dashboard')
+                ->with('status', 'Tu correo ya había sido verificado. Bienvenido.');
+        }
+
+        $user->markEmailAsVerified();
+
+        // Log out whoever was in session and log in the correct user
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->route('dashboard')
+            ->with('status', '✅ ¡Correo verificado! Bienvenido a Armonihz.');
+    }
+
+    public function resendVerification(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard');
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('status', 'Se ha reenviado el enlace de verificación. Revisa tu bandeja de entrada.');
+    }
+}
