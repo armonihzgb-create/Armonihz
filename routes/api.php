@@ -5,6 +5,7 @@ use App\Http\Controllers\MusicianProfileController;
 use App\Http\Controllers\Api\ProfileViewController;
 use App\Http\Controllers\ClientController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ClientEventController;
 
 Route::prefix('v1')->group(function () {
 
@@ -52,7 +53,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/client/sync-google-photo', [ClientController::class, 'syncGooglePhoto']);
            Route::post('/client/sync', [ClientController::class, 'syncClient']);
         Route::delete('/client/account', [ClientController::class, 'deleteAccount']);
-     
+        Route::get('/client/events', [ClientEventController::class, 'index']);
+        Route::post('/client/events', [ClientEventController::class, 'store']);
     });
 
 });
