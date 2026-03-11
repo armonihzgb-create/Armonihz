@@ -1,8 +1,0 @@
-[phases.setup]
-nixPkgs = ["...", "nginx"]
-
-[phases.build]
-cmds = [
-    "...",
-    "echo 'client_max_body_size 100M;' > /etc/nginx/conf.d/upload_limit.conf"
-]
