@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             \App\Http\Middleware\CheckUserIsActive::class,
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'auth/google/callback',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
