@@ -43,4 +43,14 @@ class MusicianProfile extends Model
     {
         return $this->hasMany(Promotion::class);
     }
+
+    public function castingApplications()
+    {
+        return $this->hasMany(CastingApplication::class , 'musician_profile_id');
+    }
+
+    public function media()
+    {
+        return $this->hasMany(MusicianMedia::class);
+    }
 }

@@ -3,22 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClientEvent;
+use App\Models\CastingApplication;
+use App\Models\MusicianProfile;
 use Illuminate\Http\Request;
 
 class ClientEventController extends Controller
 {
     // Obtener los eventos del cliente logueado
+   // Obtener los eventos del cliente logueado
     public function index(Request $request)
     {
-        // Asumiendo que tu middleware de Firebase inyecta el ID del cliente en el request
-        // o puedes obtenerlo según como manejes tu autenticación actual.
-        $firebaseUid = $request->attributes->get('firebase_uid'); 
-        
+        $firebaseUid = $request->attributes->get('firebase_uid');
+
         $eventos = ClientEvent::where('firebase_uid', $firebaseUid)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Mapeamos para que coincida con lo que Android espera
         $formattedEvents = $eventos->map(function ($evento) {
             return [
                 'id' => $evento->id,
@@ -26,11 +26,77 @@ class ClientEventController extends Controller
                 'tipoMusica' => $evento->tipo_musica,
                 'fecha' => $evento->fecha,
                 'ubicacion' => $evento->ubicacion,
-                'propuestas' => 0 // Aquí luego conectarás con la tabla de propuestas
+                'status' => $evento->status,
+                'duracion' => $evento->duracion,
+                'descripcion' => $evento->descripcion,
+                'presupuesto' => (float) $evento->presupuesto,
+                'propuestas' => CastingApplication::where('client_event_id', $evento->id)->count(),
             ];
         });
 
         return response()->json($formattedEvents);
+    }
+
+    /**
+     * Get all applications for a specific client event.
+     */
+    public function getApplications(Request $request, $id)
+    {
+        $firebaseUid = $request->attributes->get('firebase_uid');
+        $event = ClientEvent::where('id', $id)->where('firebase_uid', $firebaseUid)->firstOrFail();
+
+        $applications = CastingApplication::where('client_event_id', $event->id)
+            ->with('musician.user')
+            ->get()
+            ->map(function ($app) {
+            $musician = $app->musician;
+            return [
+            'id' => $app->id,
+            'status' => $app->status,
+            'proposed_price' => $app->proposed_price,
+            'message' => $app->message,
+            'created_at' => $app->created_at,
+            'musician' => [
+            'id' => $musician->id,
+            'stage_name' => $musician->stage_name,
+            'location' => $musician->location,
+            'profile_picture' => $musician->profile_picture,
+            'hourly_rate' => $musician->hourly_rate,
+            ],
+            ];
+        });
+
+        return response()->json(['event_id' => $event->id, 'applications' => $applications]);
+    }
+
+    /**
+     * Accept an application — closes the event and marks the musician as hired.
+     */
+    public function acceptApplication(Request $request, $eventId, $appId)
+    {
+        $firebaseUid = $request->attributes->get('firebase_uid');
+        $event = ClientEvent::where('id', $eventId)->where('firebase_uid', $firebaseUid)->firstOrFail();
+
+        if ($event->status !== 'open') {
+            return response()->json(['error' => 'El evento ya no está abierto.'], 409);
+        }
+
+        $app = CastingApplication::where('id', $appId)
+            ->where('client_event_id', $eventId)
+            ->firstOrFail();
+
+        // Accept this application
+        $app->update(['status' => 'accepted']);
+
+        // Reject all other applications for this event
+        CastingApplication::where('client_event_id', $eventId)
+            ->where('id', '!=', $appId)
+            ->update(['status' => 'rejected']);
+
+        // Close the event
+        $event->update(['status' => 'closed']);
+
+        return response()->json(['message' => 'Músico contratado exitosamente.', 'application_id' => $app->id]);
     }
 
     // Guardar un nuevo evento
@@ -63,5 +129,50 @@ class ClientEventController extends Controller
             'message' => 'Evento creado con éxito',
             'evento' => $evento
         ], 201);
+    }
+    // Actualizar un evento existente
+    public function update(Request $request, $id)
+    {
+        // 1. Obtener el ID del usuario desde Firebase
+        $firebaseUid = $request->attributes->get('firebase_uid');
+
+        // 2. Buscar el evento asegurando que pertenezca al cliente logueado
+        $evento = ClientEvent::where('id', $id)
+            ->where('firebase_uid', $firebaseUid)
+            ->firstOrFail();
+
+        // 3. Validar de seguridad: No editar si ya está cerrado
+        if ($evento->status !== 'open') {
+            return response()->json([
+                'error' => 'No puedes editar un evento que ya está cerrado o en proceso.'
+            ], 403);
+        }
+
+        // 4. Validar los datos recibidos (igual que en el store)
+        $validated = $request->validate([
+            'titulo' => 'required|string',
+            'tipoMusica' => 'required|string',
+            'fecha' => 'required|string',
+            'duracion' => 'required|string',
+            'ubicacion' => 'required|string',
+            'descripcion' => 'nullable|string',
+            'presupuesto' => 'required|numeric',
+        ]);
+
+        // 5. Actualizar los datos en la base de datos
+        $evento->update([
+            'titulo' => $validated['titulo'],
+            'tipo_musica' => $validated['tipoMusica'],
+            'fecha' => $validated['fecha'],
+            'duracion' => $validated['duracion'],
+            'ubicacion' => $validated['ubicacion'],
+            'descripcion' => $validated['descripcion'],
+            'presupuesto' => $validated['presupuesto'],
+        ]);
+
+        return response()->json([
+            'message' => 'Evento actualizado con éxito',
+            'evento' => $evento
+        ], 200);
     }
 }

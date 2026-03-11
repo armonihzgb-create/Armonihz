@@ -19,5 +19,11 @@ class ClientEvent extends Model
         'ubicacion',
         'descripcion',
         'presupuesto',
+        'status',
     ];
+
+    public function applications()
+    {
+        return $this->hasMany(CastingApplication::class , 'client_event_id');
+    }
 }

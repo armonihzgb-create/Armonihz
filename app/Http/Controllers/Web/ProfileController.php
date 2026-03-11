@@ -37,7 +37,13 @@ class ProfileController extends Controller
             $acceptedRequests = $profile->hiringRequests()->where('status', 'accepted')->count();
         }
 
-        return view('profile', compact('user', 'profile', 'genres', 'completion', 'acceptedRequests'));
+        // --- Media ---
+        $media = [];
+        if ($profile) {
+            $media = $profile->media()->orderBy('created_at', 'desc')->get();
+        }
+
+        return view('profile', compact('user', 'profile', 'genres', 'completion', 'acceptedRequests', 'media'));
     }
 
     /**
@@ -100,13 +106,87 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         $profile = $user->musicianProfile;
-        return view('multimedia', array_merge(compact('user', 'profile'), ['media' => []]));
+        
+        $media = [];
+        if ($profile) {
+            $media = $profile->media()->orderBy('created_at', 'desc')->get();
+        }
+
+        return view('multimedia', array_merge(compact('user', 'profile'), ['media' => $media]));
     }
 
     public function availability(Request $request)
     {
         $user = $request->user();
         return view('availability', compact('user'));
+    }
+
+    /**
+     * Delete the user's account and profile permanently.
+     */
+    public function destroy(Request $request)
+    {
+        $user = clone $request->user();
+        $profile = $user->musicianProfile;
+
+        // Perform cleanup of local files if any
+        if ($profile && $profile->profile_picture && \Illuminate\Support\Str::startsWith($profile->profile_picture, 'profiles/')) {
+            Storage::disk('public')->delete($profile->profile_picture);
+        }
+
+        // Delete the user (this cascades to musician_profiles and hiring_requests based on DB constraints)
+        // Note: For now we just delete the user.
+        $user->delete();
+
+        // Invalidate session
+        \Illuminate\Support\Facades\Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('status', 'Tu cuenta ha sido eliminada exitosamente. Esperamos verte pronto.');
+    }
+
+    /**
+     * Change user's password.
+     */
+    public function changePassword(Request $request)
+    {
+        $user = clone $request->user();
+
+        // If the user is exclusively a Google user (no local password), shouldn't reach here normally, 
+        // but we protect against it.
+        if ($user->google_id && !$user->password) {
+            return back()->withErrors(['password' => 'Tu cuenta está vinculada a Google.'])->withFragment('password-section');
+        }
+
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*#?&]/',
+                'confirmed',
+                'different:current_password'
+            ],
+        ], [
+            'current_password.required' => 'Debes ingresar tu contraseña actual.',
+            'current_password.current_password' => 'La contraseña actual es incorrecta.',
+            'password.required' => 'La nueva contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.regex' => 'La contraseña debe contener al menos una mayúscula, un número y un carácter especial.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.different' => 'La nueva contraseña no puede ser igual a la actual.',
+        ]);
+
+        $request->user()->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+        ]);
+
+        return back()->with('success', 'Contraseña actualizada correctamente.');
     }
 
     // ── Private ───────────────────────────────────────────────────────────────

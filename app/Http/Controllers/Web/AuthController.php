@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 use App\Models\User;
 use App\Models\MusicianProfile;
 use App\Models\Genre;
+use App\Services\FirebaseService;
 
 class AuthController extends Controller
 {
@@ -267,5 +269,106 @@ class AuthController extends Controller
         $request->user()->sendEmailVerificationNotification();
 
         return back()->with('status', 'Se ha reenviado el enlace de verificación. Revisa tu bandeja de entrada.');
+    }
+    // ── GOOGLE SIGN-IN (Firebase) ─────────────────────────────────────────────
+
+    public function googleCallback(Request $request, FirebaseService $firebaseService)
+    {
+        $request->validate(['credential' => 'required|string']);
+
+        $tokenStr = $request->credential;
+        $decoded = null;
+        $isFirebase = false;
+
+        // Try 1: Google Identity Services (Web)
+        $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
+            'id_token' => $tokenStr,
+        ]);
+
+        if ($response->successful()) {
+            $googleDecoded = $response->json();
+            $expectedClientId = config('services.google.client_id', env('GOOGLE_CLIENT_ID'));
+
+            // Validate Audience for Web
+            if (isset($googleDecoded['aud']) && $expectedClientId && $googleDecoded['aud'] === $expectedClientId) {
+                $decoded = $googleDecoded;
+            }
+        }
+
+        // Try 2: Firebase (Android App)
+        if (!$decoded) {
+            try {
+                $firebaseDecoded = $firebaseService->verifyIdToken($tokenStr);
+                $decoded = $firebaseDecoded->claims()->all();
+                $isFirebase = true;
+            }
+            catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Google Auth Error (Firebase Fallback): ' . $e->getMessage());
+                return back()->withErrors(['auth' => 'Token de Google o Firebase inválido. Intenta de nuevo.']);
+            }
+        }
+
+        if (!$decoded) {
+            return back()->withErrors(['auth' => 'No se pudo validar el Token con Google ni con Firebase.']);
+        }
+
+        // Extract consistent fields from either payload
+        $email = $decoded['email'] ?? null;
+        $name = $decoded['name'] ?? 'Usuario';
+        $uid = $decoded['sub'] ?? null;
+        $picture = $decoded['picture'] ?? null;
+
+        if (!$email || !$uid) {
+            return back()->withErrors(['auth' => 'No se pudo obtener la cuenta de Google (faltan datos).']);
+        }
+
+        $user = User::firstOrCreate(
+        ['email' => $email],
+        [
+            'name' => $name,
+            'google_id' => $uid,
+            'firebase_uid' => $uid,
+            'role' => 'musico',
+            'password' => bcrypt(Str::random(24)),
+            'is_active' => true,
+            'is_verified' => false,
+            'email_verified_at' => now(),
+        ]
+        );
+
+        // If the user was just created, we MUST create their MusicianProfile
+        // Otherwise they will get "Attempt to read property 'instagram' on null" on the dashboard/profile
+        if ($user->wasRecentlyCreated && $user->role === 'musico') {
+            MusicianProfile::create([
+                'user_id' => $user->id,
+                'stage_name' => $name,
+                'location' => '',
+                'bio' => null,
+                'profile_picture' => $picture, // Save Google Picture!
+                'is_verified' => false,
+            ]);
+        }
+
+        // Link google_id & firebase_uid if the user already existed with email+password
+        if (!$user->google_id) {
+            $user->update([
+                'google_id' => $uid,
+                'firebase_uid' => $uid,
+                'email_verified_at' => $user->email_verified_at ?? now(),
+            ]);
+        }
+
+        if (!$user->is_active) {
+            return back()->withErrors(['auth' => 'Tu cuenta está suspendida. Contacta al soporte.']);
+        }
+
+        Auth::login($user, true);
+        $request->session()->regenerate();
+
+        if ($user->role === 'admin') {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        return redirect()->intended(route('dashboard'));
     }
 }

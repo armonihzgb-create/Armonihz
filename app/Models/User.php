@@ -24,8 +24,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'firebase_uid',
+        'google_id',
         'is_active',
         'is_verified',
+        'email_verified_at',
     ];
 
     public function musicianProfile()

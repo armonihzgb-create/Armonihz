@@ -35,7 +35,11 @@
             <div class="nbf-info-bar">
                 <div class="nbf-avatar-container">
                     @if($profile && $profile->profile_picture)
-                        <img src="{{ asset('storage/' . $profile->profile_picture) }}" alt="Foto de perfil">
+                        @if(Str::startsWith($profile->profile_picture, ['http://', 'https://']))
+                            <img src="{{ $profile->profile_picture }}" alt="Foto de perfil">
+                        @else
+                            <img src="{{ asset('storage/' . $profile->profile_picture) }}" alt="Foto de perfil">
+                        @endif
                     @else
                         <div class="nbf-avatar-initials">
                             {{ strtoupper(substr($user->name, 0, 2)) }}
@@ -178,6 +182,54 @@
             </div>
 
         </div>
+        
+        {{-- Multimedia Section (Creative Layout) --}}
+        @if(isset($media) && count($media) > 0)
+        <div class="nbf-section" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e8edf3;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 20px;">
+                <div>
+                    <h2 class="nbf-section-title" style="margin-bottom:4px;">Portafolio Multimedia</h2>
+                    <p style="font-size:14px; color:#64748b; margin:0;">Tus mejores momentos y presentaciones.</p>
+                </div>
+                <a href="/multimedia" class="nbf-btn-secondary" style="font-size:13px; padding:8px 16px;">Gestionar</a>
+            </div>
+
+            <div class="nbf-media-showcase">
+                {{-- Photos --}}
+                @if($media->where('type', 'photo')->count() > 0)
+                <div class="nbf-media-grid photos-grid">
+                    @foreach($media->where('type', 'photo')->take(6) as $photo)
+                    <div class="nbf-media-item" onclick="openViewModal('{{ $photo->url() }}', 'photo')">
+                        <img src="{{ $photo->url() }}" alt="Foto">
+                        <div class="nbf-media-overlay">
+                            <i data-lucide="zoom-in" style="width:24px;height:24px;color:#fff;"></i>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                {{-- Videos --}}
+                @if($media->where('type', 'video')->count() > 0)
+                <div class="nbf-media-grid videos-grid" style="margin-top: 16px;">
+                    @foreach($media->where('type', 'video')->take(4) as $video)
+                    <div class="nbf-media-item video-item" onclick="openViewModal('{{ $video->url() }}', 'video')">
+                        <video src="{{ $video->url() }}" preload="metadata"></video>
+                        <div class="nbf-play-indicator">
+                            <i data-lucide="play" style="width:20px;height:20px;color:#fff;margin-left:2px;"></i>
+                        </div>
+                        @if($video->is_featured)
+                        <div class="nbf-featured-badge">
+                            <i data-lucide="star" style="width:12px;height:12px;fill:currentColor;"></i> Destacado
+                        </div>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+        </div>
+        @endif
     </div>
 
     <style>
@@ -455,6 +507,88 @@
             color: #2b6cb0;
         }
 
+        .nbf-btn-secondary {
+            border-radius: 6px;
+            font-size: 13px; font-weight: 600;
+            padding: 10px 16px; 
+            border: 1px solid #ced4da;
+            background: #fff; color: #495057;
+            cursor: pointer; transition: all .2s;
+            text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+        }
+
+        /* ── Media Showcase ─────────────────────────────── */
+        .nbf-media-showcase {
+            width: 100%;
+        }
+        .nbf-media-grid {
+            display: grid; gap: 12px;
+        }
+        .photos-grid {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        }
+        .videos-grid {
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        }
+        .nbf-media-item {
+            position: relative; border-radius: 12px; overflow: hidden;
+            background: #f1f5f9; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,.05);
+        }
+        .photos-grid .nbf-media-item {
+            aspect-ratio: 1; /* Squarish for photos */
+        }
+        .videos-grid .nbf-media-item {
+            aspect-ratio: 16/9; /* Widescreen for videos */
+        }
+        .nbf-media-item img, .nbf-media-item video {
+            width: 100%; height: 100%; object-fit: cover;
+            display: block; transition: transform .4s ease;
+        }
+        .nbf-media-item:hover img, .nbf-media-item:hover video {
+            transform: scale(1.05);
+        }
+        .nbf-media-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,.3);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity .3s;
+        }
+        .nbf-media-item:hover .nbf-media-overlay {
+            opacity: 1;
+        }
+        .nbf-play-indicator {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(108,63,197,.9); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,.3); transition: transform .2s;
+        }
+        .video-item:hover .nbf-play-indicator {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        .nbf-featured-badge {
+            position: absolute; top: 12px; left: 12px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff; font-size: 11px; font-weight: 700;
+            padding: 4px 10px; border-radius: 20px;
+            display: flex; align-items: center; gap: 4px;
+            box-shadow: 0 4px 12px rgba(245,158,11,.4);
+            z-index: 2;
+        }
+
+        /* Modal Button Overrides */
+        #view-media-modal button svg {
+            display: inline-block !important;
+            flex-shrink: 0 !important;
+            visibility: visible !important;
+        }
+        .mm-modal-close {
+            position:absolute !important; top:24px !important; right:24px !important; background:rgba(255,255,255,.1) !important;
+            border:none !important; width:48px !important; height:48px !important; border-radius:50% !important; color:#fff !important;
+            display:flex !important; align-items:center !important; justify-content:center !important; cursor:pointer !important;
+            transition:background .2s !important; z-index: 10000 !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important;
+        }
+        .mm-modal-close:hover { background: rgba(255,255,255,.2) !important; transform: scale(1.1) !important; }
     </style>
 
     {{-- ══════════════  MODAL EDITAR PERFIL  ══════════════ --}}
@@ -505,8 +639,13 @@
                     <label style="display:block;margin-bottom:10px;">Foto de Perfil</label>
                     <div id="photo-preview-wrap" style="position:relative;display:inline-block;cursor:pointer;" onclick="document.getElementById('photo-input').click()">
                         @if($profile && $profile->profile_picture)
-                            <img id="photo-preview" src="{{ asset('storage/'.$profile->profile_picture) }}"
-                                 style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--accent-blue);">
+                            @if(Str::startsWith($profile->profile_picture, ['http://', 'https://']))
+                                <img id="photo-preview" src="{{ $profile->profile_picture }}"
+                                     style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--accent-blue);">
+                            @else
+                                <img id="photo-preview" src="{{ asset('storage/'.$profile->profile_picture) }}" 
+                                     style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--accent-blue);">
+                            @endif
                         @else
                             <div id="photo-preview" style="width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#6c3fc5,#2f93f5);color:#fff;font-size:28px;font-weight:700;display:flex;align-items:center;justify-content:center;border:3px solid var(--accent-blue);">
                                 {{ strtoupper(substr($user->name,0,2)) }}
@@ -534,13 +673,15 @@
                         <label>Ciudad / Ubicación</label>
                         <input type="text" name="location"
                                value="{{ old('location', $profile->location) }}"
-                               placeholder="Ej. Guadalajara, Jal.">
+                               placeholder="Ej. Guadalajara, Jal."
+                               oninput="this.value = this.value.replace(/[0-9]/g, '')">
                     </div>
                     <div class="form-group">
                         <label>Tarifa por hora (MXN)</label>
                         <input type="number" name="hourly_rate" min="0" step="50"
                                value="{{ old('hourly_rate', $profile->hourly_rate) }}"
-                               placeholder="Ej. 3500">
+                               placeholder="Ej. 3500"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
                 </div>
 
@@ -549,7 +690,8 @@
                     <label>Teléfono / WhatsApp</label>
                     <input type="text" name="phone"
                            value="{{ old('phone', $profile->phone) }}"
-                           placeholder="+52 000 000 0000">
+                           placeholder="+52 000 000 0000"
+                           oninput="this.value = this.value.replace(/[^0-9\+\-\s\(\)]/g, '')">
                 </div>
 
                 {{-- Biografía --}}
@@ -640,7 +782,21 @@
         .form-group input:focus, .form-group textarea:focus { border-color:var(--accent-blue);outline:none;background:#fff; }
         @keyframes slideUp { from { opacity:0;transform:translateY(30px); } to { opacity:1;transform:translateY(0); } }
         @media (max-width: 768px) { .profile-grid { grid-template-columns:1fr; } }
+
+        /* Estilos para el Cambio de Contraseña */
+        .strength-bar-wrap { height:4px; background:#e5e7eb; border-radius:2px; margin-top:8px; overflow:hidden; }
+        .strength-bar { height:100%; width:0%; border-radius:2px; transition:width .3s, background .3s; }
+        .strength-label { font-size:11px; font-weight:600; margin-top:4px; display:block; }
+        .pwd-requirements { display: none; flex-direction: column; gap: 4px; margin-top: 10px; padding: 10px 12px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; }
+        .pwd-requirements.visible { display: flex; }
+        .req-item { font-size: 12px; color: #6b7280; display: flex; align-items: center; gap: 7px; transition: color .2s; }
+        .req-item .req-dot { font-size: 7px; flex-shrink: 0; }
+        .req-item.ok { color: #16a34a; }
+        .req-item.ok .req-dot { color: #16a34a; }
+        .req-item.fail { color: #dc2626; }
+        .req-item.fail .req-dot { color: #dc2626; }
     </style>
+
 
     {{-- ══════════════  MODAL VISTA MÓVIL  ══════════════ --}}
     <div id="preview-modal-overlay" style="
@@ -708,8 +864,13 @@
                         {{-- Cover / Hero --}}
                         <div class="app-hero">
                             @if($profile && $profile->profile_picture)
-                                <img src="{{ asset('storage/'.$profile->profile_picture) }}"
-                                     style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
+                                @if(Str::startsWith($profile->profile_picture, ['http://', 'https://']))
+                                    <img src="{{ $profile->profile_picture }}"
+                                         style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
+                                @else
+                                    <img src="{{ asset('storage/'.$profile->profile_picture) }}"
+                                         style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
+                                @endif
                             @else
                                 <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#6c3fc5,#2f93f5);color:#fff;font-size:26px;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid #fff;">
                                     {{ strtoupper(substr($profile->stage_name ?? $user->name,0,2)) }}
@@ -955,8 +1116,8 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') { closeEditModal(); closePreviewModal(); }
         });
-        // Auto-open modal if there are validation errors
-        @if($errors->any())
+        // Auto-open edit modal if there are validation errors (excluding password errors)
+        @if($errors->any() && !$errors->has('current_password') && !$errors->has('password'))
             document.addEventListener('DOMContentLoaded', () => openEditModal());
         @endif
 
@@ -987,4 +1148,268 @@
         });
     </script>
 
+    {{-- ══════════════ AJUSTES DE CUENTA (Contraseña & Eliminar) ══════════════ --}}
+    <div style="margin-top: 40px; text-align: right; padding: 0 24px 24px; display: flex; justify-content: flex-end; gap: 16px; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 24px;">
+        
+        {{-- Botón Cambiar Contraseña --}}
+        @if($user->google_id)
+            <div title="Tu cuenta está vinculada con Google. La contraseña se gestiona desde tu cuenta de Google." style="cursor: not-allowed;">
+                <button type="button" disabled style="
+                    display: inline-flex; align-items: center; gap: 8px;
+                    background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0;
+                    padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; 
+                    cursor: not-allowed; opacity: 0.7;
+                ">
+                    <i data-lucide="key" style="width:16px; height:16px;"></i>
+                    Cambiar contraseña
+                </button>
+            </div>
+        @else
+            <button type="button" onclick="openPasswordModal()" style="
+                display: inline-flex; align-items: center; gap: 8px;
+                background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;
+                padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; 
+                cursor: pointer; transition: all 0.2s;
+            " onmouseover="this.style.background='#e2e8f0';" onmouseout="this.style.background='#f1f5f9';">
+                <i data-lucide="key" style="width:16px; height:16px;"></i>
+                Cambiar contraseña
+            </button>
+        @endif
+
+        {{-- Botón Eliminar Cuenta --}}
+        <button type="button" onclick="openDeleteModal()" style="
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #fff0f0; color: #e11d48; border: 1px solid #ffe4e6;
+            padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; 
+            cursor: pointer; transition: all 0.2s;
+        " onmouseover="this.style.background='#ffe4e6'; this.style.borderColor='#fecdd3';" 
+           onmouseout="this.style.background='#fff0f0'; this.style.borderColor='#ffe4e6';">
+            <i data-lucide="trash-2" style="width:16px; height:16px;"></i>
+            Eliminar cuenta permanentemente
+        </button>
+    </div>
+
+    {{-- MODAL CAMBIAR CONTRASEÑA --}}
+    @if(!$user->google_id)
+    <div id="password-modal-overlay" style="
+        display:none;position:fixed;inset:0;z-index:3000;
+        background:rgba(0,0,0,.6);backdrop-filter:blur(3px);
+        align-items:center;justify-content:center;
+    ">
+        <div style="background:#fff;border-radius:12px;width:100%;max-width:400px;padding:24px;box-shadow:0 10px 40px rgba(0,0,0,.2);animation:slideUp .2s ease;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                <h3 style="margin:0;color:#1e293b;font-size:18px;display:flex;align-items:center;gap:8px;">
+                    <i data-lucide="key" style="width:20px;color:#3b82f6;"></i>
+                    Cambiar Contraseña
+                </h3>
+                <button onclick="closePasswordModal()" style="background:transparent;border:none;color:#94a3b8;cursor:pointer;font-size:20px;line-height:1;">&times;</button>
+            </div>
+            
+            <form action="{{ route('profile.password') }}" method="POST">
+                @csrf
+                @method('PUT')
+                
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#475569;">Contraseña Actual</label>
+                    <div style="position:relative;">
+                        <input type="password" id="profile-current-pwd" name="current_password" required style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    @error('current_password')<span style="display:block;color:#ef4444;font-size:12px;margin-top:4px;">{{ $message }}</span>@enderror
+                </div>
+                
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#475569;">Nueva Contraseña</label>
+                    <div style="position:relative;">
+                        <input type="password" id="profile-new-pwd" name="password" required placeholder="Mínimo 8 caracteres" oninput="checkProfileStrength(this.value); checkProfileMatch();" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    
+                    <div class="strength-bar-wrap"><div class="strength-bar" id="profile-strength-bar"></div></div>
+                    <span class="strength-label" id="profile-strength-label"></span>
+                    
+                    <div class="pwd-requirements" id="profile-pwd-requirements">
+                        <span id="prof-req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
+                        <span id="prof-req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
+                        <span id="prof-req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
+                        <span id="prof-req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
+                    </div>
+
+                    @error('password')<span style="display:block;color:#ef4444;font-size:12px;margin-top:4px;">{{ $message }}</span>@enderror
+                </div>
+                
+                <div style="margin-bottom:24px;" id="profile-confirm-group">
+                    <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#475569;">Confirmar Nueva Contraseña</label>
+                    <div style="position:relative;">
+                        <input type="password" id="profile-confirm-pwd" name="password_confirmation" required oninput="checkProfileMatch()" onpaste="return false;" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    <span style="display:none;color:#ef4444;font-size:12px;margin-top:4px;" id="profile-match-error">Las contraseñas no coinciden.</span>
+                </div>
+                
+                <div style="display:flex;justify-content:flex-end;gap:12px;">
+                    <button type="button" onclick="closePasswordModal()" style="background:#f1f5f9;color:#475569;border:none;padding:10px 16px;border-radius:6px;font-weight:600;cursor:pointer;">Cancelar</button>
+                    <button type="submit" style="background:#3b82f6;color:#fff;border:none;padding:10px 16px;border-radius:6px;font-weight:600;cursor:pointer;">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+
+    {{-- MODAL ELIMINAR CUENTA --}}
+    <div id="delete-modal-overlay" style="
+        display:none;position:fixed;inset:0;z-index:3000;
+        background:rgba(0,0,0,.6);backdrop-filter:blur(3px);
+        align-items:center;justify-content:center;
+    ">
+        <div style="background:#fff;border-radius:12px;width:100%;max-width:400px;padding:24px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.2);animation:slideUp .2s ease;">
+            <div style="width:48px;height:48px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i data-lucide="alert-triangle" style="color:#dc2626;width:24px;height:24px;"></i>
+            </div>
+            <h3 style="margin:0 0 12px;color:#1e293b;font-size:18px;">¿Eliminar tu cuenta?</h3>
+            <p style="color:#64748b;font-size:14px;margin-bottom:24px;line-height:1.5;">
+                Toda tu información, perfil, fotos y solicitudes pendientes se perderán para siempre. Esta acción no se puede deshacer.
+            </p>
+            <form action="{{ route('profile.destroy') }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <button type="button" onclick="closeDeleteModal()" style="flex:1;background:#f1f5f9;color:#475569;border:none;padding:10px;border-radius:6px;font-weight:600;cursor:pointer;">Cancelar</button>
+                    <button type="submit" style="flex:1;background:#dc2626;color:#fff;border:none;padding:10px;border-radius:6px;font-weight:600;cursor:pointer;">Sí, eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openDeleteModal() {
+            document.getElementById('delete-modal-overlay').style.display = 'flex';
+        }
+        function closeDeleteModal() {
+            document.getElementById('delete-modal-overlay').style.display = 'none';
+        }
+        @if(!$user->google_id)
+        function openPasswordModal() {
+            document.getElementById('password-modal-overlay').style.display = 'flex';
+        }
+        function closePasswordModal() {
+            document.getElementById('password-modal-overlay').style.display = 'none';
+        }
+        @if($errors->has('current_password') || $errors->has('password'))
+            document.addEventListener('DOMContentLoaded', () => openPasswordModal());
+        @endif
+
+
+        function checkProfileStrength(val) {
+            const bar = document.getElementById('profile-strength-bar');
+            const lbl = document.getElementById('profile-strength-label');
+            const req = document.getElementById('profile-pwd-requirements');
+
+            const rules = [
+                { id:'prof-req-length',  ok: val.length >= 8 },
+                { id:'prof-req-upper',   ok: /[A-Z]/.test(val) },
+                { id:'prof-req-number',  ok: /[0-9]/.test(val) },
+                { id:'prof-req-special', ok: /[^A-Za-z0-9]/.test(val) },
+            ];
+            
+            if (val.length > 0) {
+                req.classList.add('visible');
+                rules.forEach(r => {
+                    const el = document.getElementById(r.id);
+                    if(el){
+                        el.classList.toggle('ok',   r.ok);
+                        el.classList.toggle('fail', !r.ok);
+                    }
+                });
+            } else {
+                req.classList.remove('visible');
+                rules.forEach(r => {
+                    const el = document.getElementById(r.id);
+                    if(el) el.classList.remove('ok','fail');
+                });
+            }
+
+            let score = rules.filter(r => r.ok).length;
+            const levels = [
+                { w:'25%',  bg:'#ef4444', txt:'Muy débil', color:'#ef4444' },
+                { w:'50%',  bg:'#f97316', txt:'Débil',     color:'#f97316' },
+                { w:'75%',  bg:'#eab308', txt:'Regular',   color:'#eab308' },
+                { w:'100%', bg:'#22c55e', txt:'Fuerte',    color:'#22c55e' },
+            ];
+            
+            if (val.length === 0) { bar.style.width='0'; lbl.textContent=''; return; }
+            const lvl = levels[Math.max(0, score - 1)];
+            bar.style.width      = lvl.w;
+            bar.style.background = lvl.bg;
+            lbl.textContent      = lvl.txt;
+            lbl.style.color      = lvl.color;
+
+            checkProfileMatch();
+        }
+
+        function checkProfileMatch() {
+            const p1  = document.getElementById('profile-new-pwd').value;
+            const p2  = document.getElementById('profile-confirm-pwd').value;
+            const err = document.getElementById('profile-match-error');
+            const grp = document.getElementById('profile-confirm-pwd'); // The input
+            
+            if (p2.length === 0) { 
+                err.style.display='none'; 
+                grp.style.borderColor = '#e2e8f0';
+                return; 
+            }
+            
+            const ok = p1 === p2;
+            err.style.display = ok ? 'none' : 'block';
+            grp.style.borderColor = ok ? '#22c55e' : '#ef4444';
+            
+            // disable submit button if match fails or requirements not met?
+            // The backend handles the hard validation, but this gives visual feedback.
+        }
+        @endif
+    </script>
+
+    {{-- VIEW MEDIA MODAL --}}
+    <div id="view-media-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,.95); backdrop-filter:blur(8px); align-items:center; justify-content:center; flex-direction:column; padding:20px;">
+        <button onclick="hideViewModal()" class="mm-modal-close">
+            <i data-lucide="x" style="width:24px;height:24px; display:inline-block; visibility:visible;"></i>
+        </button>
+        <div id="view-media-container" style="max-width:90vw; max-height:85vh; border-radius:12px; overflow:hidden; box-shadow:0 24px 80px rgba(0,0,0,.6); position: relative;">
+            <!-- content injected via js -->
+        </div>
+    </div>
+
+    <script>
+        function openViewModal(url, type) {
+            const container = document.getElementById('view-media-container');
+            container.innerHTML = ''; 
+            
+            if(type === 'photo') {
+                const img = document.createElement('img');
+                img.src = url;
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '85vh';
+                img.style.display = 'block';
+                img.style.objectFit = 'contain';
+                container.appendChild(img);
+            } else {
+                const vid = document.createElement('video');
+                vid.src = url;
+                vid.controls = true;
+                vid.autoplay = true;
+                vid.style.maxWidth = '100%';
+                vid.style.maxHeight = '85vh';
+                vid.style.display = 'block';
+                vid.style.backgroundColor = '#000';
+                vid.style.outline = 'none';
+                container.appendChild(vid);
+            }
+            
+            document.getElementById('view-media-modal').style.display = 'flex';
+            if (window.lucide) { lucide.createIcons(); }
+        }
+
+        function hideViewModal() {
+            const container = document.getElementById('view-media-container');
+            container.innerHTML = ''; // This stops the video from playing
+            document.getElementById('view-media-modal').style.display = 'none';
+        }
+    </script>
 @endsection

@@ -19,7 +19,7 @@ class MusicianProfileController extends Controller
     public function index(Request $request)
     {
         $query = MusicianProfile::with(['user:id,name', 'genres'])
-            ->where('is_verified', true)
+           // ->where('is_verified', true)
             ->withExists(['promotions as has_active_promotion' => function ($query) {
             $query->where('is_active', true)->where('valid_until', '>', now());
         }])
@@ -61,7 +61,7 @@ class MusicianProfileController extends Controller
      */
     public function show(string $id)
     {
-        $profile = MusicianProfile::with(['user:id,name', 'genres', 'promotions' => function ($query) {
+        $profile = MusicianProfile::with(['user:id,name', 'genres', 'media', 'promotions' => function ($query) {
             $query->where('is_active', true);
         }])->findOrFail($id);
 

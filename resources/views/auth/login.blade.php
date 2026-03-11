@@ -2,6 +2,9 @@
 
 @section('head')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    {{-- Google Identity Services (GSI) --}}
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 @endsection
 
 @section('content')
@@ -105,6 +108,32 @@
                     </p>
                 </div>
 
+                {{-- ── Google Sign-In (Native GSI Button) ── --}}
+                <div class="auth-divider"><span>o continúa con</span></div>
+
+                <div id="g_id_onload"
+                     data-client_id="{{ env('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID_HERE') }}"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleCallback"
+                     data-auto_prompt="false">
+                </div>
+
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left"
+                     data-width="350">
+                </div>
+                {{-- Hidden form to POST Firebase credential to Laravel --}}
+                <form id="google-form" method="POST" action="{{ route('auth.google.callback') }}" style="display:none">
+                    @csrf
+                    <input type="hidden" name="credential" id="google-credential">
+                </form>
+
             </div>
         </div>
 
@@ -168,6 +197,22 @@
     .mt-4 { margin-top: 24px; }
     .mt-6 { margin-top: 32px; }
     .text-center { text-align: center; }
+
+    /* ── Divider ── */
+    .auth-divider {
+        display: flex; align-items: center; gap: 12px;
+        margin: 24px 0 16px;
+        color: #9ca3af; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em;
+    }
+    .auth-divider::before,
+    .auth-divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+
+    /* ── GSI Wrapper ── */
+    .g_id_signin {
+        display: flex; justify-content: center; width: 100%;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 
 <script>
@@ -210,6 +255,15 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
 
     if (hasError) e.preventDefault();
 });
+
+// ── Google Sign-In Callback (GSI) ──
+function handleGoogleCallback(response) {
+    if (response.credential) {
+        document.getElementById('google-credential').value = response.credential;
+        document.getElementById('google-form').submit();
+    }
+}
+
 </script>
 
 @endsection

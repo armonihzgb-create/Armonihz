@@ -7,12 +7,16 @@
                 <i data-lucide="sparkles"></i>
             </div>
             <div>
-                <h2 style="margin:0;">Bienvenido, {{ $user->name }}</h2>
+                <h2 style="margin:0;">Bienvenido, {{ ($user->role === 'musico' && $user->musicianProfile) ? ($user->musicianProfile->stage_name ?? $user->name) : $user->name }}</h2>
                 <p class="dashboard-subtitle" style="margin:0;">Aquí tienes un resumen de tu actividad reciente</p>
             </div>
         </div>
         @if($user->role === 'musico' && $user->musicianProfile && $user->musicianProfile->profile_picture)
-            <img src="{{ asset('storage/' . $user->musicianProfile->profile_picture) }}" alt="Perfil" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            @if(Str::startsWith($user->musicianProfile->profile_picture, ['http://', 'https://']))
+                <img src="{{ $user->musicianProfile->profile_picture }}" alt="Perfil" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            @else
+                <img src="{{ asset('storage/' . $user->musicianProfile->profile_picture) }}" alt="Perfil" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            @endif
         @else
             <div style="width:56px; height:56px; border-radius:50%; background:var(--bg-secondary); border: 2px solid #e5e7eb; display:flex; align-items:center; justify-content:center; color:var(--text-dim);">
                 <i data-lucide="user" style="width:24px; height:24px;"></i>

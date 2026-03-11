@@ -6,6 +6,8 @@ use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\RequestController;
 use App\Http\Controllers\Web\PromotionController;
+use App\Http\Controllers\Web\CastingController;
+use App\Http\Controllers\Web\MultimediaController;
 
 // --- PUBLIC ROUTES ---
 Route::get('/', function () {
@@ -24,10 +26,14 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class , 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class , 'register'])->name('register.submit');
 
+    // Google Sign-In via Firebase
+    Route::post('/auth/google/callback', [AuthController::class , 'googleCallback'])->name('auth.google.callback');
+
     // Forgot password (only guests need to request a link)
     Route::get('/password/forgot', [AuthController::class , 'showForgotForm'])->name('password.request');
     Route::post('/password/forgot', [AuthController::class , 'sendResetLink'])->name('password.email');
 });
+
 
 // Password reset form & submit — public (works even when logged in as another user)
 Route::get('/password/reset/{token}', [AuthController::class , 'showResetForm'])->name('password.reset');
@@ -67,28 +73,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware(['role:musico'])->group(function () {
             Route::get('/profile', [ProfileController::class , 'edit'])->name('profile');
             Route::put('/profile', [ProfileController::class , 'update'])->name('profile.update');
+            Route::put('/profile/password', [ProfileController::class , 'changePassword'])->name('profile.password');
+            Route::delete('/profile', [ProfileController::class , 'destroy'])->name('profile.destroy');
             Route::get('/multimedia', [ProfileController::class , 'multimedia'])->name('multimedia');
+            Route::post('/multimedia/upload', [MultimediaController::class, 'upload'])->name('multimedia.upload');
+            Route::delete('/multimedia/{media}', [MultimediaController::class, 'destroy'])->name('multimedia.destroy');
+            Route::patch('/multimedia/{media}/feature', [MultimediaController::class, 'setFeatured'])->name('multimedia.feature');
+
             Route::get('/availability', [ProfileController::class , 'availability'])->name('availability');
 
             Route::get('/requests', [RequestController::class , 'index'])->name('requests.index');
             Route::get('/requests/{id}', [RequestController::class , 'show'])->name('requests.show');
 
-            Route::get('/castings', function () {
-                    return view('castings.index');
-                }
-                )->name('castings.index');
-                Route::get('/castings/{id}', function ($id) {
-                    return view('castings.show', ['id' => $id]);
-                }
-                )->name('castings.show');
+            Route::get('/castings', [CastingController::class , 'index'])->name('castings.index');
+            Route::get('/castings/mis-postulaciones', [CastingController::class , 'myApplications'])->name('castings.my-applications');
+            Route::get('/castings/{id}', [CastingController::class , 'show'])->name('castings.show');
+            Route::post('/castings/{id}/apply', [CastingController::class , 'apply'])->name('castings.apply');
 
-                Route::get('/promote', [PromotionController::class , 'create'])->name('promotions.create');
-                Route::get('/my-promotions', [PromotionController::class , 'index'])->name('promotions.index');
-            }
-            );
+            Route::get('/promote', [PromotionController::class , 'create'])->name('promotions.create');
+            Route::get('/my-promotions', [PromotionController::class , 'index'])->name('promotions.index');
+        }
+        );
 
-            // --- ADMIN ROUTES ---
-            Route::middleware(['role:admin'])->prefix('admin')->group(function () {
+        // --- ADMIN ROUTES ---
+        Route::middleware(['role:admin'])->prefix('admin')->group(function () {
             Route::get('/', function () {
                     return view('admin');
                 }
@@ -118,10 +126,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
 // --- FIX PARA IMÁGENES EN ENTORNO LOCAL (WINDOWS / XAMPP) ---
-// Sirve archivos directamente desde storage/app/public sin depender del symlink.
-Route::get('/storage/{path}', function ($path) {
+// Usamos /file/ para evitar conflictos con la carpeta /public/storage/ existente
+Route::get('/file/{path}', function ($path) {
+    if (str_starts_with($path, 'profiles/')) {
+        $fullPath = storage_path('app/public/' . $path);
+    } else if (str_starts_with($path, 'musician_media/')) {
+        $fullPath = storage_path('app/public/' . $path);
+    } else {
+        $fullPath = storage_path('app/public/' . $path);
+    }
+
     $base = realpath(storage_path('app/public'));
-    $fullPath = realpath($base . '/' . $path);
+    $fullPath = realpath($fullPath);
 
     // Ensure the resolved path is inside the allowed base directory (prevents path traversal)
     if (!$fullPath || !str_starts_with($fullPath, $base)) {
@@ -133,8 +149,53 @@ Route::get('/storage/{path}', function ($path) {
     }
 
     $mimeType = mime_content_type($fullPath);
+    // If it's a video, serve it with proper ranges for seeking support
+    if (str_starts_with($mimeType, 'video/')) {
+        $size = filesize($fullPath);
+        $length = $size;
+        $start = 0;
+        $end = $size - 1;
+
+        $headers = [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'max-age=86400, public',
+            'Accept-Ranges' => 'bytes',
+        ];
+
+        if (isset($_SERVER['HTTP_RANGE'])) {
+            $c_start = $start;
+            $c_end = $end;
+            list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+            if (strpos($range, ',') !== false) {
+                header('HTTP/1.1 416 Requested Range Not Satisfiable');
+                header("Content-Range: bytes $start-$end/$size");
+                exit;
+            }
+            if ($range == '-') {
+                $c_start = $size - substr($range, 1);
+            } else {
+                $range = explode('-', $range);
+                $c_start = $range[0];
+                $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size;
+            }
+            $c_end = ($c_end > $end) ? $end : $c_end;
+            if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
+                header('HTTP/1.1 416 Requested Range Not Satisfiable');
+                header("Content-Range: bytes $start-$end/$size");
+                exit;
+            }
+            $start = $c_start;
+            $end = $c_end;
+            $length = $end - $start + 1;
+            $headers['Content-Range'] = "bytes $start-$end/$size";
+            return response()->file($fullPath, $headers)->setStatusCode(206);
+        }
+        
+        return response()->file($fullPath, $headers);
+    }
+
     return response()->file($fullPath, [
-    'Content-Type' => $mimeType,
-    'Cache-Control' => 'max-age=86400, public',
+        'Content-Type' => $mimeType,
+        'Cache-Control' => 'max-age=86400, public',
     ]);
 })->where('path', '.*');

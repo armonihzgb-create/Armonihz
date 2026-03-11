@@ -61,7 +61,8 @@
                             <label>Ciudad *</label>
                             <input type="text" name="city"
                                    value="{{ old('city') }}"
-                                   placeholder="Ej. CDMX" required>
+                                   placeholder="Ej. CDMX" 
+                                   oninput="this.value = this.value.replace(/[0-9]/g, '')" required>
                             @error('city')<span class="field-error">{{ $message }}</span>@enderror
                         </div>
                     </div>
