@@ -53,4 +53,18 @@ class MusicianProfile extends Model
     {
         return $this->hasMany(MusicianMedia::class);
     }
+
+    public function profilePictureUrl()
+    {
+        if (!$this->profile_picture) {
+            return asset('images/default-avatar.png'); // Si tienes un avatar por defecto
+        }
+
+        if (filter_var($this->profile_picture, FILTER_VALIDATE_URL)) {
+            return $this->profile_picture;
+        }
+
+        // Force to use our custom file streaming route, bypassing EasyPanel symlink issues
+        return url('file/' . $this->profile_picture);
+    }
 }

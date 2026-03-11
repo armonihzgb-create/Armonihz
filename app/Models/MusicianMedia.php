@@ -28,7 +28,7 @@ class MusicianMedia extends Model
      */
     public function url(): string
     {
-        return asset('storage/' . $this->path);
+        return url('file/' . $this->path);
     }
 
     public function profile()
