@@ -125,6 +125,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
             );
         });
 
+// --- TEMPORARY ROUTE FOR IONOS HOSTING ---
+// Visita /setup-storage en tu dominio para crear el enlace simbólico sin SSH
+Route::get('/setup-storage', function () {
+    try {
+        if (file_exists(public_path('storage'))) {
+            return 'El enlace "storage" ya existe en la carpeta public. Si las imágenes no cargan, bórralo manualmente mediante FTP o el administrador de archivos y vuelve a visitar esta ruta.';
+        }
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        return '¡Enlace de almacenamiento creado con éxito! Tus imágenes y videos ahora deberían ser visibles.';
+    } catch (\Exception $e) {
+        return 'Error al intentar crear el enlace: ' . $e->getMessage();
+    }
+});
+
 // --- FIX PARA IMÁGENES EN ENTORNO LOCAL (WINDOWS / XAMPP) ---
 // Usamos /file/ para evitar conflictos con la carpeta /public/storage/ existente
 Route::get('/file/{path}', function ($path) {
