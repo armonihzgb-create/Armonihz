@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (config('app.env') === 'production') {
-             Request::setTrustedProxies(['*'], Request::HEADER_X_FORWARDED_ALL);
+            Request::setTrustedProxies(['*'], Request::HEADER_X_FORWARDED_ALL);
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
         RateLimiter::for ('login', function (Request $request) {
