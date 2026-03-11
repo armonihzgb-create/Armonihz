@@ -311,7 +311,7 @@
     <section class="hero">
         <div class="hero-content">
             @if($profile->profile_picture)
-                <img src="{{ asset('storage/' . $profile->profile_picture) }}"
+                <img src="{{ $profile->profilePictureUrl() }}"
                      alt="{{ $profile->stage_name }}" class="hero-avatar">
             @else
                 <div class="hero-avatar-initial">

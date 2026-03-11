@@ -38,7 +38,7 @@
                         @if(Str::startsWith($profile->profile_picture, ['http://', 'https://']))
                             <img src="{{ $profile->profile_picture }}" alt="Foto de perfil">
                         @else
-                            <img src="{{ asset('storage/' . $profile->profile_picture) }}" alt="Foto de perfil">
+                            <img src="{{ $profile->profilePictureUrl() }}" alt="Foto de perfil">
                         @endif
                     @else
                         <div class="nbf-avatar-initials">
@@ -643,7 +643,7 @@
                                 <img id="photo-preview" src="{{ $profile->profile_picture }}"
                                      style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--accent-blue);">
                             @else
-                                <img id="photo-preview" src="{{ asset('storage/'.$profile->profile_picture) }}" 
+                                <img id="photo-preview" src="{{ $profile->profilePictureUrl() }}" 
                                      style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--accent-blue);">
                             @endif
                         @else
@@ -868,7 +868,7 @@
                                     <img src="{{ $profile->profile_picture }}"
                                          style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
                                 @else
-                                    <img src="{{ asset('storage/'.$profile->profile_picture) }}"
+                                    <img src="{{ $profile->profilePictureUrl() }}"
                                          style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
                                 @endif
                             @else
