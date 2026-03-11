@@ -239,7 +239,8 @@
                 }
             })
             .catch(err => {
-                showAlert("Error de conexión", true);
+                console.error("Grave error de red:", err);
+                showAlert("Error crítico (" + err.name + "): " + err.message, true);
             })
             .finally(() => {
                 input.value = ""; // Reset file input
