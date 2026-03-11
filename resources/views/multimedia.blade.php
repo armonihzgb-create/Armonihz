@@ -230,10 +230,20 @@
                     'Accept': 'application/json'
                 }
             })
-            .then(res => res.json().then(data => ({ status: res.status, body: data })))
+            .then(res => {
+                return res.text().then(text => ({ status: res.status, text: text }));
+            })
             .then(obj => {
+                let data = {};
+                try {
+                    data = JSON.parse(obj.text);
+                } catch(e) {
+                    data = { message: "Error del servidor (HTTP " + obj.status + ")" };
+                    console.error("HTML Error Response:", obj.text);
+                }
+
                 if (obj.status >= 400) {
-                    showAlert(obj.body.error || obj.body.message || "Error al subir chivo", true);
+                    showAlert(data.error || data.message || "Error al subir chivo", true);
                 } else {
                     window.location.reload(); // Reload to show new item
                 }
