@@ -272,15 +272,14 @@ class AuthController extends Controller
     }
     // ── GOOGLE SIGN-IN (Firebase) ─────────────────────────────────────────────
 
-    public function googleCallback(Request $request, FirebaseService $firebaseService)
+    public function googleCallback(Request $request)
     {
         $request->validate(['credential' => 'required|string']);
 
         $tokenStr = $request->credential;
         $decoded = null;
-        $isFirebase = false;
 
-        // Try 1: Google Identity Services (Web)
+        // Validar Token con Google Identity Services (Web)
         $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
             'id_token' => $tokenStr,
         ]);
@@ -289,27 +288,15 @@ class AuthController extends Controller
             $googleDecoded = $response->json();
             $expectedClientId = config('services.google.client_id', env('GOOGLE_CLIENT_ID'));
 
-            // Validate Audience for Web
+            // Validar Audience para Web
             if (isset($googleDecoded['aud']) && $expectedClientId && $googleDecoded['aud'] === $expectedClientId) {
                 $decoded = $googleDecoded;
             }
         }
 
-        // Try 2: Firebase (Android App)
         if (!$decoded) {
-            try {
-                $firebaseDecoded = $firebaseService->verifyIdToken($tokenStr);
-                $decoded = $firebaseDecoded->claims()->all();
-                $isFirebase = true;
-            }
-            catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Google Auth Error (Firebase Fallback): ' . $e->getMessage());
-                return back()->withErrors(['auth' => 'Token de Google o Firebase inválido. Intenta de nuevo.']);
-            }
-        }
-
-        if (!$decoded) {
-            return back()->withErrors(['auth' => 'No se pudo validar el Token con Google ni con Firebase.']);
+            \Illuminate\Support\Facades\Log::error('Google Auth Error: Token no válido o aud key mismatch.');
+            return back()->withErrors(['auth' => 'No se pudo validar el Token con Google.']);
         }
 
         // Extract consistent fields from either payload
