@@ -162,44 +162,38 @@ public function deleteAccount(Request $request)
 }
 
 public function syncClient(Request $request)
-    {
-        // Obtenemos el UID que el middleware sacó del token de Google
-        $firebaseUid = $request->attributes->get('firebase_uid');
+{
+    $firebaseUid = $request->attributes->get('firebase_uid');
 
-        if (!$firebaseUid) {
-            return response()->json(['message' => 'Token inválido o ausente'], 401);
-        }
-
-        $request->validate([
-            'name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-        ]);
-
-        // 1. 🔥 PASO CLAVE: Asegurarnos de que el USER exista en la tabla 'users'
-        $user = User::updateOrCreate(
-            ['email' => $request->email], // Buscamos por email
-            [
-                'name' => $request->name,
-                'firebase_uid' => $firebaseUid, // Guardamos el UID aquí también
-            ]
-        );
-
-        // 2. 🔥 Vincular el CLIENT con ese USER
-        $cliente = Client::updateOrCreate(
-            ['firebase_uid' => $firebaseUid],
-            [
-                'nombre' => $request->name,
-                'email' => $request->email,
-                'user_id' => $user->id, // Vinculación total
-            ]
-        );
-
-        return response()->json([
-            'message' => 'Sincronización exitosa',
-            'user_id' => $user->id,
-            'client_id' => $cliente->id
-        ], 200);
+    if (!$firebaseUid) {
+        return response()->json(['message' => 'Token de Firebase no detectado'], 401);
     }
+
+    // 1. Buscamos o creamos el Usuario en la tabla 'users'
+    $user = User::updateOrCreate(
+        ['email' => $request->email], // Buscamos por correo
+        [
+            'name' => $request->name,
+            'firebase_uid' => $firebaseUid,
+            'role' => 'cliente'
+        ]
+    );
+
+    // 2. Vinculamos al Cliente con el ID de ese Usuario
+    $cliente = Client::updateOrCreate(
+        ['firebase_uid' => $firebaseUid],
+        [
+            'user_id' => $user->id, // <--- Aquí ya no será NULL
+            'nombre' => $request->name,
+            'email' => $request->email,
+        ]
+    );
+
+    return response()->json([
+        'message' => 'Cliente sincronizado correctamente',
+        'user_id' => $user->id
+    ], 200);
+}
 
     /**
      * Guarda el token de notificaciones.

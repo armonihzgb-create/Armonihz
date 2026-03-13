@@ -17,12 +17,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
-        'firebase_uid', // Asegúrate de que esté aquí
+        'firebase_uid', // Necesario para vincular con Firebase
         'google_id',
         'is_active',
         'is_verified',
         'email_verified_at',
-        'fcm_token',    // Asegúrate de que esté aquí
+        'fcm_token',    // Necesario para las notificaciones
     ];
 
     protected $hidden = [
@@ -54,7 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(HiringRequest::class , 'client_id');
     }
 
-    // CONFIGURACIÓN NOTIFICACIONES PUSH
+    /**
+     * Canal de ruta para las notificaciones FCM.
+     */
     public function routeNotificationForFcm($notification)
     {
         return $this->fcm_token;

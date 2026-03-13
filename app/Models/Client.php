@@ -12,7 +12,7 @@ class Client extends Model
     protected $table = 'clients';
 
     protected $fillable = [
-        'user_id',      // 🔥 ESTO FALTABA: Sin esto no se vincula con User
+        'user_id',      // 🔥 AHORA SÍ permitirá guardar el vínculo con User
         'firebase_uid',
         'fotoPerfil',
         'nombre',
