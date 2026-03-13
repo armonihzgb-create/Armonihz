@@ -28,7 +28,7 @@
 
                 <div class="auth-header" style="margin-top:20px;">
                     <h2>¿Olvidaste tu contraseña?</h2>
-                    <p class="auth-subtitle">Ingresa tu correo y te enviaremos el enlace de recuperación.</p>
+                    <p class="auth-subtitle">Ingresa tu correo y te enviaremos el código de recuperación.</p>
                 </div>
 
                 {{-- ✅ Mensaje de éxito --}}
