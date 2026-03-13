@@ -152,4 +152,40 @@
     .full-width { width: 100%; }
 </style>
 
+<script>
+(function() {
+    const INTERVAL    = 4000;
+    const CHECK_URL   = '{{ route("verification.check") }}';
+    const DASHBOARD   = '{{ route("dashboard") }}';
+    let attempts      = 0;
+
+    function checkVerification() {
+        fetch(CHECK_URL, {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin'
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.verified) {
+                // Update UI to show success
+                const icon = document.querySelector('.email-icon-wrap i');
+                if (icon) { icon.className = 'fa-solid fa-circle-check'; icon.style.color = '#16a34a'; }
+                const h2 = document.querySelector('.auth-container h2');
+                if (h2) h2.textContent = '¡Correo verificado!';
+                const sub = document.querySelector('.auth-subtitle');
+                if (sub) sub.innerHTML = 'Redirigiendo al Dashboard&hellip;';
+                // Redirect this (original) tab — no new tab needed
+                setTimeout(() => { window.location.href = DASHBOARD; }, 1200);
+            } else {
+                attempts++;
+                if (attempts < 225) setTimeout(checkVerification, INTERVAL);
+            }
+        })
+        .catch(() => { if (attempts < 225) setTimeout(checkVerification, INTERVAL * 2); });
+    }
+
+    setTimeout(checkVerification, 5000); // Start after 5s
+})();
+</script>
+
 @endsection

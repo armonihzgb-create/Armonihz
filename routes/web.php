@@ -47,6 +47,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/email/resend', [AuthController::class , 'resendVerification'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+    // Polling endpoint — JS on verify page calls this every 4s
+    Route::get('/email/check-status', function () {
+        return response()->json([
+            'verified' => auth()->user()?->hasVerifiedEmail() ?? false,
+        ]);
+    })->name('verification.check');
 });
 
 // Verification link (signed URL — no auth required; controller handles login)
