@@ -691,7 +691,7 @@
                     <input type="text" name="phone"
                            value="{{ old('phone', $profile->phone) }}"
                            placeholder="+52 000 000 0000"
-                           oninput="this.value = this.value.replace(/[^0-9\+\-\s\(\)]/g, '')">
+                           oninput="formatPhone(this)">
                 </div>
 
                 {{-- Biografía --}}
@@ -1363,7 +1363,33 @@
             // disable submit button if match fails or requirements not met?
             // The backend handles the hard validation, but this gives visual feedback.
         }
+        }
         @endif
+
+        function formatPhone(input) {
+            // 1. Solo permite +, numeros, espacios y guiones
+            let val = input.value.replace(/[^\+0-9\s\-]/g, '');
+
+            // 2. Si hay un '+', solo puede estar al principio
+            if (val.indexOf('+') > 0) {
+                val = val.replace(/\+/g, (match, offset) => offset === 0 ? '+' : '');
+            }
+
+            // 3. Limitar a máximo 10 NÚMEROS
+            let digitCount = 0;
+            let cutIndex = val.length;
+            for (let i = 0; i < val.length; i++) {
+                if (/[0-9]/.test(val[i])) {
+                    digitCount++;
+                    if (digitCount > 10) {
+                        cutIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            input.value = val.substring(0, cutIndex);
+        }
     </script>
 
     {{-- VIEW MEDIA MODAL --}}

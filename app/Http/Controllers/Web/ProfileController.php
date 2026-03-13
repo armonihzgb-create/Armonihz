@@ -59,7 +59,17 @@ class ProfileController extends Controller
             'bio' => 'nullable|string|max:2000',
             'location' => 'nullable|string|max:255',
             'hourly_rate' => 'nullable|numeric|min:0',
-            'phone' => 'nullable|string|max:30',
+            'phone' => [
+                'nullable',
+                'string',
+                'regex:/^\+?[0-9\s\-]*$/',
+                function ($attribute, $value, $fail) {
+                    $digitsCount = preg_match_all('/[0-9]/', $value);
+                    if ($digitsCount > 10) {
+                        $fail('El número de teléfono no debe tener más de 10 números.');
+                    }
+                },
+            ],
             'instagram' => 'nullable|string|max:255',
             'facebook' => 'nullable|string|max:255',
             'youtube' => 'nullable|string|max:255',
@@ -67,6 +77,8 @@ class ProfileController extends Controller
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
             'genres' => 'nullable|array',
             'genres.*' => 'integer|exists:genres,id',
+        ], [
+            'phone.regex' => 'El teléfono solo puede contener números, espacios, guiones y un símbolo + opcional al inicio.',
         ]);
 
         // ── Photo upload ──────────────────────────────────────────────────────
