@@ -12,11 +12,12 @@ class Client extends Model
     protected $table = 'clients';
 
     protected $fillable = [
-        'user_id',      // 🔥 AHORA SÍ permitirá guardar el vínculo con User
+        'user_id',     
         'firebase_uid',
         'fotoPerfil',
         'nombre',
-        'email'
+        'email',
+        'fcm_token'
     ];
 
     public function user()

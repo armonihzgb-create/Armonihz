@@ -199,27 +199,37 @@ public function syncClient(Request $request)
     /**
      * Guarda el token de notificaciones.
      */
-    public function updateFcmToken(Request $request)
-    {
-        $request->validate([
-            'fcm_token' => 'required|string',
-        ]);
+   public function updateFcmToken(Request $request)
+{
+    $request->validate([
+        'fcm_token' => 'required|string',
+    ]);
 
-        $firebaseUid = $request->attributes->get('firebase_uid');
-        
-        // Buscamos al usuario por su UID de Firebase
-        $user = User::where('firebase_uid', $firebaseUid)->first();
+    $firebaseUid = $request->attributes->get('firebase_uid');
 
-        if ($user) {
-            $user->fcm_token = $request->fcm_token;
-            $user->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Token guardado correctamente en el usuario ' . $user->id
-            ]);
-        }
-
-        return response()->json(['error' => 'No se encontró el usuario en la BD'], 404);
+    if (!$firebaseUid) {
+        return response()->json([
+            'error' => 'Usuario no autenticado'
+        ], 401);
     }
+
+    // Buscar cliente por Firebase UID
+    $client = Client::where('firebase_uid', $firebaseUid)->first();
+
+    if (!$client) {
+        return response()->json([
+            'error' => 'Cliente no encontrado'
+        ], 404);
+    }
+
+    // Guardar token
+    $client->update([
+        'fcm_token' => $request->fcm_token
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Token guardado correctamente'
+    ], 200);
+}
 }
