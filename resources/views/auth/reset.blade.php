@@ -44,12 +44,16 @@
                     <input type="hidden" name="token" value="{{ $token }}">
 
                     {{-- Email (pre-poblado) --}}
+                    @php
+                        // Fix for edge cases where the URL hash appends the query string inside the email variable itself
+                        $cleanEmail = explode('?', $email)[0];
+                    @endphp
                     <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
                         <label for="email">Correo electrónico</label>
                         <div class="input-wrapper">
                             <i class="fa-regular fa-envelope input-icon"></i>
                             <input type="email" id="email" name="email"
-                                   value="{{ old('email', $email) }}"
+                                   value="{{ old('email', $cleanEmail) }}"
                                    placeholder="ejemplo@correo.com"
                                    autocomplete="email"
                                    style="background:#f9fafb;color:#6b7280;" readonly>
