@@ -35,6 +35,10 @@ Route::middleware('guest')->group(function () {
 });
 
 
+// OTP code verification (public — user is not logged in yet)
+Route::get('/password/verify-code', [AuthController::class , 'showVerifyCodeForm'])->name('password.verify.form');
+Route::post('/password/verify-code', [AuthController::class , 'verifyResetCode'])->name('password.verify.code');
+
 // Password reset form & submit — public (works even when logged in as another user)
 Route::get('/password/reset/{token}', [AuthController::class , 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [AuthController::class , 'resetPassword'])->name('password.update');

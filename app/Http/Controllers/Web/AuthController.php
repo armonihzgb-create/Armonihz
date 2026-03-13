@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
@@ -156,13 +158,71 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
         ], [
             'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'Ingresa un correo electrónico válido.',
+            'email.email'    => 'Ingresa un correo electrónico válido.',
         ]);
 
-        $status = Password::sendResetLink($request->only('email'));
+        // Generate a 6-digit OTP code
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $email = strtolower(trim($request->email));
+        $cacheKey = 'pwd_otp_' . md5($email);
 
-        // Always return success message (security: don't reveal if email exists)
-        return back()->with('status', 'Si tu correo está registrado, recibirás un enlace en breve para restablecer tu contraseña.');
+        // Store code for 15 minutes (regardless of whether email exists — prevents enumeration)
+        Cache::put($cacheKey, $code, now()->addMinutes(15));
+
+        // Send the email only if the user actually exists
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            Mail::send('emails.reset-code', ['code' => $code, 'user' => $user], function ($m) use ($user) {
+                $m->to($user->email)
+                  ->subject('Código de verificación - Armonihz');
+            });
+        }
+
+        return redirect()->route('password.verify.form')
+            ->with('otp_email', $email)
+            ->with('status', "Hemos enviado un código de 6 dígitos a <strong>{$email}</strong>. Reviósa tu bandeja de entrada.");
+    }
+
+    public function showVerifyCodeForm(Request $request)
+    {
+        // Email comes from session flash (after sendResetLink) or query string
+        $email = session('otp_email', $request->query('email', ''));
+        return view('auth.verify-code', compact('email'));
+    }
+
+    public function verifyResetCode(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code'  => 'required|string|size:6',
+        ], [
+            'code.required' => 'El código es obligatorio.',
+            'code.size'     => 'El código debe tener exactamente 6 dígitos.',
+        ]);
+
+        $email    = strtolower(trim($request->email));
+        $cacheKey = 'pwd_otp_' . md5($email);
+        $stored   = Cache::get($cacheKey);
+
+        if (!$stored || $stored !== $request->code) {
+            return back()
+                ->withInput()
+                ->withErrors(['code' => 'El código es incorrecto o ya expiró. Solicita uno nuevo.']);
+        }
+
+        // Code is valid — consume it
+        Cache::forget($cacheKey);
+
+        // Generate a real Laravel password reset token for the existing reset form
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return back()->withErrors(['code' => 'No encontramos una cuenta con ese correo.']);
+        }
+
+        $token = Password::createToken($user);
+
+        // Redirect to existing reset form (same tab, no email links needed)
+        return redirect(route('password.reset', ['token' => $token]) . '?email=' . urlencode($email));
     }
 
     // ── RESET PASSWORD ────────────────────────────────────────────────────────
