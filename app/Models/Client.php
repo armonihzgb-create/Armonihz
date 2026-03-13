@@ -11,15 +11,16 @@ class Client extends Model
 
     protected $table = 'clients';
 
-   protected $fillable = [
-    'firebase_uid',
-    'fotoPerfil',
-    'nombre',
-    'email'
-];
+    protected $fillable = [
+        'user_id',      // 🔥 ESTO FALTABA: Sin esto no se vincula con User
+        'firebase_uid',
+        'fotoPerfil',
+        'nombre',
+        'email'
+    ];
 
-public function user()
-{
-    return $this->belongsTo(User::class);
-}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
