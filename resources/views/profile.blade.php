@@ -1053,10 +1053,13 @@
             flex-shrink: 0;
         }
         .app-hero {
-            background: linear-gradient(180deg,#1a0b38 0%,#6c3fc5 100%);
+            background-image: linear-gradient(to bottom, rgba(26,11,56,0.6), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
             padding: 20px 16px 24px;
             text-align: center;
             flex-shrink: 0;
+            position: relative;
         }
         .app-body {
             flex: 1;
