@@ -186,7 +186,9 @@ class AuthController extends Controller
     public function showVerifyCodeForm(Request $request)
     {
         // Email comes from URL query param (persists on reload) or session flash fallback
-        $email = $request->query('email', session('otp_email', ''));
+        // Strip anything after '?' to avoid proxy-caused duplication (e.g. email?email=...)
+        $raw   = $request->query('email', session('otp_email', ''));
+        $email = explode('?', $raw)[0];
         return view('auth.verify-code', compact('email'));
     }
 
