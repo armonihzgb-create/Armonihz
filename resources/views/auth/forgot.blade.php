@@ -122,28 +122,23 @@
     .text-center { text-align: center; }
 </style>
 
-@endsection
-
-@section('scripts')
 <script>
-// Only activate the listener after user submitted the email (success message visible)
-@if(session('status'))
 (function() {
+    // Only activate if the success alert is visible (user already submitted the email form)
+    const successAlert = document.querySelector('.alert-success');
+    if (!successAlert) return;
     if (!('BroadcastChannel' in window)) return;
 
     const ch = new BroadcastChannel('armonihz_reset');
-
     ch.onmessage = function(e) {
         if (e.data && e.data.type === 'reset_url' && e.data.url) {
             ch.close();
-            // Navigate THIS (original) tab to the reset form
             window.location.href = e.data.url;
         }
     };
-
     // Stop listening after 30 min
     setTimeout(() => ch.close(), 30 * 60 * 1000);
 })();
-@endif
 </script>
+
 @endsection
