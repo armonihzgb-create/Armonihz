@@ -1067,14 +1067,14 @@
             background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
             background-size: cover;
             background-position: center;
-            filter: grayscale(100%);
+            filter: grayscale(200%);
             z-index: -2;
         }
         .app-hero::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(26,11,56,0.55), rgba(0,0,0,0.82));
+            background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.75));
             z-index: -1;
         }
         .app-body {
