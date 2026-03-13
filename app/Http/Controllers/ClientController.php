@@ -162,34 +162,37 @@ public function deleteAccount(Request $request)
 }
 
 public function syncClient(Request $request)
-{
-    $firebaseUid = $request->attributes->get('firebase_uid');
+    {
+        // 🔥 CAMBIO: Obtenemos el usuario autenticado (el que tiene el fcm_token)
+        $user = $request->user(); 
 
-    if (!$firebaseUid) {
-        return response()->json(['message' => 'Usuario no autenticado'], 401);
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado en la tabla users'], 401);
+        }
+
+        $request->validate([
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+        ]);
+
+        // 🔥 CAMBIO: Ahora guardamos el user_id para vincular la tabla clients con users
+        $cliente = Client::updateOrCreate(
+            ['email' => $user->email], // Usamos email para evitar duplicados
+            [
+                'firebase_uid' => $user->firebase_uid,
+                'nombre' => $request->name,
+                'user_id' => $user->id, // <--- AQUÍ SE HACE LA VINCULACIÓN
+            ]
+        );
+
+        return response()->json([
+            'message' => 'Cliente sincronizado y vinculado',
+            'client_id' => $cliente->id,
+            'user_id' => $user->id
+        ], 200);
     }
 
-    $request->validate([
-        'name' => 'nullable|string|max:255',
-        'email' => 'nullable|email|max:255',
-    ]);
-
-    // 🔥 Crea o actualiza el cliente
-    $cliente = Client::updateOrCreate(
-        ['firebase_uid' => $firebaseUid],
-        [
-            'nombre' => $request->name,
-            'email' => $request->email,
-        ]
-    );
-
-    return response()->json([
-        'message' => 'Cliente sincronizado',
-        'client_id' => $cliente->id
-    ], 200);
-}
-
-/**
+    /**
      * Guarda el token de Firebase del celular del usuario.
      */
     public function updateFcmToken(\Illuminate\Http\Request $request)
@@ -198,13 +201,14 @@ public function syncClient(Request $request)
             'fcm_token' => 'required|string',
         ]);
 
+        // 🔥 NOTA: Esto ya está bien, se guarda en la tabla 'users'
         $user = $request->user();
-        $user->fcm_token = $request->fcm_token;
-        $user->save();
+        if ($user) {
+            $user->fcm_token = $request->fcm_token;
+            $user->save();
+            return response()->json(['success' => true, 'message' => 'Token guardado en tabla users']);
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Token de notificaciones actualizado correctamente'
-        ]);
+        return response()->json(['error' => 'No se encontró el usuario'], 404);
     }
 }

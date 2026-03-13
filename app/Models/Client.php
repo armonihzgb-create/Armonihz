@@ -18,5 +18,8 @@ class Client extends Model
     'email'
 ];
 
-    
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
 }

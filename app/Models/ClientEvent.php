@@ -26,4 +26,8 @@ class ClientEvent extends Model
     {
         return $this->hasMany(CastingApplication::class , 'client_event_id');
     }
+    public function client()
+{
+    return $this->belongsTo(Client::class);
+}
 }
