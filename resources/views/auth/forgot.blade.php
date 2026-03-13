@@ -123,3 +123,28 @@
 </style>
 
 @endsection
+
+@push('scripts')
+<script>
+// Only activate listener after the user has submitted the email
+// (i.e., the success alert is visible on the page)
+@if(session('status'))
+(function() {
+    if (!('BroadcastChannel' in window)) return; // old browser fallback
+
+    const ch = new BroadcastChannel('armonihz_reset');
+
+    ch.onmessage = function(e) {
+        if (e.data && e.data.type === 'reset_url' && e.data.url) {
+            ch.close();
+            // Navigate THIS (original) tab to the reset form
+            window.location.href = e.data.url;
+        }
+    };
+
+    // Auto-close listener after 30 min to avoid memory leaks
+    setTimeout(() => ch.close(), 30 * 60 * 1000);
+})();
+@endif
+</script>
+@endpush

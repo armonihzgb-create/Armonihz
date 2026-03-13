@@ -244,4 +244,40 @@ document.getElementById('reset-form').addEventListener('submit', function(e) {
 });
 </script>
 
+<script>
+// Cross-tab handoff: send this reset URL to the original (forgot) tab
+// and self-close, so the form appears there instead of here.
+(function() {
+    if (!('BroadcastChannel' in window)) return;
+
+    const ch = new BroadcastChannel('armonihz_reset');
+
+    // Broadcast our URL to any listening tabs
+    ch.postMessage({ type: 'reset_url', url: window.location.href });
+    ch.close();
+
+    // Show a friendly self-closing page instead of the form
+    // We replace the page content with a minimal message
+    document.addEventListener('DOMContentLoaded', function() {
+        const wrapper = document.querySelector('.auth-wrapper');
+        if (!wrapper) return;
+
+        wrapper.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+                        min-height:100vh;font-family:'Inter',sans-serif;gap:16px;text-align:center;padding:24px;">
+                <div style="font-size:52px;animation:pop .4s cubic-bezier(.4,2,.6,1)">🔐</div>
+                <h2 style="margin:0;font-size:20px;color:#1a202c;">¡Enlace recibido!</h2>
+                <p style="margin:0;font-size:14px;color:#64748b;max-width:320px;line-height:1.6;">
+                    El formulario para cambiar tu contraseña se abrió en tu otra pestaña del navegador.
+                    <br><br>Puedes cerrar esta ventana.
+                </p>
+                <style>@keyframes pop { 0%{transform:scale(0)} 100%{transform:scale(1)} }</style>
+            </div>`;
+
+        // Try to close this tab automatically (works if opened by same-browser email client)
+        setTimeout(() => { window.close(); }, 2500);
+    });
+})();
+</script>
+
 @endsection
