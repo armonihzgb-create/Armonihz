@@ -7,6 +7,7 @@ use App\Models\ClientEvent;
 use App\Models\CastingApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\ProposalReceivedNotification; 
 
 class CastingController extends Controller
 {
@@ -32,7 +33,7 @@ class CastingController extends Controller
 
         // Add match score and already_applied flag to each event
         $myApplicationIds = $profile
-            ?CastingApplication::where('musician_profile_id', $profile->id)
+            ? CastingApplication::where('musician_profile_id', $profile->id)
             ->pluck('client_event_id')
             ->toArray()
             : [];
@@ -76,7 +77,7 @@ class CastingController extends Controller
 
         // Find existing application if any
         $myApplication = $profile
-            ?CastingApplication::where('client_event_id', $id)
+            ? CastingApplication::where('client_event_id', $id)
             ->where('musician_profile_id', $profile->id)
             ->first()
             : null;
@@ -122,13 +123,23 @@ class CastingController extends Controller
             'message.max' => 'El mensaje no puede superar los 800 caracteres.',
         ]);
 
-        CastingApplication::create([
+        // 1. Guardamos la aplicación en una variable
+        $application = CastingApplication::create([
             'client_event_id' => $event->id,
             'musician_profile_id' => $profile->id,
             'proposed_price' => $request->proposed_price,
             'message' => $request->message,
             'status' => 'pending',
         ]);
+
+        // 2. Buscamos al cliente dueño del evento para notificarlo
+        // Nota: Asumo que la relación en tu modelo ClientEvent se llama 'client' o 'user'.
+        // Si se llama diferente, solo cambia la palabra después de la flecha.
+        $clientUser = $event->client ?? $event->user; 
+
+        if ($clientUser) {
+            $clientUser->notify(new ProposalReceivedNotification($application));
+        }
 
         return redirect()->route('castings.show', $id)->with('success', '¡Te postulaste exitosamente! El cliente podrá ver tu propuesta.');
     }
@@ -142,7 +153,7 @@ class CastingController extends Controller
         $profile = $user->musicianProfile;
 
         $applications = $profile
-            ?CastingApplication::where('musician_profile_id', $profile->id)
+            ? CastingApplication::where('musician_profile_id', $profile->id)
             ->with('event')
             ->orderByDesc('created_at')
             ->get()

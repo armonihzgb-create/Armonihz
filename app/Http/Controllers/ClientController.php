@@ -188,4 +188,23 @@ public function syncClient(Request $request)
         'client_id' => $cliente->id
     ], 200);
 }
+
+/**
+     * Guarda el token de Firebase del celular del usuario.
+     */
+    public function updateFcmToken(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        $user = $request->user();
+        $user->fcm_token = $request->fcm_token;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Token de notificaciones actualizado correctamente'
+        ]);
+    }
 }

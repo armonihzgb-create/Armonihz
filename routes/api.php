@@ -60,6 +60,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/client/events/{id}/applications', [ClientEventController::class , 'getApplications']);
             Route::post('/client/events/{eventId}/applications/{appId}/accept', [ClientEventController::class , 'acceptApplication']);
             Route::put('/client/events/{id}', [ClientEventController::class, 'update']);
+            Route::post('/client/fcm-token', [ClientController::class, 'updateFcmToken']);
         }
         );
     });

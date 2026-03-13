@@ -28,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
         'is_verified',
         'email_verified_at',
+        'fcm_token',
     ];
 
     public function musicianProfile()
@@ -66,5 +67,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function client()
     {
         return $this->hasOne(Client::class);
+    }
+
+    /**
+     * Route notifications for the FCM channel.
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return string|null
+     */
+    public function routeNotificationForFcm($notification)
+    {
+        return $this->fcm_token;
     }
 }
