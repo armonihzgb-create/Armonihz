@@ -178,15 +178,15 @@ class AuthController extends Controller
             });
         }
 
-        return redirect()->route('password.verify.form')
+        return redirect()->route('password.verify.form', ['email' => $email])
             ->with('otp_email', $email)
             ->with('status', "Hemos enviado un código de 6 dígitos a <strong>{$email}</strong>. Reviósa tu bandeja de entrada.");
     }
 
     public function showVerifyCodeForm(Request $request)
     {
-        // Email comes from session flash (after sendResetLink) or query string
-        $email = session('otp_email', $request->query('email', ''));
+        // Email comes from URL query param (persists on reload) or session flash fallback
+        $email = $request->query('email', session('otp_email', ''));
         return view('auth.verify-code', compact('email'));
     }
 
