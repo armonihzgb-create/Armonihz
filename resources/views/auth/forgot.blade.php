@@ -124,13 +124,12 @@
 
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
-// Only activate listener after the user has submitted the email
-// (i.e., the success alert is visible on the page)
+// Only activate the listener after user submitted the email (success message visible)
 @if(session('status'))
 (function() {
-    if (!('BroadcastChannel' in window)) return; // old browser fallback
+    if (!('BroadcastChannel' in window)) return;
 
     const ch = new BroadcastChannel('armonihz_reset');
 
@@ -142,9 +141,9 @@
         }
     };
 
-    // Auto-close listener after 30 min to avoid memory leaks
+    // Stop listening after 30 min
     setTimeout(() => ch.close(), 30 * 60 * 1000);
 })();
 @endif
 </script>
-@endpush
+@endsection
