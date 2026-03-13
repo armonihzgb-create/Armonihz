@@ -236,28 +236,47 @@ class AuthController extends Controller
             abort(403, 'Enlace de verificación inválido.');
         }
 
-        if ($user->hasVerifiedEmail()) {
-            // Log in as the correct user anyway and go to dashboard
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            Auth::login($user);
-            $request->session()->regenerate();
-            return redirect()->route('dashboard')
-                ->with('status', 'Tu correo ya había sido verificado. Bienvenido.');
+        // Mark as verified (idempotent if already verified)
+        if (!$user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
         }
 
-        $user->markEmailAsVerified();
-
-        // Log out whoever was in session and log in the correct user
+        // Log in the verified user (in case this tab has a different session)
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard')
-            ->with('status', '✅ ¡Correo verificado! Bienvenido a Armonihz.');
+        // Return a tiny self-closing page — the original tab's polling
+        // will detect verification and redirect to Dashboard automatically.
+        return response(<<<HTML
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Verificado ✅</title>
+            <style>
+                body { margin:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+                       min-height:100vh; font-family:'Inter',sans-serif; background:#f0fdf4; color:#15803d; gap:16px; }
+                .icon { font-size:56px; animation: pop .4s cubic-bezier(.4,2,.6,1); }
+                h2 { margin:0; font-size:20px; }
+                p  { margin:0; font-size:14px; color:#4b7a60; }
+                @keyframes pop { 0%{transform:scale(0)} 100%{transform:scale(1)} }
+            </style>
+        </head>
+        <body>
+            <div class="icon">✅</div>
+            <h2>¡Correo verificado!</h2>
+            <p>Puedes cerrar esta pestaña.</p>
+            <script>
+                // Close this tab — works when opened by email client same-browser
+                setTimeout(() => { window.close(); }, 1800);
+            </script>
+        </body>
+        </html>
+        HTML);
     }
 
     public function resendVerification(Request $request)
