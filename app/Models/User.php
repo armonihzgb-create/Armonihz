@@ -79,4 +79,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->fcm_token;
     }
+
+    public function up(): void {
+    Schema::table('users', function (Blueprint $table) {
+        $table->string('firebase_uid')->nullable()->unique()->after('id');
+    });
+}
+
+public function down(): void {
+    Schema::table('users', function (Blueprint $table) {
+        $table->dropColumn('firebase_uid');
+    });
+}
 }
