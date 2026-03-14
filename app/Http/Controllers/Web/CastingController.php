@@ -138,10 +138,13 @@ class CastingController extends Controller
         }
 
         // 3. ENVIAR NOTIFICACIÓN
-        if ($clientUser) {
-            // Laravel detectará automáticamente si tiene fcm_token para enviar el Push
-            $clientUser->notify(new ProposalReceivedNotification($application));
-        }
+       if ($clientUser) {
+
+    $notification = new ProposalReceivedNotification($application);
+
+    $clientUser->notify($notification); // guarda en BD
+    $notification->send($clientUser);   // envía push
+}
 
         return redirect()->route('castings.show', $id)->with('success', '¡Postulación enviada! El cliente ha sido notificado en su celular.');
     }

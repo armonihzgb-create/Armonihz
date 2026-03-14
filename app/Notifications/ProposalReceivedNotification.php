@@ -4,7 +4,10 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use App\Models\CastingApplication;
+use Illuminate\Notifications\Messages\DatabaseMessage;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification as FirebaseNotification;
+use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class ProposalReceivedNotification extends Notification
 {
@@ -12,35 +15,47 @@ class ProposalReceivedNotification extends Notification
 
     protected $application;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct(CastingApplication $application)
+    public function __construct($application)
     {
         $this->application = $application;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     * En este caso, usaremos 'fcm' para notificaciones Push
-     * y 'database' para que se guarde el historial en tu app.
-     */
     public function via($notifiable)
     {
-        return ['database']; // Aquí añadiremos 'fcm' más adelante cuando instales el paquete de Firebase.
+        return ['database']; // guardamos también en BD
     }
 
-    /**
-     * Estructura para guardar en la base de datos (Historial de notificaciones)
-     */
     public function toDatabase($notifiable)
     {
         return [
-            'type' => 'new_proposal',
-            'application_id' => $this->application->id,
+            'title' => 'Nueva propuesta 🎵',
+            'message' => 'Un músico envió una propuesta para tu evento',
             'event_id' => $this->application->client_event_id,
-            'message' => '¡Tienes una nueva propuesta para tu evento "' . $this->application->event->nombre . '"!',
-            'musician_name' => $this->application->musicianProfile->stage_name ?? 'Un músico',
         ];
+    }
+
+    public function sendPush($notifiable)
+    {
+        if (!$notifiable->fcm_token) {
+            return;
+        }
+
+        $messaging = Firebase::messaging();
+
+        $message = CloudMessage::withTarget('token', $notifiable->fcm_token)
+            ->withNotification(
+                FirebaseNotification::create(
+                    'Nueva propuesta 🎵',
+                    'Un músico envió una propuesta para tu evento'
+                )
+            )
+            ->withHighestPossiblePriority();
+
+        $messaging->send($message);
+    }
+
+    public function send($notifiable)
+    {
+        $this->sendPush($notifiable);
     }
 }
