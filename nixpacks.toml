@@ -1,2 +1,2 @@
 [start]
-cmd = "sh /app/fix-upload-limit.sh && (php-fpm -D 2>/dev/null || true) && nginx -g 'daemon off;'"
+cmd = "sh /app/fix-upload-limit.sh && php-fpm -y /assets/php-fpm.conf -F & nginx -c /nginx.conf"
