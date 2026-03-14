@@ -1,2 +1,0 @@
-[start]
-cmd = "sh /app/fix-upload-limit.sh && php-fpm -y /assets/php-fpm.conf -F & nginx -c /nginx.conf"

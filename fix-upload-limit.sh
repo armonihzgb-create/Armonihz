@@ -1,6 +1,6 @@
 #!/bin/sh
 # Set client_max_body_size in every nginx config file found
-for f in /etc/nginx/nginx.conf /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf /nginx.conf; do
+for f in /assets/nginx.conf /nginx.conf /etc/nginx/nginx.conf /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf; do
     if [ -f "$f" ]; then
         # If client_max_body_size already exists, replace it; else add it inside the http or server block
         if grep -q "client_max_body_size" "$f"; then
