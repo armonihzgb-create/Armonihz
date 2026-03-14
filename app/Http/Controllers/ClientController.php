@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\Client;
 use App\Models\User;
+use App\Services\FirebaseNotificationService;
+
 
 class ClientController extends Controller
 {
@@ -231,5 +233,20 @@ public function syncClient(Request $request)
         'success' => true,
         'message' => 'Token guardado correctamente'
     ], 200);
+}
+
+
+
+public function testNotification(FirebaseNotificationService $fcm)
+{
+    $client = Client::first();
+
+    $fcm->send(
+        $client->fcm_token,
+        "Armonihz",
+        "Notificación de prueba"
+    );
+
+    return "Notificación enviada";
 }
 }
