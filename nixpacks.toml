@@ -1,5 +1,2 @@
-[phases.setup]
-nixPkgs = []
-
 [start]
 cmd = "sh /app/fix-upload-limit.sh && (php-fpm -D 2>/dev/null || true) && nginx -g 'daemon off;'"
