@@ -240,22 +240,30 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
+            'token'    => 'required',
+            'email'    => 'required|email',
             'password' => 'required|string|min:8|confirmed',
         ], [
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'Ingresa un correo electrónico válido.',
+            'email.required'    => 'El correo electrónico es obligatorio.',
+            'email.email'       => 'Ingresa un correo electrónico válido.',
             'password.required' => 'La contraseña es obligatoria.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.min'      => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed'=> 'Las contraseñas no coinciden.',
         ]);
+
+        // Check that the new password is different from the current one
+        $user = User::where('email', $request->email)->first();
+        if ($user && $user->password && Hash::check($request->password, $user->password)) {
+            return back()->withErrors([
+                'password' => 'La nueva contraseña no puede ser igual a la contraseña actual.',
+            ])->withInput($request->except('password', 'password_confirmation'));
+        }
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password) {
             $user->forceFill([
-                'password' => Hash::make($password),
+                'password'       => Hash::make($password),
                 'remember_token' => Str::random(60),
             ])->save();
             event(new PasswordReset($user));
