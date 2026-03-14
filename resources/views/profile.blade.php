@@ -1067,7 +1067,7 @@
             background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
             background-size: cover;
             background-position: center;
-            filter: grayscale(200%);
+            filter: grayscale(100%);
             z-index: -2;
         }
         .app-hero::after {
