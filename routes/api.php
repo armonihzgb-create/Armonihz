@@ -61,6 +61,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/client/events/{eventId}/applications/{appId}/accept', [ClientEventController::class , 'acceptApplication']);
             Route::put('/client/events/{id}', [ClientEventController::class, 'update']);
             Route::post('/client/fcm-token', [ClientController::class, 'updateFcmToken']);
+            Route::get('/test-notification', [ClientController::class, 'testNotification']);
         }
         );
     });
