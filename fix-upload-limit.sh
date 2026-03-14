@@ -1,27 +1,16 @@
 #!/bin/sh
-# Set client_max_body_size in every nginx config file found
-for f in /assets/nginx.conf /nginx.conf /etc/nginx/nginx.conf /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf; do
-    if [ -f "$f" ]; then
-        # If client_max_body_size already exists, replace it; else add it inside the http or server block
-        if grep -q "client_max_body_size" "$f"; then
-            sed -i 's/client_max_body_size[^;]*;/client_max_body_size 100M;/g' "$f"
-        else
-            sed -i 's/http {/http {\n    client_max_body_size 100M;/' "$f"
-            sed -i 's/server {/server {\n    client_max_body_size 100M;/' "$f"
-        fi
-    fi
-done
+# Patch /nginx.conf to raise the upload/body size limit to 100M
+NGINX_CONF="/nginx.conf"
 
-# Also set PHP limits via .htaccess-style ini if php-fpm pool config exists
-for f in /etc/php*/fpm/pool.d/www.conf /etc/php-fpm.d/www.conf; do
-    if [ -f "$f" ]; then
-        grep -q "upload_max_filesize" "$f" \
-            && sed -i 's/php_admin_value\[upload_max_filesize\].*/php_admin_value[upload_max_filesize] = 100M/' "$f" \
-            || echo "php_admin_value[upload_max_filesize] = 100M" >> "$f"
-        grep -q "post_max_size" "$f" \
-            && sed -i 's/php_admin_value\[post_max_size\].*/php_admin_value[post_max_size] = 100M/' "$f" \
-            || echo "php_admin_value[post_max_size] = 100M" >> "$f"
+if [ -f "$NGINX_CONF" ]; then
+    if grep -q "client_max_body_size" "$NGINX_CONF"; then
+        # Replace existing value
+        sed -i 's/client_max_body_size[^;]*;/client_max_body_size 100M;/g' "$NGINX_CONF"
+    else
+        # Inject into the first 'server {' block
+        sed -i 's/server {/server {\n    client_max_body_size 100M;/' "$NGINX_CONF"
     fi
-done
-
-echo "[upload-fix] nginx client_max_body_size set to 100M"
+    echo "[upload-fix] Patched $NGINX_CONF → client_max_body_size 100M"
+else
+    echo "[upload-fix] WARNING: $NGINX_CONF not found — limit not set"
+fi
