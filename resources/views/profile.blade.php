@@ -59,8 +59,12 @@
                 </div>
 
                 <div class="nbf-header-actions">
-                    <button type="button" class="nbf-action-btn primary" onclick="openEditModal()">Editar perfil</button>
-                    <button type="button" class="nbf-action-btn secondary" onclick="openPreviewModal()">Vista Previa</button>
+                    <button type="button" class="nbf-action-btn primary" onclick="openEditModal()">
+                        <i class="fa-solid fa-pen-to-square" style="margin-right:6px;"></i>Editar perfil
+                    </button>
+                    <button type="button" class="nbf-action-btn secondary" onclick="openPreviewModal()">
+                        <i class="fa-solid fa-mobile-screen-button" style="margin-right:6px;"></i>Vista Previa
+                    </button>
                 </div>
             </div>
         </div>
