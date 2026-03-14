@@ -89,65 +89,86 @@ class CastingController extends Controller
      * Lógica para postularse y enviar notificación PUSH al cliente.
      */
     public function apply(Request $request, $id)
-    {
-        $event = ClientEvent::findOrFail($id);
-        $user = Auth::user();
-        $profile = $user->musicianProfile;
+{
+    $event = ClientEvent::findOrFail($id);
+    $user = Auth::user();
+    $profile = $user->musicianProfile;
 
-        // Validaciones previas
-        if (!$profile) {
-            return redirect()->route('profile')->withErrors(['error' => 'Completa tu perfil de músico antes de postularte.']);
-        }
-
-        if ($event->status !== 'open') {
-            return redirect()->route('castings.show', $id)->withErrors(['error' => 'Este evento ya no acepta propuestas.']);
-        }
-
-        $exists = CastingApplication::where('client_event_id', $id)
-            ->where('musician_profile_id', $profile->id)
-            ->exists();
-
-        if ($exists) {
-            return redirect()->route('castings.show', $id)->withErrors(['error' => 'Ya te has postulado a este evento.']);
-        }
-
-        $request->validate([
-            'proposed_price' => ['required', 'numeric', 'min:0'],
-            'message' => ['required', 'string', 'max:800'],
-        ], [
-            'proposed_price.required' => 'Debes ingresar un precio.',
-            'message.required' => 'El mensaje es obligatorio.',
+    // Validaciones previas
+    if (!$profile) {
+        return redirect()->route('profile')->withErrors([
+            'error' => 'Completa tu perfil de músico antes de postularte.'
         ]);
-
-        // 1. Crear la postulación
-        $application = CastingApplication::create([
-            'client_event_id' => $event->id,
-            'musician_profile_id' => $profile->id,
-            'proposed_price' => $request->proposed_price,
-            'message' => $request->message,
-            'status' => 'pending',
-        ]);
-
-        // 2. ENCONTRAR AL DESTINATARIO (User con fcm_token)
-        // Buscamos al usuario que creó el evento
-        $clientUser = $event->user; 
-
-        // Si el evento está vinculado a un "Client", buscamos al "User" dueño de ese cliente
-        if (!$clientUser && $event->client) {
-            $clientUser = $event->client->user; 
-        }
-
-        // 3. ENVIAR NOTIFICACIÓN
-       if ($clientUser) {
-
-    $notification = new ProposalReceivedNotification($application);
-
-    $clientUser->notify($notification); // guarda en BD
-    $notification->send($clientUser);   // envía push
-}
-
-        return redirect()->route('castings.show', $id)->with('success', '¡Postulación enviada! El cliente ha sido notificado en su celular.');
     }
+
+    if ($event->status !== 'open') {
+        return redirect()->route('castings.show', $id)->withErrors([
+            'error' => 'Este evento ya no acepta propuestas.'
+        ]);
+    }
+
+    $exists = CastingApplication::where('client_event_id', $id)
+        ->where('musician_profile_id', $profile->id)
+        ->exists();
+
+    if ($exists) {
+        return redirect()->route('castings.show', $id)->withErrors([
+            'error' => 'Ya te has postulado a este evento.'
+        ]);
+    }
+
+    $request->validate([
+        'proposed_price' => ['required', 'numeric', 'min:0'],
+        'message' => ['required', 'string', 'max:800'],
+    ]);
+
+    // 1️⃣ Crear la postulación
+    $application = CastingApplication::create([
+        'client_event_id' => $event->id,
+        'musician_profile_id' => $profile->id,
+        'proposed_price' => $request->proposed_price,
+        'message' => $request->message,
+        'status' => 'pending',
+    ]);
+
+    // 2️⃣ Obtener cliente dueño del evento
+    $client = $event->client;
+
+    if (!$client) {
+        \Log::warning('Evento sin cliente asociado', ['event_id' => $event->id]);
+    }
+
+    // 3️⃣ Enviar notificación PUSH
+    if ($client && $client->fcm_token) {
+
+        try {
+
+            $fcm = app(\App\Services\FirebaseNotificationService::class);
+
+            $fcm->send(
+                $client->fcm_token,
+                "Nueva propuesta 🎵",
+                $user->name . " envió una propuesta para tu evento"
+            );
+
+            \Log::info("Notificación enviada al cliente", [
+                'client_id' => $client->id,
+                'event_id' => $event->id
+            ]);
+
+        } catch (\Throwable $e) {
+
+            \Log::error("Error enviando notificación", [
+                'error' => $e->getMessage()
+            ]);
+
+        }
+    }
+
+    return redirect()
+        ->route('castings.show', $id)
+        ->with('success', '¡Postulación enviada! El cliente ha sido notificado en su celular.');
+}
 
     /**
      * Historial de postulaciones del músico.
