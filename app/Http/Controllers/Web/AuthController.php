@@ -180,7 +180,7 @@ class AuthController extends Controller
 
         return redirect()->route('password.verify.form', ['email' => $email])
             ->with('otp_email', $email)
-            ->with('status', "Hemos enviado un código de 6 dígitos a <strong>{$email}</strong>. Reviósa tu bandeja de entrada.");
+            ->with('status', "Hemos enviado un código de 6 dígitos a <strong>{$email}</strong>. Revisa tu bandeja de entrada.");
     }
 
     public function showVerifyCodeForm(Request $request)
@@ -269,7 +269,7 @@ class AuthController extends Controller
             $request->session()->regenerateToken();
 
             return redirect()->route('login')
-                ->with('status', '✅ Contraseña actualizada correctamente. Ya puedes iniciar sesión con tu nueva contraseña.');
+                ->with('status', 'Contraseña actualizada correctamente. Ya puedes iniciar sesión con tu nueva contraseña.');
         }
 
         return back()->withErrors([
