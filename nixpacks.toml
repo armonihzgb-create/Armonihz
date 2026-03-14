@@ -1,2 +1,6 @@
-[start]
-cmd = "sh /app/fix-upload-limit.sh; php-fpm -y /assets/php-fpm.conf -F & nginx -c /nginx.conf"
+[phases.build]
+cmds = [
+  "find /assets -name 'nginx.conf' 2>/dev/null | xargs -I{} sed -i 's/http {/http {\\n    client_max_body_size 100M;/' {} 2>/dev/null || true",
+  "find / -maxdepth 2 -name 'nginx.conf' 2>/dev/null | xargs -I{} sed -i 's/http {/http {\\n    client_max_body_size 100M;/' {} 2>/dev/null || true",
+  "npm run build"
+]
