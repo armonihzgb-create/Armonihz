@@ -25,6 +25,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/musicians/{id}', [MusicianProfileController::class , 'show'])->middleware('throttle:public-api');
 
         Route::get('/promotions', [App\Http\Controllers\PromotionController::class , 'index'])->middleware('throttle:public-api');
+        Route::get('/test-notification', [ClientController::class, 'testNotification']);
 
         // ── Authenticated routes (Sanctum) ────────────
         Route::middleware('auth:sanctum')->group(function () {
@@ -61,7 +62,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/client/events/{eventId}/applications/{appId}/accept', [ClientEventController::class , 'acceptApplication']);
             Route::put('/client/events/{id}', [ClientEventController::class, 'update']);
             Route::post('/client/fcm-token', [ClientController::class, 'updateFcmToken']);
-            Route::get('/test-notification', [ClientController::class, 'testNotification']);
+            
         }
         );
     });
