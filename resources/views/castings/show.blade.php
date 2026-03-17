@@ -306,7 +306,7 @@
         }
         .cs-price-input-wrap { position: relative; display: flex; align-items: center; }
         .cs-price-prefix {
-            position: absolute; left: 13px; font-size: 15px;
+            position: absolute; left: 15px; font-size: 16px;
             font-weight: 700; color: #94a3b8;
         }
         .cs-input {
@@ -315,7 +315,7 @@
             transition: border-color .2s;
         }
         .cs-input:focus { border-color: #6c3fc5; outline: none; }
-        .cs-price-input { padding-left: 36px; font-weight: 700; font-size: 17px; }
+        .cs-price-input { padding-left: 44px; font-weight: 700; font-size: 17px; }
         .cs-textarea {
             width: 100%; padding: 11px 12px; border: 1.5px solid #e2e8f0;
             border-radius: 8px; font-size: 14px; line-height: 1.6; resize: vertical;
