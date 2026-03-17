@@ -131,12 +131,13 @@
                         <div class="cs-field">
                             <label class="cs-label">Tu precio (MXN) *</label>
                             <div class="cs-price-input-wrap">
-                                <span class="cs-price-prefix">$</span>
+                                <span class="cs-price-prefix" style="left: 14px;">$</span>
                                 <input type="number" name="proposed_price" min="0" step="100"
                                        value="{{ old('proposed_price') }}"
                                        placeholder="3500"
                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                       class="cs-input cs-price-input">
+                                       class="cs-input cs-price-input"
+                                       style="padding-left: 36px !important;">
                             </div>
                         </div>
 
