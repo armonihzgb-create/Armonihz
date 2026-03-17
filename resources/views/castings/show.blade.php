@@ -104,6 +104,66 @@
                         {{ $myApplication->status === 'accepted' ? 'cs-status-badge--green' : ($myApplication->status === 'rejected' ? 'cs-status-badge--red' : ($myApplication->status === 'cancelled' ? 'cs-status-badge--grey' : 'cs-status-badge--yellow')) }}">
                         {{ $myApplication->status === 'accepted' ? '✓ Aceptado' : ($myApplication->status === 'rejected' ? '✗ No seleccionado' : ($myApplication->status === 'cancelled' ? '✗ Contratación cancelada' : '⏳ En revisión')) }}
                     </span>
+
+                    {{-- Actions for pending proposals --}}
+                    @if($myApplication->status === 'pending')
+                        <div class="cs-applied-actions">
+                            <button type="button" class="cs-edit-btn" onclick="document.getElementById('edit-proposal-form').style.display='block'; this.parentElement.style.display='none';">
+                                <i data-lucide="edit-2" style="width:14px;height:14px;"></i> Editar Propuesta
+                            </button>
+                            <form action="{{ route('castings.destroy', $myApplication->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de cancelar tu postulación?');" style="margin:0;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="cs-danger-btn">
+                                    <i data-lucide="trash-2" style="width:14px;height:14px;"></i> Cancelar Postulación
+                                </button>
+                            </form>
+                        </div>
+
+                        {{-- Edit form (Hidden by default) --}}
+                        <div id="edit-proposal-form" style="display:none; margin-top: 20px; text-align: left; padding-top: 20px; border-top: 1px dashed #e2e8f0;">
+                            <h4 style="margin:0 0 16px; color:#1e293b; font-size:15px;"><i data-lucide="edit-3" style="width:16px;height:16px;vertical-align:text-bottom;"></i> Editar mi propuesta</h4>
+                            
+                            @if($errors->any())
+                                <div class="cs-error-box">
+                                    @foreach($errors->all() as $err)<div>• {{ $err }}</div>@endforeach
+                                </div>
+                            @endif
+
+                            <form action="{{ route('castings.update', $myApplication->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+        
+                                <div class="cs-field">
+                                    <label class="cs-label">Tu precio (MXN) *</label>
+                                    <div class="cs-price-input-wrap">
+                                        <span class="cs-price-prefix" style="left: 14px;">$</span>
+                                        <input type="number" name="proposed_price" min="0" step="100"
+                                               value="{{ old('proposed_price', $myApplication->proposed_price) }}"
+                                               placeholder="3500"
+                                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                               class="cs-input cs-price-input"
+                                               style="padding-left: 36px !important;">
+                                    </div>
+                                </div>
+        
+                                <div class="cs-field">
+                                    <label class="cs-label">Mensaje para el cliente *</label>
+                                    <textarea name="message" rows="5" maxlength="800"
+                                              class="cs-textarea"
+                                              oninput="document.getElementById('char-count-edit').textContent = this.value.length">{{ old('message', $myApplication->message) }}</textarea>
+                                    <div class="cs-char-count">
+                                        <span id="char-count-edit">{{ strlen($myApplication->message) }}</span> / 800
+                                    </div>
+                                </div>
+        
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="submit" class="cs-submit-btn" style="flex:1;">Guardar Cambios</button>
+                                    <button type="button" class="cs-secondary-btn" onclick="document.getElementById('edit-proposal-form').style.display='none'; document.querySelector('.cs-applied-actions').style.display='flex';" style="flex:1;">Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
+                    @endif
                 </div>
 
             @else
@@ -333,12 +393,32 @@
         .cs-submit-btn:hover { opacity: .9; }
         .cs-submit-note { text-align: center; font-size: 12px; color: #94a3b8; margin: 10px 0 0; }
 
+        /* Actinos inside applied state */
+        .cs-applied-actions { 
+            display: flex; gap: 10px; margin-top: 20px; justify-content: center; 
+        }
+        .cs-edit-btn, .cs-secondary-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+            background: #f8fafc; color: #475569; border: 1.5px solid #e2e8f0; cursor: pointer; transition: all .2s;
+        }
+        .cs-edit-btn:hover, .cs-secondary-btn:hover { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
+        
+        .cs-danger-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+            background: #fef2f2; color: #dc2626; border: 1.5px solid #fecaca; cursor: pointer; transition: all .2s;
+        }
+        .cs-danger-btn:hover { background: #fee2e2; border-color: #fca5a5; }
+
         @media (max-width: 860px) {
             .cs-layout { grid-template-columns: 1fr; }
             .cs-detail-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 480px) {
             .cs-detail-grid { grid-template-columns: 1fr; }
+            .cs-applied-actions { flex-direction: column; }
+            .cs-applied-actions button { width: 100%; }
         }
     </style>
 
@@ -348,6 +428,12 @@
         }
         const msgArea = document.querySelector('textarea[name="message"]');
         if (msgArea) updateCharCount(msgArea);
+
+        // Si hay errores de validación, mostrar el formulario de edición por defecto
+        @if($myApplication && $myApplication->status === 'pending' && $errors->any())
+            document.getElementById('edit-proposal-form').style.display = 'block';
+            document.querySelector('.cs-applied-actions').style.display = 'none';
+        @endif
     </script>
 
 @endsection

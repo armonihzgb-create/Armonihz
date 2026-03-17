@@ -122,6 +122,12 @@ class CastingController extends Controller
     $request->validate([
         'proposed_price' => ['required', 'numeric', 'min:0'],
         'message' => ['required', 'string', 'max:800'],
+    ], [
+        'proposed_price.required' => 'El precio propuesto es obligatorio.',
+        'proposed_price.numeric' => 'El precio debe ser un número.',
+        'proposed_price.min' => 'El precio no puede ser negativo.',
+        'message.required' => 'El mensaje es obligatorio.',
+        'message.max' => 'El mensaje no puede superar los 800 caracteres.',
     ]);
 
     // 1️⃣ Crear la postulación
@@ -188,5 +194,62 @@ class CastingController extends Controller
             : collect();
 
         return view('castings.my-applications', compact('applications'));
+    }
+
+    /**
+     * Actualiza una propuesta enviada.
+     */
+    public function update(Request $request, $id)
+    {
+        $app = CastingApplication::findOrFail($id);
+        $user = Auth::user();
+
+        if ($app->musician_profile_id !== $user->musicianProfile->id) {
+            abort(403);
+        }
+
+        if ($app->status !== 'pending') {
+            return back()->withErrors(['error' => 'No puedes editar una propuesta que ya fue respondida.']);
+        }
+
+        $request->validate([
+            'proposed_price' => ['required', 'numeric', 'min:0'],
+            'message' => ['required', 'string', 'max:800'],
+        ], [
+            'proposed_price.required' => 'El precio propuesto es obligatorio.',
+            'proposed_price.numeric' => 'El precio debe ser un número.',
+            'proposed_price.min' => 'El precio no puede ser negativo.',
+            'message.required' => 'El mensaje es obligatorio.',
+            'message.max' => 'El mensaje no puede superar los 800 caracteres.',
+        ]);
+
+        $app->update([
+            'proposed_price' => $request->proposed_price,
+            'message' => $request->message,
+        ]);
+
+        return back()->with('success', 'Tu propuesta ha sido actualizada correctamente.');
+    }
+
+    /**
+     * Cancela (elimina) una propuesta enviada.
+     */
+    public function destroy($id)
+    {
+        $app = CastingApplication::findOrFail($id);
+        $user = Auth::user();
+
+        if ($app->musician_profile_id !== $user->musicianProfile->id) {
+            abort(403);
+        }
+
+        // Si ya fue aceptada, probablemente no deba borrarse así de fácil
+        if ($app->status === 'accepted') {
+            return back()->withErrors(['error' => 'Ya te han aceptado para este evento. Contacta soporte para cancelar.']);
+        }
+
+        $app->delete();
+
+        return redirect()->route('castings.index')->with('success', 'Has cancelado tu postulación a este casting.');
     }
 }

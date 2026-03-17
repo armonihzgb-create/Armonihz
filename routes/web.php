@@ -95,10 +95,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/requests', [RequestController::class , 'index'])->name('requests.index');
             Route::get('/requests/{id}', [RequestController::class , 'show'])->name('requests.show');
 
-            Route::get('/castings', [CastingController::class , 'index'])->name('castings.index');
-            Route::get('/castings/mis-postulaciones', [CastingController::class , 'myApplications'])->name('castings.my-applications');
-            Route::get('/castings/{id}', [CastingController::class , 'show'])->name('castings.show');
-            Route::post('/castings/{id}/apply', [CastingController::class , 'apply'])->name('castings.apply');
+    // Castings / Oportunidades (Músicos)
+    Route::get('/castings', [CastingController::class, 'index'])->name('castings.index');
+    Route::get('/castings/mis-postulaciones', [CastingController::class, 'myApplications'])->name('castings.my-applications');
+    Route::get('/castings/{id}', [CastingController::class, 'show'])->name('castings.show');
+    Route::post('/castings/{id}/apply', [CastingController::class, 'apply'])->name('castings.apply');
+    Route::put('/castings/applications/{id}', [CastingController::class, 'update'])->name('castings.update');
+    Route::delete('/castings/applications/{id}', [CastingController::class, 'destroy'])->name('castings.destroy');
 
             Route::get('/promote', [PromotionController::class , 'create'])->name('promotions.create');
             Route::get('/my-promotions', [PromotionController::class , 'index'])->name('promotions.index');
