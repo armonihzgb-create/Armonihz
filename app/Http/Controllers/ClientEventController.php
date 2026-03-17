@@ -215,4 +215,24 @@ class ClientEventController extends Controller
             'evento' => $evento
         ], 200);
     }
+
+    /**
+     * Delete an event from the client app.
+     */
+    public function destroy(Request $request, $id)
+    {
+        $firebaseUid = $request->attributes->get('firebase_uid');
+
+        // Find the event ensuring it belongs to this client
+        $event = ClientEvent::where('id', $id)
+            ->where('firebase_uid', $firebaseUid)
+            ->firstOrFail();
+
+        // Delete the event (cascade will handle applications if DB is set up that way, otherwise they get deleted/orphaned)
+        $event->delete();
+
+        return response()->json([
+            'message' => 'Evento eliminado exitosamente',
+        ]);
+    }
 }

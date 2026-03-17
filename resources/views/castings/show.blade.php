@@ -109,13 +109,13 @@
                     @if($myApplication->status === 'pending')
                         <div class="cs-applied-actions">
                             <button type="button" class="cs-edit-btn" onclick="document.getElementById('edit-proposal-form').style.display='block'; this.parentElement.style.display='none';">
-                                <i data-lucide="edit-2" style="width:14px;height:14px;"></i> Editar Propuesta
+                                <i data-lucide="edit-3" style="width:16px;height:16px;"></i> Modificar propuesta
                             </button>
-                            <form action="{{ route('castings.destroy', $myApplication->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de cancelar tu postulación?');" style="margin:0;">
+                            <form id="cancel-proposal-form" action="{{ route('castings.destroy', $myApplication->id) }}" method="POST" style="margin:0;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="cs-danger-btn">
-                                    <i data-lucide="trash-2" style="width:14px;height:14px;"></i> Cancelar Postulación
+                                <button type="button" class="cs-danger-btn" onclick="showCancelModal()">
+                                    <i data-lucide="trash-2" style="width:16px;height:16px;"></i> Cancelar postulación
                                 </button>
                             </form>
                         </div>
@@ -223,6 +223,27 @@
 
         </div>
     </div>
+
+    {{-- Cancel Confirmation Modal --}}
+    @if($myApplication && $myApplication->status === 'pending')
+        <div id="cancel-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.45); backdrop-filter:blur(4px); align-items:center; justify-content:center;">
+            <div style="background:#fff; border-radius:20px; padding:32px 28px; max-width:380px; width:90%; box-shadow:0 24px 60px rgba(0,0,0,.2); text-align:center; animation:modalFadeIn .2s ease;">
+                <div style="width:56px;height:56px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                    <i data-lucide="alert-triangle" style="width:28px;height:28px;color:#dc2626;"></i>
+                </div>
+                <h3 style="font-size:18px;font-weight:800;color:#0f172a;margin:0 0 8px;">¿Cancelar postulación?</h3>
+                <p style="font-size:14px;color:#64748b;margin:0 0 24px;line-height:1.6;">Al cancelar esta postulación, el cliente ya no verá tu propuesta ni podras deshacer este cambio.</p>
+                <div style="display:flex;gap:10px;">
+                    <button type="button" onclick="hideCancelModal()" style="flex:1;padding:11px;border-radius:9px;border:1.5px solid #e2e8f0;background:#f8fafc;color:#475569;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;">
+                        No, mantener
+                    </button>
+                    <button type="button" onclick="document.getElementById('cancel-proposal-form').submit()" style="flex:1;padding:11px;border-radius:9px;border:none;background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(220,38,38,.3);transition:opacity .2s;">
+                        Sí, cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <style>
         .cs-breadcrumb { margin-bottom: 24px; }
@@ -395,21 +416,28 @@
 
         /* Actinos inside applied state */
         .cs-applied-actions { 
-            display: flex; gap: 10px; margin-top: 20px; justify-content: center; 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; 
         }
         .cs-edit-btn, .cs-secondary-btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
-            background: #f8fafc; color: #475569; border: 1.5px solid #e2e8f0; cursor: pointer; transition: all .2s;
+            width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 16px; border-radius: 10px; font-size: 14px; font-weight: 700;
+            background: #f8fafc; color: #334155; border: 1.5px solid #e2e8f0; cursor: pointer; transition: all .2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,.02);
         }
         .cs-edit-btn:hover, .cs-secondary-btn:hover { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
         
         .cs-danger-btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+            width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 16px; border-radius: 10px; font-size: 14px; font-weight: 700;
             background: #fef2f2; color: #dc2626; border: 1.5px solid #fecaca; cursor: pointer; transition: all .2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,.02);
         }
         .cs-danger-btn:hover { background: #fee2e2; border-color: #fca5a5; }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
 
         @media (max-width: 860px) {
             .cs-layout { grid-template-columns: 1fr; }
@@ -428,6 +456,16 @@
         }
         const msgArea = document.querySelector('textarea[name="message"]');
         if (msgArea) updateCharCount(msgArea);
+
+        function showCancelModal() {
+            const m = document.getElementById('cancel-modal');
+            if(m) m.style.display = 'flex';
+        }
+
+        function hideCancelModal() {
+            const m = document.getElementById('cancel-modal');
+            if(m) m.style.display = 'none';
+        }
 
         // Si hay errores de validación, mostrar el formulario de edición por defecto
         @if($myApplication && $myApplication->status === 'pending' && $errors->any())

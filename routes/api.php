@@ -63,6 +63,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/client/events/{eventId}/applications/{appId}/cancel', [ClientEventController::class , 'cancelApplication']);
 
             Route::put('/client/events/{id}', [ClientEventController::class, 'update']);
+            Route::delete('/client/events/{id}', [ClientEventController::class, 'destroy']);
             Route::post('/client/fcm-token', [ClientController::class, 'updateFcmToken']);
             
         }
