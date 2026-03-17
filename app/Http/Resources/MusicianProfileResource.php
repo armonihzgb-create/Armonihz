@@ -21,7 +21,9 @@ class MusicianProfileResource extends JsonResource
             'location' => $this->location,
             'hourly_rate' => $this->hourly_rate,
             'is_verified' => $this->is_verified,
-            'profile_picture' => $this->profile_picture,
+            'profile_picture' => $this->profile_picture 
+    ? asset('storage/' . $this->profile_picture) 
+    : null,
             'phone' => $this->phone,
             'instagram' => $this->instagram,
             'facebook' => $this->facebook,
