@@ -57,7 +57,9 @@ class CastingController extends Controller
 
         $types = ClientEvent::where('status', 'open')->distinct()->pluck('tipo_musica')->sort()->values();
 
-        $filterType = $request->get('type', 'all');
+        $rawType = $request->get('type', 'all');
+        $filterType = explode('?', $rawType)[0];
+
         if ($filterType !== 'all') {
             $events = $events->filter(fn($e) => strtolower($e->tipo_musica) === strtolower($filterType))->values();
         }

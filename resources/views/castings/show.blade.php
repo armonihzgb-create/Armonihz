@@ -315,7 +315,7 @@
             transition: border-color .2s;
         }
         .cs-input:focus { border-color: #6c3fc5; outline: none; }
-        .cs-price-input { padding-left: 30px; font-weight: 700; font-size: 17px; }
+        .cs-price-input { padding-left: 36px; font-weight: 700; font-size: 17px; }
         .cs-textarea {
             width: 100%; padding: 11px 12px; border: 1.5px solid #e2e8f0;
             border-radius: 8px; font-size: 14px; line-height: 1.6; resize: vertical;
