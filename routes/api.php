@@ -60,6 +60,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/client/events', [ClientEventController::class , 'store']);
             Route::get('/client/events/{id}/applications', [ClientEventController::class , 'getApplications']);
             Route::post('/client/events/{eventId}/applications/{appId}/accept', [ClientEventController::class , 'acceptApplication']);
+            Route::post('/client/events/{eventId}/applications/{appId}/cancel', [ClientEventController::class , 'cancelApplication']);
+
             Route::put('/client/events/{id}', [ClientEventController::class, 'update']);
             Route::post('/client/fcm-token', [ClientController::class, 'updateFcmToken']);
             

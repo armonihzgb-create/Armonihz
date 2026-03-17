@@ -65,17 +65,18 @@
         <div class="ma-list">
             @foreach($applications as $app)
                 @php
-                    $isAccepted = $app->status === 'accepted';
-                    $isRejected = $app->status === 'rejected';
-                    $statusLabel = $isAccepted ? '✓ Aceptado' : ($isRejected ? '✗ No seleccionado' : '⏳ En revisión');
-                    $statusClass = $isAccepted ? 'ma-status--green' : ($isRejected ? 'ma-status--red' : 'ma-status--yellow');
-                    $cardClass   = $isAccepted ? 'ma-card--accepted' : ($isRejected ? '' : '');
+                    $isAccepted  = $app->status === 'accepted';
+                    $isCancelled = $app->status === 'cancelled';
+                    $isRejected  = $app->status === 'rejected';
+                    $statusLabel = $isAccepted ? '✓ Aceptado' : ($isCancelled ? '✗ Contratación cancelada' : ($isRejected ? '✗ No seleccionado' : '⏳ En revisión'));
+                    $statusClass = $isAccepted ? 'ma-status--green' : ($isCancelled ? 'ma-status--grey' : ($isRejected ? 'ma-status--red' : 'ma-status--yellow'));
+                    $cardClass   = $isAccepted ? 'ma-card--accepted' : ($isCancelled ? 'ma-card--cancelled' : '');
                 @endphp
                 <div class="ma-card {{ $cardClass }}">
 
                     {{-- Left: icon --}}
-                    <div class="ma-card-icon {{ $isAccepted ? 'ma-icon--green' : ($isRejected ? 'ma-icon--red' : 'ma-icon--yellow') }}">
-                        {{ $isAccepted ? '🎉' : ($isRejected ? '😔' : '⏳') }}
+                    <div class="ma-card-icon {{ $isAccepted ? 'ma-icon--green' : ($isCancelled ? 'ma-icon--grey' : ($isRejected ? 'ma-icon--red' : 'ma-icon--yellow')) }}">
+                        {{ $isAccepted ? '🎉' : ($isCancelled ? '🚫' : ($isRejected ? '😔' : '⏳')) }}
                     </div>
 
                     {{-- Center: event info --}}
@@ -181,6 +182,7 @@
         }
         .ma-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.05); border-color: #d1d5db; }
         .ma-card--accepted { border-color: #bbf7d0; background: linear-gradient(140deg, #f0fdf4, #fff); }
+        .ma-card--cancelled { border-color: #e2e8f0; background: #f8fafc; opacity: 0.85; }
 
         .ma-card-icon {
             width: 54px; height: 54px; border-radius: 14px;
@@ -190,6 +192,7 @@
         .ma-icon--yellow { background: #fefce8; border: 1.5px solid #fef08a; }
         .ma-icon--green  { background: #f0fdf4; border: 1.5px solid #bbf7d0; }
         .ma-icon--red    { background: #fef2f2; border: 1.5px solid #fecaca; }
+        .ma-icon--grey   { background: #f1f5f9; border: 1.5px solid #e2e8f0; }
 
         .ma-card-body { min-width: 0; }
         .ma-card-title {
@@ -227,6 +230,7 @@
         .ma-status--yellow { background: #fefce8; color: #ca8a04; border: 1px solid #fef08a; }
         .ma-status--green  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
         .ma-status--red    { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .ma-status--grey   { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
         .ma-view-link {
             font-size: 12px; font-weight: 600; color: #6c3fc5; text-decoration: none;
             display: flex; align-items: center; gap: 3px;

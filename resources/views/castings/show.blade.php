@@ -101,8 +101,8 @@
                     </div>
 
                     <span class="cs-status-badge
-                        {{ $myApplication->status === 'accepted' ? 'cs-status-badge--green' : ($myApplication->status === 'rejected' ? 'cs-status-badge--red' : 'cs-status-badge--yellow') }}">
-                        {{ $myApplication->status === 'accepted' ? '✓ Aceptado' : ($myApplication->status === 'rejected' ? '✗ No seleccionado' : '⏳ En revisión') }}
+                        {{ $myApplication->status === 'accepted' ? 'cs-status-badge--green' : ($myApplication->status === 'rejected' ? 'cs-status-badge--red' : ($myApplication->status === 'cancelled' ? 'cs-status-badge--grey' : 'cs-status-badge--yellow')) }}">
+                        {{ $myApplication->status === 'accepted' ? '✓ Aceptado' : ($myApplication->status === 'rejected' ? '✗ No seleccionado' : ($myApplication->status === 'cancelled' ? '✗ Contratación cancelada' : '⏳ En revisión')) }}
                     </span>
                 </div>
 
@@ -291,6 +291,7 @@
         .cs-status-badge--yellow { background: #fefce8; color: #ca8a04; border: 1px solid #fef08a; }
         .cs-status-badge--green  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
         .cs-status-badge--red    { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .cs-status-badge--grey   { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
 
         /* Application form */
         .cs-form-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }

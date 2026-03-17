@@ -99,6 +99,46 @@ class ClientEventController extends Controller
         return response()->json(['message' => 'Músico contratado exitosamente.', 'application_id' => $app->id]);
     }
 
+    /**
+     * Cancel a previously accepted application — re-opens the event so new proposals can be accepted.
+     */
+    public function cancelApplication(Request $request, $eventId, $appId)
+    {
+        $firebaseUid = $request->attributes->get('firebase_uid');
+
+        // Ensure the event belongs to this client
+        $event = ClientEvent::where('id', $eventId)
+            ->where('firebase_uid', $firebaseUid)
+            ->firstOrFail();
+
+        // Find the application that was accepted
+        $app = CastingApplication::where('id', $appId)
+            ->where('client_event_id', $eventId)
+            ->firstOrFail();
+
+        if ($app->status !== 'accepted') {
+            return response()->json([
+                'error' => 'Solo puedes cancelar una propuesta que haya sido aceptada previamente.',
+            ], 409);
+        }
+
+        // Mark the accepted application as cancelled
+        $app->update(['status' => 'cancelled']);
+
+        // Re-open the rejected applications so the client can accept another one
+        CastingApplication::where('client_event_id', $eventId)
+            ->where('id', '!=', $appId)
+            ->where('status', 'rejected')
+            ->update(['status' => 'pending']);
+
+        // Re-open the event so the client can accept a different musician
+        $event->update(['status' => 'open']);
+
+        return response()->json([
+            'message' => 'Contratación cancelada. El evento está abierto de nuevo.',
+        ]);
+    }
+
     // Guardar un nuevo evento
     public function store(Request $request)
     {
