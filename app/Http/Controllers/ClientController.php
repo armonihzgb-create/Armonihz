@@ -48,7 +48,7 @@ class ClientController extends Controller
 
         return response()->json([
             'message' => 'Foto actualizada',
-            'photoUrl' => asset('storage/' . $nombre)
+            'photoUrl' => url('file/' . $nombre)
         ], 200);
     }
 
@@ -84,9 +84,9 @@ class ClientController extends Controller
     $cliente = Client::where('firebase_uid', $firebaseUid)->first();
 
     return response()->json([
-        'photoUrl' => $cliente && $cliente->fotoPerfil
-            ? asset('storage/' . $cliente->fotoPerfil)
-            : null
+       'photoUrl' => $cliente && $cliente->fotoPerfil
+    ? url('file/' . $cliente->fotoPerfil)
+    : null
     ]);
 }
 
@@ -120,7 +120,7 @@ public function syncGooglePhoto(Request $request)
 
         return response()->json([
             'message' => 'Foto sincronizada',
-            'photoUrl' => asset("storage/perfiles/$fileName")
+            'photoUrl' => url("file/perfiles/$fileName")
         ]);
 
     } catch (\Exception $e) {
