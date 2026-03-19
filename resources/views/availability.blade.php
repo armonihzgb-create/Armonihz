@@ -12,16 +12,7 @@
             <h1 class="av-title">Mi Agenda</h1>
             <p class="av-subtitle">Bloquea fechas y mantén tu disponibilidad actualizada para los clientes.</p>
         </div>
-        <div style="display:flex;gap:10px;flex-shrink:0;">
-            <button class="av-secondary-btn" onclick="alert('Próximamente')">
-                <i data-lucide="settings" style="width:15px;height:15px;"></i>
-                Configurar horario
-            </button>
-            <button class="av-primary-btn" onclick="alert('Próximamente')">
-                <i data-lucide="plus" style="width:15px;height:15px;"></i>
-                Bloquear fecha
-            </button>
-        </div>
+        <!-- Botones de cabecera removidos -->
     </div>
 
     {{-- LEGEND --}}
@@ -129,19 +120,46 @@
 
             // Click on an empty day/time to add an event
             select: async function(arg) {
+                // Formatting the selected date/range
+                let dateText = '';
+                const start = new Date(arg.startStr + 'T12:00:00'); // Force midday to avoid timezone shift on all-day events
+                const end = arg.allDay ? new Date(new Date(arg.endStr + 'T12:00:00').getTime() - 86400000) : new Date(arg.endStr);
+                
+                if (arg.allDay && start.getTime() === end.getTime()) {
+                    dateText = start.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                } else if (arg.allDay) {
+                    dateText = `Del ${start.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} al ${end.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+                } else {
+                     dateText = `${start.toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })} - ${end.toLocaleString('es-ES', { timeStyle: 'short' })}`;
+                }
+
                 const { value: formValues } = await Swal.fire({
                     title: 'Agregar Disponibilidad',
                     html: `
-                        <select id="swal-type" class="swal2-select" style="display:flex; margin: 10px auto; width: 80%;">
-                            <option value="available">Disponible</option>
-                            <option value="busy">Ocupado / Bloqueado</option>
-                        </select>
-                        <input id="swal-title" class="swal2-input" placeholder="Título (ej: Disponible para eventos)">
+                        <div style="margin-bottom: 20px; font-size: 14px; color: #6c3fc5; background: #faf5ff; padding: 12px; border-radius: 8px; font-weight: 600; border: 1.5px solid #f3e8ff;">
+                            <i data-lucide="calendar" style="width:16px; height:16px; vertical-align: -3px; margin-right: 6px;"></i>
+                            <span style="text-transform: capitalize;">${dateText}</span>
+                        </div>
+                        <div style="text-align: left; margin: 0 auto; width: 90%;">
+                            <label style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; display: block;">Tipo de bloque <span style="color:#ef4444">*</span></label>
+                            <select id="swal-type" class="swal2-select" style="display:flex; margin: 0 0 20px 0; width: 100%; font-size: 14px; padding: 12px; border-radius: 8px; border: 1.5px solid #e2e8f0; background-color: #f8fafc; color: #0f172a; outline: none;">
+                                <option value="available">✅ Sector Disponible</option>
+                                <option value="busy">🚫 Sector Bloqueado / Ocupado</option>
+                            </select>
+                            
+                            <label style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; display: block;">Nota / Título (Opcional)</label>
+                            <input id="swal-title" class="swal2-input" placeholder="Ej: Disponible para bodas" style="margin: 0; width: 100%; font-size: 14px; padding: 12px 14px; height: auto; border-radius: 8px; border: 1.5px solid #e2e8f0; background-color: #f8fafc; outline: none; box-sizing: border-box;">
+                        </div>
                     `,
                     focusConfirm: false,
                     showCancelButton: true,
-                    confirmButtonText: 'Guardar',
-                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#6c3fc5',
+                    cancelButtonColor: '#f1f5f9',
+                    confirmButtonText: 'Guardar horario',
+                    cancelButtonText: '<span style="color:#475569; font-weight:600;">Cancelar</span>',
+                    didOpen: () => {
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
+                    },
                     preConfirm: () => {
                         return {
                             title: document.getElementById('swal-title').value || (document.getElementById('swal-type').value === 'available' ? 'Disponible' : 'Ocupado'),
