@@ -11,31 +11,34 @@ class ClientEventController extends Controller
 {
     // Obtener los eventos del cliente logueado
    // Obtener los eventos del cliente logueado
-    public function index(Request $request)
-    {
-        $firebaseUid = $request->attributes->get('firebase_uid');
+  public function index(Request $request)
+{
+    $firebaseUid = $request->attributes->get('firebase_uid');
 
-        $eventos = ClientEvent::where('firebase_uid', $firebaseUid)
-            ->orderBy('created_at', 'desc')
-            ->get();
+    // Usamos 'with' para cargar la relación 'genre' de una vez (Eager Loading)
+    $eventos = ClientEvent::with('genre') 
+        ->where('firebase_uid', $firebaseUid)
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-        $formattedEvents = $eventos->map(function ($evento) {
-            return [
-                'id' => $evento->id,
-                'titulo' => $evento->titulo,
-                'tipoMusica' => $evento->tipo_musica,
-                'fecha' => $evento->fecha,
-                'ubicacion' => $evento->ubicacion,
-                'status' => $evento->status,
-                'duracion' => $evento->duracion,
-                'descripcion' => $evento->descripcion,
-                'presupuesto' => (float) $evento->presupuesto,
-                'propuestas' => CastingApplication::where('client_event_id', $evento->id)->count(),
-            ];
-        });
+    $formattedEvents = $eventos->map(function ($evento) {
+        return [
+            'id' => $evento->id,
+            'titulo' => $evento->titulo,
+            // Si la relación existe, mostramos el nombre, si no, el ID como respaldo
+            'tipoMusica' => $evento->genre ? $evento->genre->name : $evento->tipo_musica,
+            'fecha' => $evento->fecha,
+            'ubicacion' => $evento->ubicacion,
+            'status' => $evento->status,
+            'duracion' => $evento->duracion,
+            'descripcion' => $evento->descripcion,
+            'presupuesto' => (float) $evento->presupuesto,
+            'propuestas' => CastingApplication::where('client_event_id', $evento->id)->count(),
+        ];
+    });
 
-        return response()->json($formattedEvents);
-    }
+    return response()->json($formattedEvents);
+}
 
     /**
      * Get all applications for a specific client event.

@@ -30,4 +30,11 @@ class ClientEvent extends Model
 {
     return $this->belongsTo(Client::class, 'firebase_uid', 'firebase_uid');
 }
+
+public function genre()
+    {
+        // 'tipo_musica' es la llave foránea en esta tabla (ClientEvent)
+        // que apunta al 'id' de la tabla Genre
+        return $this->belongsTo(Genre::class, 'tipo_musica');
+    }
 }
