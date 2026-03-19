@@ -67,4 +67,9 @@ class MusicianProfile extends Model
         // Force to use our custom file streaming route, bypassing EasyPanel symlink issues
         return url('file/' . $this->profile_picture);
     }
+
+    public function calendarEvents()
+    {
+        return $this->hasMany(MusicianCalendarEvent::class);
+    }
 }

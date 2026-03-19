@@ -90,7 +90,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::delete('/multimedia/{media}', [MultimediaController::class, 'destroy'])->name('multimedia.destroy');
             Route::patch('/multimedia/{media}/feature', [MultimediaController::class, 'setFeatured'])->name('multimedia.feature');
 
-            Route::get('/availability', [ProfileController::class , 'availability'])->name('availability');
+            // Availability
+            Route::get('/availability', [\App\Http\Controllers\Web\AvailabilityController::class, 'index'])->name('availability');
+            Route::get('/availability/events', [\App\Http\Controllers\Web\AvailabilityController::class, 'getEvents'])->name('availability.events');
+            Route::post('/availability', [\App\Http\Controllers\Web\AvailabilityController::class, 'store'])->name('availability.store');
+            Route::put('/availability/{id}', [\App\Http\Controllers\Web\AvailabilityController::class, 'update'])->name('availability.update');
+            Route::delete('/availability/{id}', [\App\Http\Controllers\Web\AvailabilityController::class, 'destroy'])->name('availability.destroy');
 
             Route::get('/requests', [RequestController::class , 'index'])->name('requests.index');
             Route::get('/requests/{id}', [RequestController::class , 'show'])->name('requests.show');
