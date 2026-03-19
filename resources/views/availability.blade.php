@@ -24,37 +24,12 @@
         </div>
     </div>
 
-    {{-- LEGEND + MONTH CONTROLS --}}
-    <div class="av-toolbar">
-        {{-- Month navigation --}}
-        <div class="av-month-nav">
-            <button class="av-nav-btn">
-                <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
-            </button>
-            <h2 class="av-month-title">Octubre 2026</h2>
-            <button class="av-nav-btn">
-                <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
-            </button>
-        </div>
-
-        {{-- View tabs --}}
-        <div class="av-view-tabs">
-            <button class="av-view-tab active">Mes</button>
-            <button class="av-view-tab">Semana</button>
-            <button class="av-view-tab">Día</button>
-        </div>
-
-        {{-- Legend --}}
+    {{-- LEGEND --}}
+    <div class="av-toolbar" style="justify-content: flex-end;">
         <div class="av-legend">
-            <span class="av-legend-item">
-                <span class="av-legend-dot av-dot-event"></span> Evento
-            </span>
-            <span class="av-legend-item">
-                <span class="av-legend-dot av-dot-casting"></span> Casting
-            </span>
-            <span class="av-legend-item">
-                <span class="av-legend-dot av-dot-blocked"></span> Bloqueado
-            </span>
+            <span class="av-legend-item"><span class="av-legend-dot av-dot-available"></span> Disponible</span>
+            <span class="av-legend-item"><span class="av-legend-dot av-dot-busy"></span> Bloqueado / Ocupado</span>
+            <span class="av-legend-item"><span class="av-legend-dot av-dot-system"></span> Reservas / Castings</span>
         </div>
     </div>
 
@@ -92,15 +67,32 @@
 
         /* FullCalendar Customization */
         .fc { font-family: inherit; }
-        .fc .fc-toolbar-title { font-size: 1.25em; font-weight: 800; color: #0f172a; }
-        .fc .fc-button-primary { background: #f8fafc; border: 1.5px solid #e2e8f0; color: #475569; font-weight: 600; text-transform: capitalize; border-radius: 8px;}
-        .fc .fc-button-primary:hover { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
-        .fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active { background: #6c3fc5; border-color: #6c3fc5; color: #fff;}
-        .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: #f1f5f9; }
-        .fc-col-header-cell { padding: 12px 0; background: #f9fafb; font-size: 12px; color: #94a3b8; text-transform: uppercase; }
-        .fc-daygrid-day-number { font-size: 13px; font-weight: 600; color: #475569; padding: 8px !important; }
+        .fc .fc-toolbar-title { font-size: 1.3em; font-weight: 800; color: #0f172a; text-transform: capitalize; }
+        .fc .fc-toolbar-chunk { display: flex; align-items: center; gap: 8px; }
+        .fc .fc-button { padding: 6px 14px !important; font-size: 13px !important; line-height: 1.5 !important; height: auto !important; box-shadow: none !important; }
+        .fc .fc-button-primary { 
+            background: #f8fafc !important; 
+            border: 1.5px solid #e2e8f0 !important; 
+            color: #475569 !important; 
+            font-weight: 600 !important; 
+            text-transform: capitalize; 
+            border-radius: 8px !important;
+        }
+        .fc .fc-button-primary:hover { background: #f1f5f9 !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
+        .fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active { 
+            background: #6c3fc5 !important; border-color: #6c3fc5 !important; color: #fff !important;
+        }
+        .fc .fc-button-primary:focus { box-shadow: 0 0 0 3px rgba(108,63,197,.15) !important; outline: none; }
+        .fc .fc-prev-button, .fc .fc-next-button { padding: 6px 10px !important; display: flex; align-items: center; justify-content: center; }
+        .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: #f1f5f9; border-width: 1.5px; }
+        .fc-col-header-cell { padding: 12px 0; background: #f9fafb; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+        .fc-col-header-cell-cushion { color: inherit; text-decoration: none; }
+        .fc-daygrid-day-number { font-size: 13px; font-weight: 600; color: #475569; padding: 10px !important; text-decoration: none; }
+        .fc-daygrid-day-number:hover { text-decoration: underline; color: #6c3fc5; }
         .fc-day-today { background-color: rgba(108,63,197,.02) !important; }
-        .fc-event { border-radius: 6px; padding: 2px 4px; font-size: 11px; font-weight: 600; cursor: pointer; border: none !important; margin-bottom: 2px; }
+        .fc-day-today .fc-daygrid-day-number { background: #6c3fc5; color: #fff; border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; margin: 4px; padding: 0 !important; text-decoration: none; }
+        .fc-event { border-radius: 6px; padding: 3px 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: none !important; margin-bottom: 3px; }
+        .fc-icon { vertical-align: middle; }
         
         #calendar { min-height: 600px; }
         
