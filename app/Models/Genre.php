@@ -13,6 +13,13 @@ class Genre extends Model
         'name',
     ];
 
+    // Relación con los eventos
+    public function clientEvents()
+    {
+        // Un género puede estar en muchos eventos
+        return $this->hasMany(ClientEvent::class, 'tipo_musica');
+    }
+
     public function musicianProfiles()
     {
         return $this->belongsToMany(MusicianProfile::class , 'genre_musician_profile');

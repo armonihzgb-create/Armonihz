@@ -11,29 +11,36 @@ class ClientEventController extends Controller
 {
     // Obtener los eventos del cliente logueado
    // Obtener los eventos del cliente logueado
- public function index(Request $request)
+public function index(Request $request)
 {
     $firebaseUid = $request->attributes->get('firebase_uid');
 
-    // IMPORTANTE: El 'with' debe coincidir con el nombre de la función en el Modelo
+    // Cargamos la relación 'genre'
     $eventos = ClientEvent::with('genre') 
         ->where('firebase_uid', $firebaseUid)
         ->orderBy('created_at', 'desc')
         ->get();
 
     $formattedEvents = $eventos->map(function ($evento) {
+        // Log para que veas en la consola de Laravel si la relación carga o no
+        // \Log::info("Evento {$evento->id} - Tipo Musica: {$evento->tipo_musica} - Genre: " . ($evento->genre->name ?? 'NULL'));
+
         return [
             'id' => $evento->id,
             'titulo' => $evento->titulo,
-            // Aquí extraemos el nombre de la tabla que me mostraste
-            'tipoMusica' => $evento->genre ? $evento->genre->name : "Sin género ({$evento->tipo_musica})",
+            // PRIORIDAD: 
+            // 1. Si la relación encontró el nombre en la tabla genres, úsalo.
+            // 2. Si no hay relación pero el campo tiene el nombre viejo (texto), úsalo.
+            // 3. Si no, muestra el ID.
+            'tipoMusica' => $evento->genre ? $evento->genre->name : $evento->tipo_musica,
+            
             'fecha' => $evento->fecha,
             'ubicacion' => $evento->ubicacion,
             'status' => $evento->status,
             'duracion' => $evento->duracion,
             'descripcion' => $evento->descripcion,
             'presupuesto' => (float) $evento->presupuesto,
-            'propuestas' => CastingApplication::where('client_event_id', $evento->id)->count(),
+            'propuestas' => $evento->applications()->count(),
         ];
     });
 

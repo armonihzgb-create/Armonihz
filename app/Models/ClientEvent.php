@@ -35,6 +35,6 @@ public function genre()
     {
         // 'tipo_musica' es la llave foránea en esta tabla (ClientEvent)
         // que apunta al 'id' de la tabla Genre
-        return $this->belongsTo(Genre::class, 'tipo_musica');
+      return $this->belongsTo(Genre::class, 'tipo_musica');
     }
 }
