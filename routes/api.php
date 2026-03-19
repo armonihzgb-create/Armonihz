@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ProfileViewController;
 use App\Http\Controllers\ClientController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClientEventController;
+use App\Http\Controllers\GenreController;
 
 Route::prefix('v1')->group(function () {
 
@@ -26,6 +27,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/promotions', [App\Http\Controllers\PromotionController::class , 'index'])->middleware('throttle:public-api');
         Route::get('/test-notification', [ClientController::class, 'testNotification']);
+        Route::get('/genres', [GenreController::class, 'index']);
 
         // ── Authenticated routes (Sanctum) ────────────
         Route::middleware('auth:sanctum')->group(function () {
