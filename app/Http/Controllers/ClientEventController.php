@@ -11,11 +11,11 @@ class ClientEventController extends Controller
 {
     // Obtener los eventos del cliente logueado
    // Obtener los eventos del cliente logueado
-  public function index(Request $request)
+ public function index(Request $request)
 {
     $firebaseUid = $request->attributes->get('firebase_uid');
 
-    // Usamos 'with' para cargar la relación 'genre' de una vez (Eager Loading)
+    // IMPORTANTE: El 'with' debe coincidir con el nombre de la función en el Modelo
     $eventos = ClientEvent::with('genre') 
         ->where('firebase_uid', $firebaseUid)
         ->orderBy('created_at', 'desc')
@@ -25,8 +25,8 @@ class ClientEventController extends Controller
         return [
             'id' => $evento->id,
             'titulo' => $evento->titulo,
-            // Si la relación existe, mostramos el nombre, si no, el ID como respaldo
-            'tipoMusica' => $evento->genre ? $evento->genre->name : $evento->tipo_musica,
+            // Aquí extraemos el nombre de la tabla que me mostraste
+            'tipoMusica' => $evento->genre ? $evento->genre->name : "Sin género ({$evento->tipo_musica})",
             'fecha' => $evento->fecha,
             'ubicacion' => $evento->ubicacion,
             'status' => $evento->status,
