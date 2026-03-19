@@ -55,7 +55,8 @@ class CastingController extends Controller
             return $event;
         })->sortByDesc('match_score')->values();
 
-        $types = ClientEvent::where('status', 'open')->distinct()->pluck('tipo_musica')->sort()->values();
+        // Load all registered genres for the filter
+        $types = \App\Models\Genre::orderBy('name')->pluck('name')->values();
 
         $rawType = $request->get('type', 'all');
         $filterType = explode('?', $rawType)[0];
