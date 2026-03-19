@@ -144,7 +144,7 @@ class ClientEventController extends Controller
     {
         $validated = $request->validate([
             'titulo' => 'required|string',
-            'tipoMusica' => 'required|string',
+            'genre_id'    => 'required|exists:genres,id',
             'fecha' => 'required|string',
             'duracion' => 'required|string',
             'ubicacion' => 'required|string',
