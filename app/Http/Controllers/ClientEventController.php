@@ -182,49 +182,47 @@ public function index(Request $request)
 }
     // Actualizar un evento existente
     public function update(Request $request, $id)
-    {
-        // 1. Obtener el ID del usuario desde Firebase
-        $firebaseUid = $request->attributes->get('firebase_uid');
+{
+    $firebaseUid = $request->attributes->get('firebase_uid');
 
-        // 2. Buscar el evento asegurando que pertenezca al cliente logueado
-        $evento = ClientEvent::where('id', $id)
-            ->where('firebase_uid', $firebaseUid)
-            ->firstOrFail();
+    // 1. Buscamos el evento
+    $evento = ClientEvent::where('id', $id)
+        ->where('firebase_uid', $firebaseUid)
+        ->firstOrFail();
 
-        // 3. Validar de seguridad: No editar si ya está cerrado
-        if ($evento->status !== 'open') {
-            return response()->json([
-                'error' => 'No puedes editar un evento que ya está cerrado o en proceso.'
-            ], 403);
-        }
-
-        // 4. Validar los datos recibidos (igual que en el store)
-        $validated = $request->validate([
-            'titulo' => 'required|string',
-            'tipoMusica' => 'required|string',
-            'fecha' => 'required|string',
-            'duracion' => 'required|string',
-            'ubicacion' => 'required|string',
-            'descripcion' => 'nullable|string',
-            'presupuesto' => 'required|numeric',
-        ]);
-
-        // 5. Actualizar los datos en la base de datos
-        $evento->update([
-            'titulo' => $validated['titulo'],
-            'tipo_musica' => $validated['tipoMusica'],
-            'fecha' => $validated['fecha'],
-            'duracion' => $validated['duracion'],
-            'ubicacion' => $validated['ubicacion'],
-            'descripcion' => $validated['descripcion'],
-            'presupuesto' => $validated['presupuesto'],
-        ]);
-
+    if ($evento->status !== 'open') {
         return response()->json([
-            'message' => 'Evento actualizado con éxito',
-            'evento' => $evento
-        ], 200);
+            'error' => 'No puedes editar un evento que ya está cerrado o en proceso.'
+        ], 403);
     }
+
+    // 2. Validamos usando 'genre_id' (que es lo que manda Android)
+    $validated = $request->validate([
+        'titulo'      => 'required|string',
+        'genre_id'    => 'required|exists:genres,id', 
+        'fecha'       => 'required|string',
+        'duracion'    => 'required|string',
+        'ubicacion'   => 'required|string',
+        'descripcion' => 'nullable|string',
+        'presupuesto' => 'required|numeric',
+    ]);
+
+    // 3. Actualizamos la base de datos mapeando genre_id a tipo_musica
+    $evento->update([
+        'titulo'      => $validated['titulo'],
+        'tipo_musica' => $validated['genre_id'], // Aquí estaba el error
+        'fecha'       => $validated['fecha'],
+        'duracion'    => $validated['duracion'],
+        'ubicacion'   => $validated['ubicacion'],
+        'descripcion' => $validated['descripcion'],
+        'presupuesto' => $validated['presupuesto'],
+    ]);
+
+    return response()->json([
+        'message' => 'Evento actualizado con éxito',
+        'evento'  => $evento->load('genre') // Cargamos la relación para que el móvil reciba el nombre
+    ], 200);
+}
 
     /**
      * Delete an event from the client app.
