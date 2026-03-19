@@ -140,36 +140,36 @@ class ClientEventController extends Controller
     }
 
     // Guardar un nuevo evento
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'titulo' => 'required|string',
-            'genre_id'    => 'required|exists:genres,id',
-            'fecha' => 'required|string',
-            'duracion' => 'required|string',
-            'ubicacion' => 'required|string',
-            'descripcion' => 'nullable|string',
-            'presupuesto' => 'required|numeric',
-        ]);
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'titulo'      => 'required|string',
+        'genre_id'    => 'required|exists:genres,id', // Validamos lo que envía el móvil
+        'fecha'       => 'required|string',
+        'duracion'    => 'required|string',
+        'ubicacion'   => 'required|string',
+        'descripcion' => 'nullable|string',
+        'presupuesto' => 'required|numeric',
+    ]);
 
-        $firebaseUid = $request->attributes->get('firebase_uid');
+    $firebaseUid = $request->attributes->get('firebase_uid');
 
-        $evento = ClientEvent::create([
-            'firebase_uid' => $firebaseUid,
-            'titulo' => $validated['titulo'],
-            'tipo_musica' => $validated['tipoMusica'],
-            'fecha' => $validated['fecha'],
-            'duracion' => $validated['duracion'],
-            'ubicacion' => $validated['ubicacion'],
-            'descripcion' => $validated['descripcion'],
-            'presupuesto' => $validated['presupuesto'],
-        ]);
+    $evento = ClientEvent::create([
+        'firebase_uid' => $firebaseUid,
+        'titulo'       => $validated['titulo'],
+        'tipo_musica'  => $validated['genre_id'], // Usamos genre_id aquí
+        'fecha'        => $validated['fecha'],
+        'duracion'     => $validated['duracion'],
+        'ubicacion'    => $validated['ubicacion'],
+        'descripcion'  => $validated['descripcion'],
+        'presupuesto'  => $validated['presupuesto'],
+    ]);
 
-        return response()->json([
-            'message' => 'Evento creado con éxito',
-            'evento' => $evento
-        ], 201);
-    }
+    return response()->json([
+        'message' => 'Evento creado con éxito',
+        'evento' => $evento
+    ], 201);
+}
     // Actualizar un evento existente
     public function update(Request $request, $id)
     {
