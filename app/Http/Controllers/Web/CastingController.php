@@ -14,79 +14,91 @@ class CastingController extends Controller
     /**
      * Listado de castings abiertos con puntuación inteligente.
      */
-    public function index(Request $request)
-    {
-        $user = Auth::user();
-        $profile = $user->musicianProfile;
+   public function index(Request $request)
+{
+    $user = Auth::user();
+    $profile = $user->musicianProfile;
 
-        // Géneros del músico para el matching
-        $musicianGenres = $profile
-            ? $profile->genres->pluck('name')->map(fn($n) => strtolower($n))->toArray()
-            : [];
+    // Géneros del músico para el matching
+    $musicianGenres = $profile
+        ? $profile->genres->pluck('name')->map(fn($n) => strtolower($n))->toArray()
+        : [];
 
-        $musicianLocation = $profile ? strtolower($profile->location ?? '') : '';
+    $musicianLocation = $profile ? strtolower($profile->location ?? '') : '';
 
-        // Obtener eventos abiertos
-        $events = ClientEvent::where('status', 'open')
-            ->orderByDesc('created_at')
-            ->get();
+    // 1. CARGA LA RELACIÓN 'genre' AQUÍ CON with()
+    $events = ClientEvent::with('genre') 
+        ->where('status', 'open')
+        ->orderByDesc('created_at')
+        ->get();
 
-        // Calcular puntaje de coincidencia y verificar si ya postuló
-        $myApplicationIds = $profile
-            ? CastingApplication::where('musician_profile_id', $profile->id)
-            ->pluck('client_event_id')
-            ->toArray()
-            : [];
+    $myApplicationIds = $profile
+        ? CastingApplication::where('musician_profile_id', $profile->id)
+        ->pluck('client_event_id')
+        ->toArray()
+        : [];
 
-        $events = $events->map(function ($event) use ($musicianGenres, $musicianLocation, $myApplicationIds) {
-            $score = 0;
-            $eventGenre = strtolower($event->tipo_musica);
-            foreach ($musicianGenres as $g) {
-                if (str_contains($eventGenre, $g) || str_contains($g, $eventGenre)) {
-                    $score += 2;
-                }
+    $events = $events->map(function ($event) use ($musicianGenres, $musicianLocation, $myApplicationIds) {
+        $score = 0;
+        
+        // 2. USAMOS EL NOMBRE DEL GÉNERO PARA EL MATCHING
+        // Si existe la relación, usamos el nombre; si no, el valor de la columna
+        $eventGenreName = $event->genre ? strtolower($event->genre->name) : strtolower($event->tipo_musica);
+        
+        foreach ($musicianGenres as $g) {
+            if (str_contains($eventGenreName, $g) || str_contains($g, $eventGenreName)) {
+                $score += 2;
             }
-            if ($musicianLocation && str_contains(strtolower($event->ubicacion), $musicianLocation)) {
-                $score += 1;
-            }
-            $event->match_score = $score;
-            $event->already_applied = in_array($event->id, $myApplicationIds);
-            $event->applications_count = CastingApplication::where('client_event_id', $event->id)->count();
-            return $event;
-        })->sortByDesc('match_score')->values();
-
-        // Load all registered genres for the filter
-        $types = \App\Models\Genre::orderBy('name')->pluck('name')->values();
-
-        $rawType = $request->get('type', 'all');
-        $filterType = explode('?', $rawType)[0];
-
-        if ($filterType !== 'all') {
-            $events = $events->filter(fn($e) => strtolower($e->tipo_musica) === strtolower($filterType))->values();
         }
 
-        return view('castings.index', compact('events', 'types', 'filterType', 'profile'));
+        if ($musicianLocation && str_contains(strtolower($event->ubicacion), $musicianLocation)) {
+            $score += 1;
+        }
+
+        $event->match_score = $score;
+        $event->already_applied = in_array($event->id, $myApplicationIds);
+        $event->applications_count = CastingApplication::where('client_event_id', $event->id)->count();
+        
+        return $event;
+    })->sortByDesc('match_score')->values();
+
+    $types = \App\Models\Genre::orderBy('name')->pluck('name')->values();
+
+    $rawType = $request->get('type', 'all');
+    $filterType = explode('?', $rawType)[0];
+
+    if ($filterType !== 'all') {
+        // 3. FILTRO AJUSTADO PARA COMPARAR CONTRA EL NOMBRE
+        $events = $events->filter(function($e) use ($filterType) {
+            $currentName = $e->genre ? $e->genre->name : $e->tipo_musica;
+            return strtolower($currentName) === strtolower($filterType);
+        })->values();
     }
+
+    return view('castings.index', compact('events', 'types', 'filterType', 'profile'));
+}
 
     /**
      * Detalle de un casting individual.
      */
-    public function show($id)
-    {
-        $event = ClientEvent::findOrFail($id);
-        $user = Auth::user();
-        $profile = $user->musicianProfile;
+   public function show($id)
+{
+    // Cargamos la relación genre para que en la vista de detalle también salga el nombre
+    $event = ClientEvent::with('genre')->findOrFail($id);
+    
+    $user = Auth::user();
+    $profile = $user->musicianProfile;
 
-        $myApplication = $profile
-            ? CastingApplication::where('client_event_id', $id)
+    $myApplication = $profile
+        ? CastingApplication::where('client_event_id', $id)
             ->where('musician_profile_id', $profile->id)
             ->first()
-            : null;
+        : null;
 
-        $totalApplications = CastingApplication::where('client_event_id', $id)->count();
+    $totalApplications = CastingApplication::where('client_event_id', $id)->count();
 
-        return view('castings.show', compact('event', 'myApplication', 'totalApplications', 'profile'));
-    }
+    return view('castings.show', compact('event', 'myApplication', 'totalApplications', 'profile'));
+}
 
     /**
      * Lógica para postularse y enviar notificación PUSH al cliente.

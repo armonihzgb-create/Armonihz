@@ -52,7 +52,7 @@
 
                     {{-- Card Top Bar --}}
                     <div class="casting-card-topbar">
-                        <span class="casting-tag">{{ $event->tipo_musica }}</span>
+                      <span class="casting-tag">{{ $event->genre->name ?? $event->tipo_musica }}</span>
                         <div style="display:flex;gap:6px;align-items:center;">
                             @if($event->match_score > 0)
                                 <span class="casting-badge casting-badge--match">
