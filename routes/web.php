@@ -178,78 +178,56 @@ Route::get('/file/{path}', function ($path) {
     $mimeType = mime_content_type($fullPath);
 
     // --- LÓGICA DE STREAMING PURO PARA VIDEOS (SALTANDO LARAVEL) ---
-    if (str_starts_with($mimeType, 'video/')) {
-        // 1. Limpiar cualquier basura en el buffer de salida
-        if (ob_get_level()) {
-            ob_end_clean();
-        }
+   if (str_starts_with($mimeType, 'video/')) {
 
-        $fileSize = filesize($fullPath);
-        $start = 0;
-        $end = $fileSize - 1;
-        $length = $fileSize;
-
-        $fp = @fopen($fullPath, 'rb');
-
-        // 2. Cabeceras base necesarias para Android
-        header("Content-Type: $mimeType");
-        header("Accept-Ranges: bytes");
-
-        // 3. Procesar la petición de Android (Range Requests)
-        if (isset($_SERVER['HTTP_RANGE'])) {
-            $c_start = $start;
-            $c_end = $end;
-            list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
-            
-            if (strpos($range, ',') !== false) {
-                header('HTTP/1.1 416 Requested Range Not Satisfiable');
-                header("Content-Range: bytes $start-$end/$fileSize");
-                exit;
-            }
-            
-            if ($range == '-') {
-                $c_start = $fileSize - substr($range, 1);
-            } else {
-                $range = explode('-', $range);
-                $c_start = $range[0];
-                $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $fileSize - 1;
-            }
-            
-            $c_end = ($c_end > $end) ? $end : $c_end;
-            
-            if ($c_start > $c_end || $c_start > $fileSize - 1 || $c_end >= $fileSize) {
-                header('HTTP/1.1 416 Requested Range Not Satisfiable');
-                header("Content-Range: bytes $start-$end/$fileSize");
-                exit;
-            }
-            
-            $start = $c_start;
-            $end = $c_end;
-            $length = $end - $start + 1;
-            
-            fseek($fp, $start);
-            header('HTTP/1.1 206 Partial Content'); // ⬅️ Android necesita ver este 206
-            header("Content-Length: " . $length);
-            header("Content-Range: bytes $start-$end/$fileSize");
-        } else {
-            header("Content-Length: " . $length);
-        }
-
-        // 4. Enviar los bytes exactos
-        $bufferSize = 8192; // Chunks de 8KB
-        while (!feof($fp) && ($p = ftell($fp)) <= $end) {
-            if ($p + $bufferSize > $end) {
-                $bufferSize = $end - $p + 1;
-            }
-            set_time_limit(0);
-            echo fread($fp, $bufferSize);
-            flush(); // Forzar el envío inmediato
-        }
-        fclose($fp);
-        
-        // 5. MATAR EL SCRIPT para evitar que Laravel modifique los headers
-        exit; 
+    while (ob_get_level()) {
+        ob_end_clean();
     }
+
+    $fileSize = filesize($fullPath);
+    $start = 0;
+    $end = $fileSize - 1;
+    $length = $fileSize;
+
+    $fp = fopen($fullPath, 'rb');
+
+    header("Content-Type: $mimeType");
+    header("Accept-Ranges: bytes");
+    header("Content-Disposition: inline");
+    header("Connection: keep-alive");
+    header("Cache-Control: no-cache");
+
+    if (isset($_SERVER['HTTP_RANGE'])) {
+        list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+
+        $range = explode('-', $range);
+        $start = intval($range[0]);
+        $end = isset($range[1]) ? intval($range[1]) : $fileSize - 1;
+
+        $length = $end - $start + 1;
+
+        fseek($fp, $start);
+
+        header('HTTP/1.1 206 Partial Content');
+        header("Content-Length: $length");
+        header("Content-Range: bytes $start-$end/$fileSize");
+    } else {
+        header("Content-Length: $length");
+    }
+
+    $buffer = 8192;
+
+    while (!feof($fp) && ($pos = ftell($fp)) <= $end) {
+        if ($pos + $buffer > $end) {
+            $buffer = $end - $pos + 1;
+        }
+        echo fread($fp, $buffer);
+        flush();
+    }
+
+    fclose($fp);
+    exit;
+}
 
     // --- Para imágenes y otros archivos normales (Laravel normal) ---
     return response()->file($fullPath, [
