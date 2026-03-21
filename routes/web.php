@@ -157,7 +157,7 @@ Route::get('/setup-storage', function () {
     }
 });
 
-// --- FIX DEFINITIVO PARA IMÁGENES Y VIDEOS (STREAMING REAL) ---
+// --- FIX DEFINITIVO PARA IMÁGENES Y VIDEOS USANDO RAW PHP ---
 Route::get('/file/{path}', function ($path) {
     if (str_starts_with($path, 'profiles/')) {
         $fullPath = storage_path('app/public/' . $path);
@@ -170,69 +170,88 @@ Route::get('/file/{path}', function ($path) {
     $base = realpath(storage_path('app/public'));
     $fullPath = realpath($fullPath);
 
-    // Seguridad: evitar Path Traversal
+    // Evitar salir del directorio permitido
     if (!$fullPath || !str_starts_with($fullPath, $base) || !file_exists($fullPath)) {
         abort(404);
     }
 
     $mimeType = mime_content_type($fullPath);
-    $size = filesize($fullPath);
 
-    // --- LÓGICA DE STREAMING PARA VIDEOS ---
+    // --- LÓGICA DE STREAMING PURO PARA VIDEOS (SALTANDO LARAVEL) ---
     if (str_starts_with($mimeType, 'video/')) {
-        $start = 0;
-        $end = $size - 1;
-        $length = $size;
-        $status = 200;
-
-        $headers = [
-            'Content-Type' => $mimeType,
-            'Cache-Control' => 'no-cache, private',
-            'Accept-Ranges' => 'bytes',
-        ];
-
-        // Procesar la cabecera Range (que envía Android)
-        if (isset($_SERVER['HTTP_RANGE'])) {
-            preg_match('/bytes=(\d+)-(\d+)?/', $_SERVER['HTTP_RANGE'], $matches);
-            $start = isset($matches[1]) ? intval($matches[1]) : 0;
-            $end = isset($matches[2]) ? intval($matches[2]) : $size - 1;
-
-            if ($end >= $size) {
-                $end = $size - 1;
-            }
-
-            $length = ($end - $start) + 1;
-            $status = 206; // 206 Partial Content (CLAVE PARA ANDROID)
-            
-            $headers['Content-Range'] = "bytes $start-$end/$size";
-        }
-
-        $headers['Content-Length'] = $length;
-
-        // Limpiar buffers de salida previos
-        while (ob_get_level() > 0) {
+        // 1. Limpiar cualquier basura en el buffer de salida
+        if (ob_get_level()) {
             ob_end_clean();
         }
 
-        // Devolver una respuesta Streamed de Laravel
-        return response()->stream(function () use ($fullPath, $start, $length) {
-            $stream = fopen($fullPath, 'rb');
-            fseek($stream, $start);
-            
-            $bufferSize = 8192; // 8KB chunks
-            $bytesSent = 0;
+        $fileSize = filesize($fullPath);
+        $start = 0;
+        $end = $fileSize - 1;
+        $length = $fileSize;
 
-            while (!feof($stream) && $bytesSent < $length) {
-                $bytesToRead = min($bufferSize, $length - $bytesSent);
-                echo fread($stream, $bytesToRead);
-                flush();
-                $bytesSent += $bytesToRead;
+        $fp = @fopen($fullPath, 'rb');
+
+        // 2. Cabeceras base necesarias para Android
+        header("Content-Type: $mimeType");
+        header("Accept-Ranges: bytes");
+
+        // 3. Procesar la petición de Android (Range Requests)
+        if (isset($_SERVER['HTTP_RANGE'])) {
+            $c_start = $start;
+            $c_end = $end;
+            list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+            
+            if (strpos($range, ',') !== false) {
+                header('HTTP/1.1 416 Requested Range Not Satisfiable');
+                header("Content-Range: bytes $start-$end/$fileSize");
+                exit;
             }
-            fclose($stream);
-        }, $status, $headers);
+            
+            if ($range == '-') {
+                $c_start = $fileSize - substr($range, 1);
+            } else {
+                $range = explode('-', $range);
+                $c_start = $range[0];
+                $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $fileSize - 1;
+            }
+            
+            $c_end = ($c_end > $end) ? $end : $c_end;
+            
+            if ($c_start > $c_end || $c_start > $fileSize - 1 || $c_end >= $fileSize) {
+                header('HTTP/1.1 416 Requested Range Not Satisfiable');
+                header("Content-Range: bytes $start-$end/$fileSize");
+                exit;
+            }
+            
+            $start = $c_start;
+            $end = $c_end;
+            $length = $end - $start + 1;
+            
+            fseek($fp, $start);
+            header('HTTP/1.1 206 Partial Content'); // ⬅️ Android necesita ver este 206
+            header("Content-Length: " . $length);
+            header("Content-Range: bytes $start-$end/$fileSize");
+        } else {
+            header("Content-Length: " . $length);
+        }
+
+        // 4. Enviar los bytes exactos
+        $bufferSize = 8192; // Chunks de 8KB
+        while (!feof($fp) && ($p = ftell($fp)) <= $end) {
+            if ($p + $bufferSize > $end) {
+                $bufferSize = $end - $p + 1;
+            }
+            set_time_limit(0);
+            echo fread($fp, $bufferSize);
+            flush(); // Forzar el envío inmediato
+        }
+        fclose($fp);
+        
+        // 5. MATAR EL SCRIPT para evitar que Laravel modifique los headers
+        exit; 
     }
 
-    // --- Para imágenes y otros archivos normales ---
+    // --- Para imágenes y otros archivos normales (Laravel normal) ---
     return response()->file($fullPath, [
         'Content-Type' => $mimeType,
         'Cache-Control' => 'max-age=86400, public',
