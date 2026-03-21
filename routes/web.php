@@ -157,7 +157,7 @@ Route::get('/setup-storage', function () {
     }
 });
 
-// --- FIX PARA IMÁGENES Y VIDEOS (STREAMING) ---
+// --- FIX PARA IMÁGENES Y VIDEOS (STREAMING REAL PARA ANDROID) ---
 Route::get('/file/{path}', function ($path) {
     if (str_starts_with($path, 'profiles/')) {
         $fullPath = storage_path('app/public/' . $path);
@@ -170,7 +170,6 @@ Route::get('/file/{path}', function ($path) {
     $base = realpath(storage_path('app/public'));
     $fullPath = realpath($fullPath);
 
-    // Ensure the resolved path is inside the allowed base directory (prevents path traversal)
     if (!$fullPath || !str_starts_with($fullPath, $base) || !file_exists($fullPath)) {
         abort(404);
     }
@@ -178,10 +177,14 @@ Route::get('/file/{path}', function ($path) {
     $mimeType = mime_content_type($fullPath);
     $size = filesize($fullPath);
 
-    // LÓGICA DE STREAMING PARA VIDEOS
+    // LÓGICA DE STREAMING PURO PARA VIDEOS
     if (str_starts_with($mimeType, 'video/')) {
+        $stream = fopen($fullPath, 'rb');
+        
         $start = 0;
         $end = $size - 1;
+        $length = $size;
+        $status = 200;
 
         $headers = [
             'Content-Type' => $mimeType,
@@ -190,7 +193,11 @@ Route::get('/file/{path}', function ($path) {
         ];
 
         if (isset($_SERVER['HTTP_RANGE'])) {
+            $c_start = $start;
+            $c_end = $end;
+            
             list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+            
             if (strpos($range, ',') !== false) {
                 header('HTTP/1.1 416 Requested Range Not Satisfiable');
                 header("Content-Range: bytes $start-$end/$size");
@@ -198,31 +205,49 @@ Route::get('/file/{path}', function ($path) {
             }
             if ($range == '-') {
                 $c_start = $size - substr($range, 1);
-                $c_end = $size - 1;
             } else {
                 $range = explode('-', $range);
                 $c_start = $range[0];
                 $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size - 1;
             }
+            
             $c_end = ($c_end > $end) ? $end : $c_end;
+            
             if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
                 header('HTTP/1.1 416 Requested Range Not Satisfiable');
                 header("Content-Range: bytes $start-$end/$size");
                 exit;
             }
+            
             $start = $c_start;
             $end = $c_end;
             $length = $end - $start + 1;
-
+            $status = 206; // Partial Content
+            
             $headers['Content-Range'] = "bytes $start-$end/$size";
-            $headers['Content-Length'] = $length;
-
-            return response()->file($fullPath, $headers)->setStatusCode(206);
-        } else {
-            // Si la petición no es de rango, enviamos el tamaño total para que Android sepa la duración.
-            $headers['Content-Length'] = $size;
-            return response()->file($fullPath, $headers);
         }
+
+        $headers['Content-Length'] = $length;
+
+        // Limpiar output buffers para evitar corrupción de datos
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        return response()->stream(function () use ($stream, $start, $end) {
+            fseek($stream, $start);
+            $bufferSize = 8192; // 8KB chunks
+            $bytesSent = 0;
+            $totalToSend = ($end - $start) + 1;
+
+            while (!feof($stream) && $bytesSent < $totalToSend) {
+                $bytesToRead = min($bufferSize, $totalToSend - $bytesSent);
+                echo fread($stream, $bytesToRead);
+                flush();
+                $bytesSent += $bytesToRead;
+            }
+            fclose($stream);
+        }, $status, $headers);
     }
 
     // Para imágenes y otros archivos normales
