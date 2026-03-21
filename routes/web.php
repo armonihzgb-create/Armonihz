@@ -159,6 +159,7 @@ Route::get('/setup-storage', function () {
 
 // --- FIX PARA IMÁGENES Y VIDEOS EN ENTORNO LOCAL/PRODUCCIÓN ---
 // Usamos /file/ para evitar conflictos con la carpeta /public/storage/ existente
+// --- FIX PARA IMÁGENES Y VIDEOS (STREAMING MANUAL PARA ANDROID) ---
 Route::get('/file/{path}', function ($path) {
     if (str_starts_with($path, 'profiles/')) {
         $fullPath = storage_path('app/public/' . $path);
@@ -171,22 +172,76 @@ Route::get('/file/{path}', function ($path) {
     $base = realpath(storage_path('app/public'));
     $fullPath = realpath($fullPath);
 
-    // Ensure the resolved path is inside the allowed base directory (prevents path traversal)
-    if (!$fullPath || !str_starts_with($fullPath, $base)) {
-        abort(404);
-    }
-
-    if (!file_exists($fullPath)) {
+    if (!$fullPath || !str_starts_with($fullPath, $base) || !file_exists($fullPath)) {
         abort(404);
     }
 
     $mimeType = mime_content_type($fullPath);
-    
-    // Laravel maneja automáticamente los rangos (Accept-Ranges) con response()->file(),
-    // lo que permite que Android VideoView pueda adelantar el video y leer la duración total.
+
+    // Si es un VIDEO, forzamos el streaming por rangos a mano, pero al estilo Laravel
+    if (str_starts_with($mimeType, 'video/')) {
+        $size = filesize($fullPath);
+        $start = 0;
+        $end = $size - 1;
+        $length = $size;
+        $status = 200;
+        
+        $headers = [
+            'Content-Type' => $mimeType,
+            'Accept-Ranges' => 'bytes',
+            'Cache-Control' => 'max-age=86400, public',
+        ];
+
+        // Android envía HTTP_RANGE cuando quiere adelantar o leer la duración
+        if (request()->server('HTTP_RANGE')) {
+            $range = request()->server('HTTP_RANGE');
+            list($param, $range) = explode('=', $range, 2);
+            
+            if (strtolower(trim($param)) !== 'bytes') {
+                return response('Requested Range Not Satisfiable', 416)
+                    ->header('Content-Range', "bytes $start-$end/$size");
+            }
+            
+            $range = explode(',', $range)[0];
+            $range = explode('-', $range);
+            $c_start = $range[0];
+            $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size - 1;
+
+            $c_end = ($c_end > $end) ? $end : $c_end;
+            if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
+                return response('Requested Range Not Satisfiable', 416)
+                    ->header('Content-Range', "bytes $start-$end/$size");
+            }
+
+            $start = $c_start;
+            $end = $c_end;
+            $length = $end - $start + 1;
+            $status = 206; // 206 Partial Content (Obligatorio para Android)
+            $headers['Content-Range'] = "bytes $start-$end/$size";
+        }
+
+        $headers['Content-Length'] = $length;
+
+        // Usamos response()->stream() para enviar los fragmentos sin usar exit;
+        return response()->stream(function () use ($fullPath, $start, $length) {
+            $file = fopen($fullPath, 'rb');
+            fseek($file, $start);
+            $bufferSize = 8192; // Fragmentos de 8KB
+            $bytesLeft = $length;
+            
+            while ($bytesLeft > 0 && !feof($file)) {
+                $read = ($bytesLeft > $bufferSize) ? $bufferSize : $bytesLeft;
+                $bytesLeft -= $read;
+                echo fread($file, $read);
+                flush();
+            }
+            fclose($file);
+        }, $status, $headers);
+    }
+
+    // Si es imagen u otro archivo, lo mandamos normal
     return response()->file($fullPath, [
         'Content-Type' => $mimeType,
         'Cache-Control' => 'max-age=86400, public',
-        'Accept-Ranges' => 'bytes',
     ]);
 })->where('path', '.*');
