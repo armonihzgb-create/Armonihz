@@ -157,8 +157,7 @@ Route::get('/setup-storage', function () {
     }
 });
 
-// --- FIX PARA IMÁGENES EN ENTORNO LOCAL (WINDOWS / XAMPP) ---
-// Usamos /file/ para evitar conflictos con la carpeta /public/storage/ existente
+// --- FIX PARA IMÁGENES Y VIDEOS (STREAMING) ---
 Route::get('/file/{path}', function ($path) {
     if (str_starts_with($path, 'profiles/')) {
         $fullPath = storage_path('app/public/' . $path);
@@ -172,19 +171,15 @@ Route::get('/file/{path}', function ($path) {
     $fullPath = realpath($fullPath);
 
     // Ensure the resolved path is inside the allowed base directory (prevents path traversal)
-    if (!$fullPath || !str_starts_with($fullPath, $base)) {
-        abort(404);
-    }
-
-    if (!file_exists($fullPath)) {
+    if (!$fullPath || !str_starts_with($fullPath, $base) || !file_exists($fullPath)) {
         abort(404);
     }
 
     $mimeType = mime_content_type($fullPath);
-    // If it's a video, serve it with proper ranges for seeking support
+    $size = filesize($fullPath);
+
+    // LÓGICA DE STREAMING PARA VIDEOS
     if (str_starts_with($mimeType, 'video/')) {
-        $size = filesize($fullPath);
-        $length = $size;
         $start = 0;
         $end = $size - 1;
 
@@ -195,8 +190,6 @@ Route::get('/file/{path}', function ($path) {
         ];
 
         if (isset($_SERVER['HTTP_RANGE'])) {
-            $c_start = $start;
-            $c_end = $end;
             list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
             if (strpos($range, ',') !== false) {
                 header('HTTP/1.1 416 Requested Range Not Satisfiable');
@@ -205,10 +198,11 @@ Route::get('/file/{path}', function ($path) {
             }
             if ($range == '-') {
                 $c_start = $size - substr($range, 1);
+                $c_end = $size - 1;
             } else {
                 $range = explode('-', $range);
                 $c_start = $range[0];
-                $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size;
+                $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size - 1;
             }
             $c_end = ($c_end > $end) ? $end : $c_end;
             if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
@@ -219,15 +213,22 @@ Route::get('/file/{path}', function ($path) {
             $start = $c_start;
             $end = $c_end;
             $length = $end - $start + 1;
+
             $headers['Content-Range'] = "bytes $start-$end/$size";
+            $headers['Content-Length'] = $length;
+
             return response()->file($fullPath, $headers)->setStatusCode(206);
+        } else {
+            // Si la petición no es de rango, enviamos el tamaño total para que Android sepa la duración.
+            $headers['Content-Length'] = $size;
+            return response()->file($fullPath, $headers);
         }
-        
-        return response()->file($fullPath, $headers);
     }
 
+    // Para imágenes y otros archivos normales
     return response()->file($fullPath, [
         'Content-Type' => $mimeType,
+        'Content-Length' => $size,
         'Cache-Control' => 'max-age=86400, public',
     ]);
 })->where('path', '.*');
