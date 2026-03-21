@@ -157,7 +157,8 @@ Route::get('/setup-storage', function () {
     }
 });
 
-// --- FIX DEFINITIVO PARA IMÁGENES Y VIDEOS USANDO RAW PHP ---
+// --- FIX PARA IMÁGENES EN ENTORNO LOCAL (WINDOWS / XAMPP) ---
+// Usamos /file/ para evitar conflictos con la carpeta /public/storage/ existente
 Route::get('/file/{path}', function ($path) {
     if (str_starts_with($path, 'profiles/')) {
         $fullPath = storage_path('app/public/' . $path);
@@ -170,66 +171,61 @@ Route::get('/file/{path}', function ($path) {
     $base = realpath(storage_path('app/public'));
     $fullPath = realpath($fullPath);
 
-    // Evitar salir del directorio permitido
-    if (!$fullPath || !str_starts_with($fullPath, $base) || !file_exists($fullPath)) {
+    // Ensure the resolved path is inside the allowed base directory (prevents path traversal)
+    if (!$fullPath || !str_starts_with($fullPath, $base)) {
+        abort(404);
+    }
+
+    if (!file_exists($fullPath)) {
         abort(404);
     }
 
     $mimeType = mime_content_type($fullPath);
+    // If it's a video, serve it with proper ranges for seeking support
+    if (str_starts_with($mimeType, 'video/')) {
+        $size = filesize($fullPath);
+        $length = $size;
+        $start = 0;
+        $end = $size - 1;
 
-    // --- LÓGICA DE STREAMING PURO PARA VIDEOS (SALTANDO LARAVEL) ---
-   if (str_starts_with($mimeType, 'video/')) {
+        $headers = [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'max-age=86400, public',
+            'Accept-Ranges' => 'bytes',
+        ];
 
-    while (ob_get_level()) {
-        ob_end_clean();
-    }
-
-    $fileSize = filesize($fullPath);
-    $start = 0;
-    $end = $fileSize - 1;
-    $length = $fileSize;
-
-    $fp = fopen($fullPath, 'rb');
-
-    header("Content-Type: $mimeType");
-    header("Accept-Ranges: bytes");
-    header("Content-Disposition: inline");
-    header("Connection: keep-alive");
-    header("Cache-Control: no-cache");
-
-    if (isset($_SERVER['HTTP_RANGE'])) {
-        list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
-
-        $range = explode('-', $range);
-        $start = intval($range[0]);
-        $end = isset($range[1]) ? intval($range[1]) : $fileSize - 1;
-
-        $length = $end - $start + 1;
-
-        fseek($fp, $start);
-
-        header('HTTP/1.1 206 Partial Content');
-        header("Content-Length: $length");
-        header("Content-Range: bytes $start-$end/$fileSize");
-    } else {
-        header("Content-Length: $length");
-    }
-
-    $buffer = 8192;
-
-    while (!feof($fp) && ($pos = ftell($fp)) <= $end) {
-        if ($pos + $buffer > $end) {
-            $buffer = $end - $pos + 1;
+        if (isset($_SERVER['HTTP_RANGE'])) {
+            $c_start = $start;
+            $c_end = $end;
+            list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+            if (strpos($range, ',') !== false) {
+                header('HTTP/1.1 416 Requested Range Not Satisfiable');
+                header("Content-Range: bytes $start-$end/$size");
+                exit;
+            }
+            if ($range == '-') {
+                $c_start = $size - substr($range, 1);
+            } else {
+                $range = explode('-', $range);
+                $c_start = $range[0];
+                $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size;
+            }
+            $c_end = ($c_end > $end) ? $end : $c_end;
+            if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
+                header('HTTP/1.1 416 Requested Range Not Satisfiable');
+                header("Content-Range: bytes $start-$end/$size");
+                exit;
+            }
+            $start = $c_start;
+            $end = $c_end;
+            $length = $end - $start + 1;
+            $headers['Content-Range'] = "bytes $start-$end/$size";
+            return response()->file($fullPath, $headers)->setStatusCode(206);
         }
-        echo fread($fp, $buffer);
-        flush();
+        
+        return response()->file($fullPath, $headers);
     }
 
-    fclose($fp);
-    exit;
-}
-
-    // --- Para imágenes y otros archivos normales (Laravel normal) ---
     return response()->file($fullPath, [
         'Content-Type' => $mimeType,
         'Cache-Control' => 'max-age=86400, public',
