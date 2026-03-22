@@ -279,7 +279,7 @@ class ClientController extends Controller
         }
     }
 
-    public function updateProfile(Request $request)
+   public function updateProfile(Request $request)
     {
         $request->validate([
             'nombre' => 'required|string|min:2|max:50',
@@ -287,23 +287,38 @@ class ClientController extends Controller
             'telefono' => 'nullable|string|max:15',
         ]);
 
-        $cliente = $this->getClient($request);
+        $firebaseUid = $request->attributes->get('firebase_uid');
 
-        // 🔵 Guardamos el nombre y apellido POR SEPARADO en la tabla clients
-        $cliente->nombre = $request->nombre;
-        $cliente->apellido = $request->apellido;
-        $cliente->telefono = $request->telefono;
-        $cliente->save();
+        if (!$firebaseUid) {
+            return response()->json(['message' => 'Token de Firebase no detectado'], 401);
+        }
 
-        // 🔵 Para la tabla 'users' (que por defecto en Laravel solo tiene 'name'), sí los unimos
-        $user = User::find($cliente->user_id);
+        // 1. Buscamos al usuario en la tabla 'users' por el firebase_uid
+        $user = User::where('firebase_uid', $firebaseUid)->first();
+
+        // 2. Si el usuario existe, actualizamos su nombre completo
         if ($user) {
             $user->name = trim($request->nombre . ' ' . $request->apellido);
             $user->save();
         }
 
+        // 3. Usamos updateOrCreate en 'clients' para asegurar que NO se duplique
+        // Busca al cliente por su firebase_uid. Si existe, lo actualiza. Si no, lo crea.
+        $cliente = Client::updateOrCreate(
+            ['firebase_uid' => $firebaseUid], // Condición de búsqueda
+            [
+                'user_id' => $user ? $user->id : null,
+                'nombre' => $request->nombre,
+                'apellido' => $request->apellido,
+                'telefono' => $request->telefono,
+                // Conservamos el email que tenga en la cuenta de Google, si está disponible
+                'email' => $request->email ?? ($user ? $user->email : null)
+            ]
+        );
+
         return response()->json([
-            'message' => 'Perfil actualizado correctamente'
+            'message' => 'Perfil actualizado correctamente',
+            'cliente' => $cliente
         ]);
     }
 }
