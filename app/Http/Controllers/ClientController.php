@@ -155,7 +155,7 @@ class ClientController extends Controller
         ]);
     }
 
-    public function syncClient(Request $request)
+   public function syncClient(Request $request)
     {
         $firebaseUid = $request->attributes->get('firebase_uid');
 
@@ -165,10 +165,16 @@ class ClientController extends Controller
             ], 401);
         }
 
+        // 1. Separar el nombre completo que viene de Google
+        $nombreCompleto = trim($request->name);
+        $partes = explode(' ', $nombreCompleto, 2); // Divide por el primer espacio
+        $primerNombre = $partes[0];
+        $apellidos = isset($partes[1]) ? $partes[1] : null; // Si hay apellido, lo toma, si no, null
+
         $user = User::updateOrCreate(
             ['email' => $request->email],
             [
-                'name' => $request->name,
+                'name' => $request->name, // En la tabla 'users' está bien guardar el nombre completo
                 'firebase_uid' => $firebaseUid,
                 'role' => 'cliente'
             ]
@@ -178,7 +184,8 @@ class ClientController extends Controller
             ['firebase_uid' => $firebaseUid],
             [
                 'user_id' => $user->id,
-                'nombre' => $request->name,
+                'nombre' => $primerNombre, // Guardamos solo "Pedro"
+                'apellido' => $apellidos,  // Guardamos "Hernández" (si existe)
                 'email' => $request->email
             ]
         );
