@@ -220,19 +220,33 @@ class ClientController extends Controller
         return "Notificación enviada";
     }
 
-    // Obtener la lista de favoritos del cliente
+  // Obtener la lista de favoritos del cliente
     public function getFavorites(Request $request)
     {
         $cliente = $this->getClient($request);
         
-        // Traemos a los músicos favoritos. 
-        // (Ajusta los 'select' según los datos que ocupes mostrar en la tarjeta de favoritos)
+        // Traemos a los músicos favoritos desde musician_profiles
         $favorites = $cliente->favorites()
-            ->select('musicians.id', 'musicians.stage_name', 'musicians.profile_picture', 'musicians.location') 
+            ->select(
+                'musician_profiles.id', 
+                'musician_profiles.stage_name', 
+                'musician_profiles.profile_picture', 
+                'musician_profiles.location'
+            ) 
             ->get();
 
+        // Puedes mapear la respuesta si necesitas formatear la URL de la imagen como lo haces en "profile"
+        $formattedFavorites = $favorites->map(function ($musician) {
+            return [
+                'id' => $musician->id,
+                'stage_name' => $musician->stage_name,
+                'location' => $musician->location,
+                'profile_picture' => $musician->profile_picture ? url('file/' . $musician->profile_picture) : null
+            ];
+        });
+
         return response()->json([
-            'data' => $favorites
+            'data' => $formattedFavorites
         ]);
     }
 
@@ -241,18 +255,18 @@ class ClientController extends Controller
     {
         $cliente = $this->getClient($request);
 
-        // Verifica si ya está en favoritos
-        $isFavorite = $cliente->favorites()->where('musician_id', $musicianId)->exists();
+        // Verifica si ya está en favoritos usando el nombre correcto de la columna
+        $isFavorite = $cliente->favorites()->where('musician_profile_id', $musicianId)->exists();
 
         if ($isFavorite) {
-            // Si ya existe, lo quitamos (Dislike)
+            // Si ya existe, lo quitamos
             $cliente->favorites()->detach($musicianId);
             return response()->json([
                 'message' => 'Eliminado de favoritos',
                 'is_favorite' => false
             ]);
         } else {
-            // Si no existe, lo agregamos (Like)
+            // Si no existe, lo agregamos
             $cliente->favorites()->attach($musicianId);
             return response()->json([
                 'message' => 'Añadido a favoritos',

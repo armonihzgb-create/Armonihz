@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MusicianProfile;
 
 class Client extends Model
 {
@@ -24,9 +25,14 @@ class Client extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function favorites()
-    {
-        // Relación de muchos a muchos
-        return $this->belongsToMany(Musician::class, 'client_musician_favorites', 'client_id', 'musician_id')->withTimestamps();
-    }
+  public function favorites()
+{
+    // Relación de muchos a muchos apuntando a MusicianProfile
+    return $this->belongsToMany(
+        MusicianProfile::class, 
+        'client_musician_favorites', 
+        'client_id', 
+        'musician_profile_id'
+    )->withTimestamps();
+}
 }
