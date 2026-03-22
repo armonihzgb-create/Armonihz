@@ -65,14 +65,18 @@ class MusicianProfileController extends Controller
             $query->where('is_active', true);
         }])->findOrFail($id);
 
-        // ⬅️ Lógica para saber si es favorito
+       // ⬅️ Lógica corregida para saber si es favorito usando Firebase
         $isFavorite = false;
-        if ($request->user() && $request->user()->role === 'cliente' && $request->user()->client) {
-            $isFavorite = $request->user()->client->favoriteMusicians()
-                                  ->where('musician_profile_id', $id)
-                                  ->exists();
+        if ($request->attributes->has('firebase_uid')) {
+            $uid = $request->attributes->get('firebase_uid');
+            $client = \App\Models\Client::where('firebase_uid', $uid)->first();
+            
+            if ($client) {
+                $isFavorite = $client->favoriteMusicians()
+                                     ->where('musician_profile_id', $id)
+                                     ->exists();
+            }
         }
-
         // Le inyectamos el atributo al modelo temporalmente para que el Resource lo lea
         $profile->setAttribute('is_favorite', $isFavorite);
 

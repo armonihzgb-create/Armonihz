@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\MusicianProfile;
+use App\Models\Client; // ⬅️ IMPORTANTE: Asegúrate de importar el modelo Client
 
 class FavoriteController extends Controller
 {
     public function index(Request $request)
     {
-        $client = $request->user()->client;
+        // 1. Obtenemos el UID que inyectó tu middleware
+        $uid = $request->attributes->get('firebase_uid');
+        
+        // 2. Buscamos al cliente en la base de datos
+        $client = Client::where('firebase_uid', $uid)->firstOrFail();
         
         // Obtenemos los músicos favoritos con sus relaciones necesarias
         $favorites = $client->favoriteMusicians()->with(['user', 'genres', 'media'])->get();
@@ -23,14 +28,13 @@ class FavoriteController extends Controller
     
     public function addFavorite(Request $request, $id)
     {
-        // 1. Obtenemos el cliente autenticado
-        // (Ajusta esto dependiendo de cómo obtengas al cliente desde el usuario logueado)
-        $client = $request->user()->client; 
+        $uid = $request->attributes->get('firebase_uid');
+        $client = Client::where('firebase_uid', $uid)->firstOrFail();
 
-        // 2. Verificamos que el músico exista
+        // Verificamos que el músico exista
         $musician = MusicianProfile::findOrFail($id);
 
-        // 3. Lo agregamos a favoritos sin duplicarlo (syncWithoutDetaching)
+        // Lo agregamos a favoritos sin duplicarlo (syncWithoutDetaching)
         $client->favoriteMusicians()->syncWithoutDetaching([$id]);
 
         return response()->json([
@@ -40,7 +44,8 @@ class FavoriteController extends Controller
 
     public function removeFavorite(Request $request, $id)
     {
-        $client = $request->user()->client;
+        $uid = $request->attributes->get('firebase_uid');
+        $client = Client::where('firebase_uid', $uid)->firstOrFail();
         
         // Lo quitamos de la tabla pivote
         $client->favoriteMusicians()->detach($id);
