@@ -59,25 +59,40 @@ class MusicianProfileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, string $id) // ⬅️ Agregamos Request $request aquí
+   public function show(Request $request, string $id)
     {
         $profile = MusicianProfile::with(['user:id,name', 'genres', 'media', 'promotions' => function ($query) {
             $query->where('is_active', true);
         }])->findOrFail($id);
 
-       // ⬅️ Lógica corregida para saber si es favorito usando Firebase
         $isFavorite = false;
-        if ($request->attributes->has('firebase_uid')) {
-            $uid = $request->attributes->get('firebase_uid');
-            $client = \App\Models\Client::where('firebase_uid', $uid)->first();
-            
-            if ($client) {
-                $isFavorite = $client->favoriteMusicians()
-                                     ->where('musician_profile_id', $id)
-                                     ->exists();
+
+        // Extraemos el token manualmente por si esta ruta es pública y no usa el middleware
+        $authHeader = $request->header('Authorization');
+        
+        if ($authHeader && str_starts_with($authHeader, 'Bearer ')) {
+            try {
+                $idToken = substr($authHeader, 7);
+                // Llamamos a tu servicio de Firebase
+                $firebaseService = app(\App\Services\FirebaseService::class);
+                $decodedToken = $firebaseService->verifyIdToken($idToken);
+                $uid = $decodedToken->claims()->get('sub');
+
+                // Buscamos al cliente
+                $client = \App\Models\Client::where('firebase_uid', $uid)->first();
+                
+                // Si existe, verificamos si este músico es su favorito
+                if ($client) {
+                    $isFavorite = $client->favoriteMusicians()
+                                         ->where('musician_profile_id', $id)
+                                         ->exists();
+                }
+            } catch (\Throwable $e) {
+                // Si el token es inválido o no hay sesión, simplemente se queda en false
             }
         }
-        // Le inyectamos el atributo al modelo temporalmente para que el Resource lo lea
+
+        // Le inyectamos el atributo al modelo
         $profile->setAttribute('is_favorite', $isFavorite);
 
         return $this->successResponse(new MusicianProfileResource($profile), 'Musician profile retrieved successfully');
