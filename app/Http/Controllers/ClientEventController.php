@@ -15,25 +15,17 @@ public function index(Request $request)
 {
     $firebaseUid = $request->attributes->get('firebase_uid');
 
-    // Cargamos la relación 'genre'
-    $eventos = ClientEvent::with('genre') 
+    // 🔵 1. Cargamos las relaciones 'genre' y 'client'
+    $eventos = ClientEvent::with(['genre', 'client']) 
         ->where('firebase_uid', $firebaseUid)
         ->orderBy('created_at', 'desc')
         ->get();
 
     $formattedEvents = $eventos->map(function ($evento) {
-        // Log para que veas en la consola de Laravel si la relación carga o no
-        // \Log::info("Evento {$evento->id} - Tipo Musica: {$evento->tipo_musica} - Genre: " . ($evento->genre->name ?? 'NULL'));
-
         return [
             'id' => $evento->id,
             'titulo' => $evento->titulo,
-            // PRIORIDAD: 
-            // 1. Si la relación encontró el nombre en la tabla genres, úsalo.
-            // 2. Si no hay relación pero el campo tiene el nombre viejo (texto), úsalo.
-            // 3. Si no, muestra el ID.
             'tipoMusica' => $evento->genre ? $evento->genre->name : $evento->tipo_musica,
-            
             'fecha' => $evento->fecha,
             'ubicacion' => $evento->ubicacion,
             'status' => $evento->status,
@@ -41,6 +33,9 @@ public function index(Request $request)
             'descripcion' => $evento->descripcion,
             'presupuesto' => (float) $evento->presupuesto,
             'propuestas' => $evento->applications()->count(),
+            
+            // 🔵 2. Agregamos el nombre del cliente
+            'nombre_cliente' => $evento->client->nombre ?? 'Usuario Anónimo',
         ];
     });
 
