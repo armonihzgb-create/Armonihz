@@ -67,6 +67,8 @@ Route::prefix('v1')->group(function () {
             Route::put('/client/events/{id}', [ClientEventController::class, 'update']);
             Route::delete('/client/events/{id}', [ClientEventController::class, 'destroy']);
             Route::post('/client/fcm-token', [ClientController::class, 'updateFcmToken']);
+            Route::get('/client/favorites', [ClientController::class, 'getFavorites']);
+            Route::post('/client/favorites/{musicianId}', [ClientController::class, 'toggleFavorite']);
             
         }
         );

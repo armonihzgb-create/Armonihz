@@ -24,4 +24,9 @@ class Client extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function favorites()
+    {
+        // Relación de muchos a muchos
+        return $this->belongsToMany(Musician::class, 'client_musician_favorites', 'client_id', 'musician_id')->withTimestamps();
+    }
 }

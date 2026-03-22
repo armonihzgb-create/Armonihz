@@ -219,5 +219,46 @@ class ClientController extends Controller
 
         return "Notificación enviada";
     }
+
+    // Obtener la lista de favoritos del cliente
+    public function getFavorites(Request $request)
+    {
+        $cliente = $this->getClient($request);
+        
+        // Traemos a los músicos favoritos. 
+        // (Ajusta los 'select' según los datos que ocupes mostrar en la tarjeta de favoritos)
+        $favorites = $cliente->favorites()
+            ->select('musicians.id', 'musicians.stage_name', 'musicians.profile_picture', 'musicians.location') 
+            ->get();
+
+        return response()->json([
+            'data' => $favorites
+        ]);
+    }
+
+    // Agregar o quitar de favoritos (Toggle)
+    public function toggleFavorite(Request $request, $musicianId)
+    {
+        $cliente = $this->getClient($request);
+
+        // Verifica si ya está en favoritos
+        $isFavorite = $cliente->favorites()->where('musician_id', $musicianId)->exists();
+
+        if ($isFavorite) {
+            // Si ya existe, lo quitamos (Dislike)
+            $cliente->favorites()->detach($musicianId);
+            return response()->json([
+                'message' => 'Eliminado de favoritos',
+                'is_favorite' => false
+            ]);
+        } else {
+            // Si no existe, lo agregamos (Like)
+            $cliente->favorites()->attach($musicianId);
+            return response()->json([
+                'message' => 'Añadido a favoritos',
+                'is_favorite' => true
+            ]);
+        }
+    }
 }
 
