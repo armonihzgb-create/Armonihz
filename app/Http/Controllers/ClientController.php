@@ -80,11 +80,13 @@ class ClientController extends Controller
         ]);
     }
 
-    public function profile(Request $request)
+  public function profile(Request $request)
     {
         $cliente = $this->getClient($request);
 
         return response()->json([
+            'nombre' => $cliente->nombre, // Aquí mandas el nombre del cliente
+            'email' => $cliente->email,   // Aquí mandas el correo
             'photoUrl' => $cliente->fotoPerfil
                 ? url('file/' . $cliente->fotoPerfil)
                 : null
