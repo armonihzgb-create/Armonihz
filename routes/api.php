@@ -67,9 +67,9 @@ Route::prefix('v1')->group(function () {
             Route::put('/client/events/{id}', [ClientEventController::class, 'update']);
             Route::delete('/client/events/{id}', [ClientEventController::class, 'destroy']);
             Route::post('/client/fcm-token', [ClientController::class, 'updateFcmToken']);
-            Route::get('/client/favorites', [ClientController::class, 'getFavorites']);
-            Route::post('/client/favorites/{musicianId}', [ClientController::class, 'toggleFavorite']);
-            
+            Route::post('/client/favorites/{id}', [App\Http\Controllers\FavoriteController::class, 'addFavorite']);
+            Route::delete('/client/favorites/{id}', [App\Http\Controllers\FavoriteController::class, 'removeFavorite']);
+            Route::get('/client/favorites', [App\Http\Controllers\FavoriteController::class, 'index']);
         }
         );
     });

@@ -59,11 +59,22 @@ class MusicianProfileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id) // ⬅️ Agregamos Request $request aquí
     {
         $profile = MusicianProfile::with(['user:id,name', 'genres', 'media', 'promotions' => function ($query) {
             $query->where('is_active', true);
         }])->findOrFail($id);
+
+        // ⬅️ Lógica para saber si es favorito
+        $isFavorite = false;
+        if ($request->user() && $request->user()->role === 'cliente' && $request->user()->client) {
+            $isFavorite = $request->user()->client->favoriteMusicians()
+                                  ->where('musician_profile_id', $id)
+                                  ->exists();
+        }
+
+        // Le inyectamos el atributo al modelo temporalmente para que el Resource lo lea
+        $profile->setAttribute('is_favorite', $isFavorite);
 
         return $this->successResponse(new MusicianProfileResource($profile), 'Musician profile retrieved successfully');
     }

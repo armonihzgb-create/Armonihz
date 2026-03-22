@@ -75,6 +75,7 @@ class MusicianProfileResource extends JsonResource
                     'videos' => $videos,
                 ];
             }),
+            'is_favorite' => $this->is_favorite ?? false,
         ];
     }
 }
