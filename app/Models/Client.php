@@ -17,6 +17,7 @@ class Client extends Model
         'firebase_uid',
         'fotoPerfil',
         'nombre',
+        'apellido',
         'email',
         'fcm_token',
         'telefono'
