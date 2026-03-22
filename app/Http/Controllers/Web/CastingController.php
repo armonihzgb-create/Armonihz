@@ -27,7 +27,7 @@ class CastingController extends Controller
     $musicianLocation = $profile ? strtolower($profile->location ?? '') : '';
 
     // 1. CARGA LA RELACIÓN 'genre' AQUÍ CON with()
-    $events = ClientEvent::with('genre') 
+   $events = ClientEvent::with(['genre', 'client']) // 🔵 Agregamos 'client'
         ->where('status', 'open')
         ->orderByDesc('created_at')
         ->get();
@@ -41,8 +41,6 @@ class CastingController extends Controller
     $events = $events->map(function ($event) use ($musicianGenres, $musicianLocation, $myApplicationIds) {
         $score = 0;
         
-        // 2. USAMOS EL NOMBRE DEL GÉNERO PARA EL MATCHING
-        // Si existe la relación, usamos el nombre; si no, el valor de la columna
         $eventGenreName = $event->genre ? strtolower($event->genre->name) : strtolower($event->tipo_musica);
         
         foreach ($musicianGenres as $g) {
@@ -58,6 +56,9 @@ class CastingController extends Controller
         $event->match_score = $score;
         $event->already_applied = in_array($event->id, $myApplicationIds);
         $event->applications_count = CastingApplication::where('client_event_id', $event->id)->count();
+        
+        // 🔵 ASIGNAMOS EL NOMBRE DEL CLIENTE AL EVENTO
+        $event->nombre_cliente = $event->client ? $event->client->nombre : 'Usuario Anónimo';
         
         return $event;
     })->sortByDesc('match_score')->values();
@@ -84,7 +85,10 @@ class CastingController extends Controller
    public function show($id)
 {
     // Cargamos la relación genre para que en la vista de detalle también salga el nombre
-    $event = ClientEvent::with('genre')->findOrFail($id);
+    $event = ClientEvent::with(['genre', 'client'])->findOrFail($id);
+
+    // 🔵 Le asignamos la variable para la vista
+    $event->nombre_cliente = $event->client ? $event->client->nombre : 'Usuario Anónimo';
     
     $user = Auth::user();
     $profile = $user->musicianProfile;

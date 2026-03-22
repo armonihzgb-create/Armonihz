@@ -72,6 +72,10 @@
 
                     {{-- Details --}}
                     <div class="casting-card-details">
+                        <div class="casting-card-detail-row" style="font-weight: 600; color: #334155; margin-bottom: 4px;">
+                            <i data-lucide="user" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
+                            <span>{{ $event->nombre_cliente }}</span>
+                        </div>
                         <div class="casting-card-detail-row">
                             <i data-lucide="map-pin" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
                             <span>{{ $event->ubicacion }}</span>
