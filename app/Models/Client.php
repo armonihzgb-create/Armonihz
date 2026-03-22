@@ -35,4 +35,14 @@ class Client extends Model
         'musician_profile_id'
     )->withTimestamps();
 }
+
+public function favoriteMusicians()
+    {
+        return $this->belongsToMany(
+            \App\Models\MusicianProfile::class, 
+            'client_musician_favorites', 
+            'client_id', 
+            'musician_profile_id'
+        )->withTimestamps();
+    }
 }
