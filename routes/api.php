@@ -55,6 +55,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/client/foto', [ClientController::class , 'uploadFotoPerfil']);
             Route::delete('/client/foto', [ClientController::class , 'deleteFotoPerfil']);
             Route::get('/client/profile', [ClientController::class , 'profile']);
+            Route::put('/client/profile', [ClientController::class , 'updateProfile']);
             Route::post('/client/sync-google-photo', [ClientController::class , 'syncGooglePhoto']);
             Route::post('/client/sync', [ClientController::class , 'syncClient']);
             Route::delete('/client/account', [ClientController::class , 'deleteAccount']);

@@ -87,6 +87,7 @@ class ClientController extends Controller
         return response()->json([
             'nombre' => $cliente->nombre, // Aquí mandas el nombre del cliente
             'email' => $cliente->email,   // Aquí mandas el correo
+            'telefono' => $cliente->telefono,
             'photoUrl' => $cliente->fotoPerfil
                 ? url('file/' . $cliente->fotoPerfil)
                 : null
@@ -275,6 +276,40 @@ class ClientController extends Controller
                 'is_favorite' => true
             ]);
         }
+    }
+
+    public function updateProfile(Request $request)
+    {
+        // 1. Validar los datos recibidos
+        $request->validate([
+            'nombre' => 'required|string|min:2|max:50',
+            'apellido' => 'required|string|min:2|max:50',
+            'telefono' => 'nullable|string|max:15', // nullable por si el usuario lo deja vacío
+        ]);
+
+        // 2. Obtener el cliente autenticado
+        $cliente = $this->getClient($request);
+
+        // 3. Unir el nombre y el apellido (Ya que en tu BD al parecer usas un solo campo "nombre" y "name")
+        // Si tienes columnas separadas para apellido en tu BD, omite esta línea y guárdalos por separado.
+        $nombreCompleto = trim($request->nombre . ' ' . $request->apellido);
+
+        // 4. Actualizar la tabla Client
+        $cliente->nombre = $nombreCompleto;
+        $cliente->telefono = $request->telefono; // Asegúrate de tener la columna 'telefono' en tu migración de clients
+        $cliente->save();
+
+        // 5. Actualizar la tabla User (para mantener sincronizados los nombres)
+        $user = User::find($cliente->user_id);
+        if ($user) {
+            $user->name = $nombreCompleto;
+            $user->save();
+        }
+
+        return response()->json([
+            'message' => 'Perfil actualizado correctamente',
+            'cliente' => $cliente
+        ]);
     }
 }
 

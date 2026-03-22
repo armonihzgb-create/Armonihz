@@ -18,7 +18,8 @@ class Client extends Model
         'fotoPerfil',
         'nombre',
         'email',
-        'fcm_token'
+        'fcm_token',
+        'telefono'
     ];
 
     public function user()
