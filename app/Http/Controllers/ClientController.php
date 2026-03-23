@@ -155,7 +155,7 @@ class ClientController extends Controller
         ]);
     }
 
-public function syncClient(Request $request)
+    public function syncClient(Request $request)
     {
         $firebaseUid = $request->attributes->get('firebase_uid');
 
@@ -165,7 +165,6 @@ public function syncClient(Request $request)
             ], 401);
         }
 
-        // 1. Usuario (Aquí sí guardamos el nombre completo de Google para control interno)
         $user = User::updateOrCreate(
             ['email' => $request->email],
             [
@@ -175,16 +174,14 @@ public function syncClient(Request $request)
             ]
         );
 
-        // 2. Cliente
-        $cliente = Client::firstOrNew(['firebase_uid' => $firebaseUid]);
-
-        $cliente->user_id = $user->id;
-        $cliente->email = $request->email;
-
-        // ✅ Ya no asignamos $cliente->nombre ni $cliente->apellido aquí. 
-        // Quedarán vacíos (NULL) para que la app los muestre en blanco la primera vez.
-
-        $cliente->save();
+        Client::updateOrCreate(
+            ['firebase_uid' => $firebaseUid],
+            [
+                'user_id' => $user->id,
+                'nombre' => $request->name,
+                'email' => $request->email
+            ]
+        );
 
         return response()->json([
             'message' => 'Cliente sincronizado correctamente',
@@ -282,44 +279,38 @@ public function syncClient(Request $request)
         }
     }
 
-  public function updateProfile(Request $request)
-{
-    $request->validate([
-        'nombre' => 'required|string|min:2|max:50',
-        'apellido' => 'required|string|min:2|max:50',
-        'telefono' => 'nullable|string|max:15',
-    ]);
+    public function updateProfile(Request $request)
+    {
+        // 1. Validar los datos recibidos
+        $request->validate([
+            'nombre' => 'required|string|min:2|max:50',
+            'apellido' => 'required|string|min:2|max:50',
+            'telefono' => 'nullable|string|max:15', // nullable por si el usuario lo deja vacío
+        ]);
 
-    $firebaseUid = $request->attributes->get('firebase_uid');
+        // 2. Obtener el cliente autenticado
+        $cliente = $this->getClient($request);
 
-    if (!$firebaseUid) {
-        return response()->json(['message' => 'Token de Firebase no detectado'], 401);
+        // 3. Unir el nombre y el apellido (Ya que en tu BD al parecer usas un solo campo "nombre" y "name")
+        // Si tienes columnas separadas para apellido en tu BD, omite esta línea y guárdalos por separado.
+        $nombreCompleto = trim($request->nombre . ' ' . $request->apellido);
+
+        // 4. Actualizar la tabla Client
+        $cliente->nombre = $nombreCompleto;
+        $cliente->telefono = $request->telefono; // Asegúrate de tener la columna 'telefono' en tu migración de clients
+        $cliente->save();
+
+        // 5. Actualizar la tabla User (para mantener sincronizados los nombres)
+        $user = User::find($cliente->user_id);
+        if ($user) {
+            $user->name = $nombreCompleto;
+            $user->save();
+        }
+
+        return response()->json([
+            'message' => 'Perfil actualizado correctamente',
+            'cliente' => $cliente
+        ]);
     }
-
-    $user = User::where('firebase_uid', $firebaseUid)->first();
-
-    // ✅ Actualizamos nombre completo SOLO en users
-    if ($user) {
-        $user->name = trim($request->nombre . ' ' . $request->apellido);
-        $user->save();
-    }
-
-    // ✅ Actualizamos cliente SIN mezclar datos
-    $cliente = Client::updateOrCreate(
-        ['firebase_uid' => $firebaseUid],
-        [
-            'user_id' => $user ? $user->id : null,
-            'nombre' => $request->nombre,
-            'apellido' => $request->apellido,
-            'telefono' => $request->telefono,
-            'email' => $request->email ?? ($user ? $user->email : null)
-        ]
-    );
-
-    return response()->json([
-        'message' => 'Perfil actualizado correctamente',
-        'cliente' => $cliente
-    ]);
-}
 }
 
