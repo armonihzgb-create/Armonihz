@@ -155,7 +155,7 @@ class ClientController extends Controller
         ]);
     }
 
-   public function syncClient(Request $request)
+  public function syncClient(Request $request)
     {
         $firebaseUid = $request->attributes->get('firebase_uid');
 
@@ -165,52 +165,36 @@ class ClientController extends Controller
             ], 401);
         }
 
-        // 1. Separar el nombre completo que viene de Google
-        $nombreCompleto = trim($request->name);
-        $partes = explode(' ', $nombreCompleto, 2); // Divide por el primer espacio
-        $primerNombre = $partes[0];
-        $apellidos = isset($partes[1]) ? $partes[1] : null; // Si hay apellido, lo toma, si no, null
-
+        // 1. Actualizamos al usuario en la tabla 'users'
         $user = User::updateOrCreate(
             ['email' => $request->email],
             [
-                'name' => $request->name, // En la tabla 'users' está bien guardar el nombre completo
+                'name' => $request->name,
                 'firebase_uid' => $firebaseUid,
                 'role' => 'cliente'
             ]
         );
 
-        Client::updateOrCreate(
-            ['firebase_uid' => $firebaseUid],
-            [
-                'user_id' => $user->id,
-                'nombre' => $primerNombre, // Guardamos solo "Pedro"
-                'apellido' => $apellidos,  // Guardamos "Hernández" (si existe)
-                'email' => $request->email
-            ]
-        );
+        // 2. Buscamos si el cliente ya existe (firstOrNew no guarda en base de datos todavía)
+        $cliente = Client::firstOrNew(['firebase_uid' => $firebaseUid]);
+
+        $cliente->user_id = $user->id;
+        $cliente->email = $request->email;
+
+        // 🔴 LA CLAVE: Solo dividimos y guardamos el nombre si es la primera vez que inicia sesión
+        if (!$cliente->exists) {
+            $nombreCompleto = trim($request->name);
+            $partes = explode(' ', $nombreCompleto, 2); 
+            $cliente->nombre = $partes[0];
+            $cliente->apellido = isset($partes[1]) ? $partes[1] : null; 
+        }
+
+        // 3. Guardamos los cambios
+        $cliente->save();
 
         return response()->json([
             'message' => 'Cliente sincronizado correctamente',
             'user_id' => $user->id
-        ]);
-    }
-
-    public function updateFcmToken(Request $request)
-    {
-        $request->validate([
-            'fcm_token' => 'required|string'
-        ]);
-
-        $cliente = $this->getClient($request);
-
-        $cliente->update([
-            'fcm_token' => $request->fcm_token
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Token guardado correctamente'
         ]);
     }
 
