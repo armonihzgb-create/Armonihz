@@ -19,6 +19,8 @@ class FirebaseAuthMiddleware
 
     public function handle(Request $request, Closure $next)
     {
+            // Solo crear si no existe, NUNCA sobreescribir nombre/apellido
+$cliente = Client::where('firebase_uid', $uid)->first();
 
         $authHeader = $request->header('Authorization');
 
@@ -47,13 +49,20 @@ class FirebaseAuthMiddleware
             /**
              * Crear cliente automáticamente si no existe
              */
-            Client::updateOrCreate(
-                ['firebase_uid' => $uid],
-                [
-                    'nombre' => $name,
-                    'email' => $email
-                ]
-            );
+           if (!$cliente) {
+    // Primera vez: separar nombre y apellido
+    $nombreCompleto = trim($name ?? '');
+    $partes   = explode(' ', $nombreCompleto, 2);
+    $nombre   = $partes[0] ?? '';
+    $apellido = $partes[1] ?? '';
+
+    Client::create([
+        'firebase_uid' => $uid,
+        'nombre'       => $nombre,
+        'apellido'     => $apellido,
+        'email'        => $email,
+    ]);
+}
 
         } catch (\Throwable $e) {
 
