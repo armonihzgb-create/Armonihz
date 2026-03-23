@@ -156,7 +156,7 @@ public function profile(Request $request)
         ]);
     }
 
-  public function syncClient(Request $request)
+public function syncClient(Request $request)
 {
     $firebaseUid = $request->attributes->get('firebase_uid');
 
@@ -164,11 +164,12 @@ public function profile(Request $request)
         return response()->json(['message' => 'Token de Firebase no detectado'], 401);
     }
 
-    // Separar nombre y apellido del displayName de Firebase
     $nombreCompleto = trim($request->name ?? '');
-    $partes   = explode(' ', $nombreCompleto, 2);
-    $nombre   = $request->nombre   ?? ($partes[0] ?? '');
-    $apellido = $request->apellido ?? ($partes[1] ?? '');
+    $partes = explode(' ', $nombreCompleto, 2);
+
+    // ✅ Usar nullif para ignorar strings vacíos, no solo null
+    $nombre   = !empty($request->nombre)   ? $request->nombre   : ($partes[0] ?? '');
+    $apellido = !empty($request->apellido) ? $request->apellido : ($partes[1] ?? '');
 
     $user = User::updateOrCreate(
         ['email' => $request->email],
@@ -182,13 +183,31 @@ public function profile(Request $request)
     $cliente = Client::where('firebase_uid', $firebaseUid)->first();
 
     if ($cliente) {
-        // ✅ Ya existe: solo actualizar user_id si es NULL, NO tocar nombre/apellido
+        // ✅ Actualizar user_id si es NULL
+        // ✅ Actualizar nombre/apellido SOLO si están vacíos en BD (primer sync)
+        $changed = false;
+
         if (!$cliente->user_id) {
             $cliente->user_id = $user->id;
+            $changed = true;
+        }
+
+        // Si el cliente tiene nombre vacío o null, actualizarlo
+        if (empty($cliente->nombre)) {
+            $cliente->nombre = $nombre;
+            $changed = true;
+        }
+
+        if (empty($cliente->apellido)) {
+            $cliente->apellido = $apellido;
+            $changed = true;
+        }
+
+        if ($changed) {
             $cliente->save();
         }
+
     } else {
-        // ✅ No existe: crear con nombre y apellido separados
         Client::create([
             'firebase_uid' => $firebaseUid,
             'user_id'      => $user->id,
