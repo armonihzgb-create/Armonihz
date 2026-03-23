@@ -25,7 +25,7 @@
             {{-- Event Card --}}
             <div class="cs-section-card">
                 <div class="cs-event-topbar">
-                   <span class="casting-tag">{{ $event->genre->name ?? $event->tipo_musica }}</span>
+                   <span class="cs-tag">{{ $event->genre->name ?? $event->tipo_musica }}</span>
                     <span class="cs-event-time">{{ $event->created_at->diffForHumans() }}</span>
                 </div>
 
