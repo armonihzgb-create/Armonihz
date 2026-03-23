@@ -156,40 +156,53 @@ public function profile(Request $request)
         ]);
     }
 
-    public function syncClient(Request $request)
-    {
-        $firebaseUid = $request->attributes->get('firebase_uid');
+  public function syncClient(Request $request)
+{
+    $firebaseUid = $request->attributes->get('firebase_uid');
 
-        if (!$firebaseUid) {
-            return response()->json([
-                'message' => 'Token de Firebase no detectado'
-            ], 401);
+    if (!$firebaseUid) {
+        return response()->json(['message' => 'Token de Firebase no detectado'], 401);
+    }
+
+    // Separar nombre y apellido del displayName de Firebase
+    $nombreCompleto = trim($request->name ?? '');
+    $partes   = explode(' ', $nombreCompleto, 2);
+    $nombre   = $request->nombre   ?? ($partes[0] ?? '');
+    $apellido = $request->apellido ?? ($partes[1] ?? '');
+
+    $user = User::updateOrCreate(
+        ['email' => $request->email],
+        [
+            'name'         => $nombreCompleto,
+            'firebase_uid' => $firebaseUid,
+            'role'         => 'cliente'
+        ]
+    );
+
+    $cliente = Client::where('firebase_uid', $firebaseUid)->first();
+
+    if ($cliente) {
+        // ✅ Ya existe: solo actualizar user_id si es NULL, NO tocar nombre/apellido
+        if (!$cliente->user_id) {
+            $cliente->user_id = $user->id;
+            $cliente->save();
         }
-
-        $user = User::updateOrCreate(
-            ['email' => $request->email],
-            [
-                'name' => $request->name,
-                'firebase_uid' => $firebaseUid,
-                'role' => 'cliente'
-            ]
-        );
-
-        Client::updateOrCreate(
-            ['firebase_uid' => $firebaseUid],
-            [
-                'user_id' => $user->id,
-                'nombre' => $request->name,
-                'email' => $request->email
-            ]
-        );
-
-        return response()->json([
-            'message' => 'Cliente sincronizado correctamente',
-            'user_id' => $user->id
+    } else {
+        // ✅ No existe: crear con nombre y apellido separados
+        Client::create([
+            'firebase_uid' => $firebaseUid,
+            'user_id'      => $user->id,
+            'nombre'       => $nombre,
+            'apellido'     => $apellido,
+            'email'        => $request->email,
         ]);
     }
 
+    return response()->json([
+        'message' => 'Cliente sincronizado correctamente',
+        'user_id' => $user->id
+    ]);
+}
     public function updateFcmToken(Request $request)
     {
         $request->validate([
