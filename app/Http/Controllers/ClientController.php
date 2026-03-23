@@ -155,7 +155,7 @@ class ClientController extends Controller
         ]);
     }
 
-  public function syncClient(Request $request)
+public function syncClient(Request $request)
     {
         $firebaseUid = $request->attributes->get('firebase_uid');
 
@@ -165,7 +165,7 @@ class ClientController extends Controller
             ], 401);
         }
 
-        // 1. Actualizamos al usuario en la tabla 'users'
+        // 1. Usuario (Aquí sí guardamos el nombre completo de Google para control interno)
         $user = User::updateOrCreate(
             ['email' => $request->email],
             [
@@ -175,26 +175,38 @@ class ClientController extends Controller
             ]
         );
 
-        // 2. Buscamos si el cliente ya existe (firstOrNew no guarda en base de datos todavía)
+        // 2. Cliente
         $cliente = Client::firstOrNew(['firebase_uid' => $firebaseUid]);
 
         $cliente->user_id = $user->id;
         $cliente->email = $request->email;
 
-        // 🔴 LA CLAVE: Solo dividimos y guardamos el nombre si es la primera vez que inicia sesión
-        if (!$cliente->exists) {
-            $nombreCompleto = trim($request->name);
-            $partes = explode(' ', $nombreCompleto, 2); 
-            $cliente->nombre = $partes[0];
-            $cliente->apellido = isset($partes[1]) ? $partes[1] : null; 
-        }
+        // ✅ Ya no asignamos $cliente->nombre ni $cliente->apellido aquí. 
+        // Quedarán vacíos (NULL) para que la app los muestre en blanco la primera vez.
 
-        // 3. Guardamos los cambios
         $cliente->save();
 
         return response()->json([
             'message' => 'Cliente sincronizado correctamente',
             'user_id' => $user->id
+        ]);
+    }
+
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string'
+        ]);
+
+        $cliente = $this->getClient($request);
+
+        $cliente->update([
+            'fcm_token' => $request->fcm_token
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Token guardado correctamente'
         ]);
     }
 
@@ -270,47 +282,44 @@ class ClientController extends Controller
         }
     }
 
-   public function updateProfile(Request $request)
-    {
-        $request->validate([
-            'nombre' => 'required|string|min:2|max:50',
-            'apellido' => 'required|string|min:2|max:50',
-            'telefono' => 'nullable|string|max:15',
-        ]);
+  public function updateProfile(Request $request)
+{
+    $request->validate([
+        'nombre' => 'required|string|min:2|max:50',
+        'apellido' => 'required|string|min:2|max:50',
+        'telefono' => 'nullable|string|max:15',
+    ]);
 
-        $firebaseUid = $request->attributes->get('firebase_uid');
+    $firebaseUid = $request->attributes->get('firebase_uid');
 
-        if (!$firebaseUid) {
-            return response()->json(['message' => 'Token de Firebase no detectado'], 401);
-        }
-
-        // 1. Buscamos al usuario en la tabla 'users' por el firebase_uid
-        $user = User::where('firebase_uid', $firebaseUid)->first();
-
-        // 2. Si el usuario existe, actualizamos su nombre completo
-        if ($user) {
-            $user->name = trim($request->nombre . ' ' . $request->apellido);
-            $user->save();
-        }
-
-        // 3. Usamos updateOrCreate en 'clients' para asegurar que NO se duplique
-        // Busca al cliente por su firebase_uid. Si existe, lo actualiza. Si no, lo crea.
-        $cliente = Client::updateOrCreate(
-            ['firebase_uid' => $firebaseUid], // Condición de búsqueda
-            [
-                'user_id' => $user ? $user->id : null,
-                'nombre' => $request->nombre,
-                'apellido' => $request->apellido,
-                'telefono' => $request->telefono,
-                // Conservamos el email que tenga en la cuenta de Google, si está disponible
-                'email' => $request->email ?? ($user ? $user->email : null)
-            ]
-        );
-
-        return response()->json([
-            'message' => 'Perfil actualizado correctamente',
-            'cliente' => $cliente
-        ]);
+    if (!$firebaseUid) {
+        return response()->json(['message' => 'Token de Firebase no detectado'], 401);
     }
+
+    $user = User::where('firebase_uid', $firebaseUid)->first();
+
+    // ✅ Actualizamos nombre completo SOLO en users
+    if ($user) {
+        $user->name = trim($request->nombre . ' ' . $request->apellido);
+        $user->save();
+    }
+
+    // ✅ Actualizamos cliente SIN mezclar datos
+    $cliente = Client::updateOrCreate(
+        ['firebase_uid' => $firebaseUid],
+        [
+            'user_id' => $user ? $user->id : null,
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'telefono' => $request->telefono,
+            'email' => $request->email ?? ($user ? $user->email : null)
+        ]
+    );
+
+    return response()->json([
+        'message' => 'Perfil actualizado correctamente',
+        'cliente' => $cliente
+    ]);
+}
 }
 
