@@ -2,6 +2,86 @@
 
 @section('dashboard-content')
 
+    {{-- ── FOUC FIX + COMPONENT STYLES (must be before any HTML) ────────── --}}
+    <style>
+        /* Critical above-fold positioning */
+        .nbf-cover { width:100%; height:240px; background-size:cover; background-position:center; filter:grayscale(100%); position:relative; }
+        .nbf-info-bar { display:flex; align-items:flex-start; padding:0 40px 24px 180px; position:relative; min-height:100px; border-bottom:1px solid #edf2f7; }
+        .nbf-avatar-container { position:absolute; left:40px; top:-60px; width:120px; height:120px; border-radius:50%; background:#fff; padding:4px; z-index:10; }
+        .nbf-avatar-container img, .nbf-avatar-initials { width:100%; height:100%; border-radius:50%; object-fit:cover; background:#eef2fb; display:flex; align-items:center; justify-content:center; }
+        @media(max-width:768px) { .nbf-info-bar{flex-direction:column;padding:70px 24px 24px;align-items:center;} .nbf-avatar-container{left:50%;transform:translateX(-50%);} }
+
+        /* Section-title override (was gray) */
+        .nbf-section-title { color:#1e293b !important; font-weight:700 !important; font-size:16px !important; margin:0 !important; border-bottom:none !important; padding-bottom:0 !important; }
+        .nbf-subsection-title { font-size:12px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.06em; margin:0 0 12px; }
+
+        /* Header action buttons ↓ better look */
+        .nbf-action-btn.primary { background:linear-gradient(135deg,#6c3fc5,#2f93f5) !important; color:#fff !important; border:none !important; box-shadow:0 4px 12px rgba(108,63,197,.3); }
+        .nbf-action-btn.primary:hover { opacity:.88 !important; transform:translateY(-1px); }
+        .nbf-action-btn.secondary { background:rgba(255,255,255,.9) !important; border-color:#e2e8f0 !important; color:#475569 !important; }
+        .nbf-action-btn.secondary:hover { background:#fff !important; border-color:#c4b5fd !important; color:#6c3fc5 !important; }
+
+        /* Global modal buttons */
+        .primary-btn { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#6c3fc5,#2f93f5); color:#fff; border:none; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; box-shadow:0 4px 12px rgba(108,63,197,.3); }
+        .primary-btn:hover { opacity:.88; transform:translateY(-1px); box-shadow:0 6px 20px rgba(108,63,197,.4); }
+        .primary-btn i, .primary-btn svg { width:15px; height:15px; }
+        .secondary-btn { display:inline-flex; align-items:center; gap:8px; background:#f1f5f9; color:#475569; border:1.5px solid #e2e8f0; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
+        .secondary-btn:hover { background:#e2e8f0; border-color:#cbd5e1; }
+        .danger-btn { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; border:none; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; box-shadow:0 4px 12px rgba(220,38,38,.25); }
+        .danger-btn:hover { opacity:.88; transform:translateY(-1px); }
+
+        /* Completion card */
+        .nbf-completion-card { background:linear-gradient(135deg,rgba(108,63,197,.05),rgba(47,147,245,.06)); border:1px solid rgba(108,63,197,.12); border-radius:14px; padding:18px 22px; margin-bottom:32px; }
+        .nbf-completion-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+        .nbf-completion-title { font-size:14px; font-weight:700; color:#1e293b; margin:0 0 2px; }
+        .nbf-completion-sub { font-size:12px; color:#64748b; margin:0; }
+        .nbf-completion-badge { font-size:18px; font-weight:800; padding:6px 14px; border-radius:10px; flex-shrink:0; }
+        .nbf-completion-badge.good { color:#16a34a; background:#f0fdf4; }
+        .nbf-completion-badge.mid  { color:#d97706; background:#fffbeb; }
+        .nbf-completion-badge.low  { color:#dc2626; background:#fef2f2; }
+        .nbf-completion-bar { height:6px; background:#e2e8f0; border-radius:99px; overflow:hidden; }
+        .nbf-completion-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,#6c3fc5,#2f93f5); transition:width .6s ease; }
+
+        /* Section header */
+        .nbf-section-header { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+        .nbf-section-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+        /* Row icon */
+        .nbf-detail-label-wrap { display:flex; align-items:center; gap:8px; }
+        .nbf-row-icon { width:15px; height:15px; color:#94a3b8; flex-shrink:0; }
+
+        /* Social cards grid */
+        .nbf-social-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px; }
+        @media(max-width:768px) { .nbf-social-grid{grid-template-columns:1fr;} }
+        .nbf-social-card { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; border:1.5px solid #e8edf3; background:#fff; text-decoration:none; transition:all .2s; }
+        .nbf-social-card.active:hover { border-color:#c4b5fd; transform:translateY(-2px); box-shadow:0 4px 16px rgba(108,63,197,.08); }
+        .nbf-social-card.inactive { opacity:.55; pointer-events:none; }
+        .nbf-social-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .nbf-social-info { display:flex; flex-direction:column; }
+        .nbf-social-name { font-size:12px; font-weight:700; color:#374151; }
+        .nbf-social-handle { font-size:11px; color:#94a3b8; }
+
+        /* Rate badge */
+        .nbf-rate-badge { display:inline-flex; align-items:baseline; gap:4px; color:#15803d; font-size:17px; font-weight:800; }
+        .nbf-rate-badge small { font-size:11px; font-weight:400; color:#6b7280; }
+
+        /* Availability badge */
+        .nbf-availability-badge { display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; padding:5px 13px; border-radius:99px; }
+        .nbf-availability-badge.available { background:#f0fdf4; color:#16a34a; }
+        .nbf-availability-dot { width:7px; height:7px; border-radius:50%; background:currentColor; animation:pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+        /* Genre chips */
+        .nbf-genre-chip { display:inline-flex; align-items:center; gap:7px; padding:8px 16px; border-radius:99px; font-size:13px; font-weight:600; background:linear-gradient(135deg,rgba(108,63,197,.1),rgba(47,147,245,.1)); border:1px solid rgba(108,63,197,.18); color:#6c3fc5; transition:all .2s; cursor:default; }
+        .nbf-genre-chip:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(108,63,197,.15); }
+
+        /* Empty states */
+        .nbf-empty { color:#94a3b8 !important; font-style:italic; }
+        .nbf-empty-genres { display:flex; align-items:center; gap:12px; width:100%; padding:16px 20px; background:#fafafa; border:1.5px dashed #e2e8f0; border-radius:12px; color:#94a3b8; font-size:14px; }
+        .nbf-add-genres-btn { background:linear-gradient(135deg,#6c3fc5,#2f93f5); color:#fff; border:none; padding:7px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; margin-left:auto; transition:opacity .2s; }
+        .nbf-add-genres-btn:hover { opacity:.85; }
+    </style>
+
     {{-- SUCCESS FLASH --}}
     @if(session('success'))
         <div id="flash-msg" style="
@@ -69,99 +149,161 @@
             </div>
         </div>
 
-        {{-- 2. CONTENT AREA (Form Style) --}}
+        {{-- 2. CONTENT AREA --}}
         <div class="nbf-content">
-            
-            {{-- Personal Details Section --}}
+
+            {{-- Profile Completion --}}
+            <div class="nbf-completion-card">
+                <div class="nbf-completion-header">
+                    <div>
+                        <h3 class="nbf-completion-title">Tu perfil está al {{ $completion }}%</h3>
+                        <p class="nbf-completion-sub">Un perfil completo atrae 3× más clientes — ¡completa los campos vacíos!</p>
+                    </div>
+                    <span class="nbf-completion-badge {{ $completion >= 80 ? 'good' : ($completion >= 50 ? 'mid' : 'low') }}">{{ $completion }}%</span>
+                </div>
+                <div class="nbf-completion-bar">
+                    <div class="nbf-completion-fill" style="width:{{ $completion }}%;"></div>
+                </div>
+            </div>
+
+            {{-- Personal Details --}}
             <div class="nbf-section">
-                <h2 class="nbf-section-title">Datos Personales</h2>
-                
+                <div class="nbf-section-header">
+                    <div class="nbf-section-icon" style="background:rgba(108,63,197,.1);">
+                        <i data-lucide="user-circle" style="width:16px;height:16px;color:#6c3fc5;"></i>
+                    </div>
+                    <h2 class="nbf-section-title">Datos Personales</h2>
+                </div>
+
                 <div class="nbf-detail-card">
                     <div class="nbf-detail-row">
-                        <span class="nbf-detail-label">Nombre Artístico</span>
+                        <div class="nbf-detail-label-wrap">
+                            <i data-lucide="badge" class="nbf-row-icon"></i>
+                            <span class="nbf-detail-label">Nombre Artístico</span>
+                        </div>
                         <span class="nbf-detail-value">{{ $profile->stage_name ?? $user->name }}</span>
                     </div>
                     <div class="nbf-detail-row">
-                        <span class="nbf-detail-label">Ubicación</span>
-                        <span class="nbf-detail-value">{{ $profile->location ?? 'No especificada' }}</span>
+                        <div class="nbf-detail-label-wrap">
+                            <i data-lucide="map-pin" class="nbf-row-icon"></i>
+                            <span class="nbf-detail-label">Ubicación</span>
+                        </div>
+                        <span class="nbf-detail-value {{ !$profile->location ? 'nbf-empty' : '' }}">
+                            {{ $profile->location ?? 'Agrega tu ciudad' }}
+                        </span>
                     </div>
                     <div class="nbf-detail-row">
-                        <span class="nbf-detail-label">Teléfono</span>
-                        <span class="nbf-detail-value">{{ $profile->phone ?? '+52 ...' }}</span>
+                        <div class="nbf-detail-label-wrap">
+                            <i data-lucide="phone" class="nbf-row-icon"></i>
+                            <span class="nbf-detail-label">Teléfono / WhatsApp</span>
+                        </div>
+                        <span class="nbf-detail-value {{ !$profile->phone ? 'nbf-empty' : '' }}">
+                            {{ $profile->phone ?? 'Agrega tu número' }}
+                        </span>
                     </div>
                     <div class="nbf-detail-row">
-                        <span class="nbf-detail-label">Correo Electrónico</span>
+                        <div class="nbf-detail-label-wrap">
+                            <i data-lucide="mail" class="nbf-row-icon"></i>
+                            <span class="nbf-detail-label">Correo Electrónico</span>
+                        </div>
                         <span class="nbf-detail-value">{{ $user->email }}</span>
                     </div>
                 </div>
 
-                <h3 class="nbf-subsection-title">Redes Sociales</h3>
-                <div class="nbf-detail-card">
-                    <div class="nbf-detail-row">
-                        <span class="nbf-detail-label"><i data-lucide="instagram" style="width: 18px; height: 18px; vertical-align:middle; margin-right:6px; color: #E1306C;"></i> Instagram</span>
-                        <span class="nbf-detail-value">
-                            @if($profile->instagram)
-                                <a href="https://instagram.com/{{ ltrim($profile->instagram, '@') }}" target="_blank" class="nbf-social-link">{{ '@' . ltrim($profile->instagram, '@') }}</a>
-                            @else
-                                <span style="color:#a0aec0;">No configurado</span>
-                            @endif
-                        </span>
-                    </div>
-                    <div class="nbf-detail-row">
-                        <span class="nbf-detail-label"><i data-lucide="facebook" style="width: 18px; height: 18px; vertical-align:middle; margin-right:6px; color: #1877F2;"></i> Facebook</span>
-                        <span class="nbf-detail-value">
-                            @if($profile->facebook)
-                                <a href="{{ Str::startsWith($profile->facebook, ['http://', 'https://']) ? $profile->facebook : 'https://' . $profile->facebook }}" target="_blank" class="nbf-social-link">Visitar Perfil</a>
-                            @else
-                                <span style="color:#a0aec0;">No configurado</span>
-                            @endif
-                        </span>
-                    </div>
-                    <div class="nbf-detail-row">
-                        <span class="nbf-detail-label"><i data-lucide="youtube" style="width: 18px; height: 18px; vertical-align:middle; margin-right:6px; color: #FF0000;"></i> YouTube</span>
-                        <span class="nbf-detail-value">
-                            @if($profile->youtube)
-                                <a href="{{ Str::startsWith($profile->youtube, ['http://', 'https://']) ? $profile->youtube : 'https://' . $profile->youtube }}" target="_blank" class="nbf-social-link">Ver Canal</a>
-                            @else
-                                <span style="color:#a0aec0;">No configurado</span>
-                            @endif
-                        </span>
-                    </div>
+                {{-- Social Cards --}}
+                <div class="nbf-social-grid">
+                    <a href="{{ $profile->instagram ? 'https://instagram.com/'.ltrim($profile->instagram,'@') : '#' }}"
+                       target="{{ $profile->instagram ? '_blank' : '_self' }}"
+                       class="nbf-social-card {{ $profile->instagram ? 'active' : 'inactive' }}">
+                        <div class="nbf-social-icon" style="background:#fdf4ff;">
+                            <i data-lucide="instagram" style="color:#E1306C;width:20px;height:20px;"></i>
+                        </div>
+                        <div class="nbf-social-info">
+                            <span class="nbf-social-name">Instagram</span>
+                            <span class="nbf-social-handle">{{ $profile->instagram ? '@'.ltrim($profile->instagram,'@') : 'No configurado' }}</span>
+                        </div>
+                        @if($profile->instagram)<i data-lucide="arrow-up-right" style="width:13px;height:13px;color:#94a3b8;margin-left:auto;flex-shrink:0;"></i>@endif
+                    </a>
+                    <a href="{{ $profile->facebook ? (Str::startsWith($profile->facebook,['http','https']) ? $profile->facebook : 'https://'.$profile->facebook) : '#' }}"
+                       target="{{ $profile->facebook ? '_blank' : '_self' }}"
+                       class="nbf-social-card {{ $profile->facebook ? 'active' : 'inactive' }}">
+                        <div class="nbf-social-icon" style="background:#eff6ff;">
+                            <i data-lucide="facebook" style="color:#1877F2;width:20px;height:20px;"></i>
+                        </div>
+                        <div class="nbf-social-info">
+                            <span class="nbf-social-name">Facebook</span>
+                            <span class="nbf-social-handle">{{ $profile->facebook ? 'Ver página' : 'No configurado' }}</span>
+                        </div>
+                        @if($profile->facebook)<i data-lucide="arrow-up-right" style="width:13px;height:13px;color:#94a3b8;margin-left:auto;flex-shrink:0;"></i>@endif
+                    </a>
+                    <a href="{{ $profile->youtube ? (Str::startsWith($profile->youtube,['http','https']) ? $profile->youtube : 'https://'.$profile->youtube) : '#' }}"
+                       target="{{ $profile->youtube ? '_blank' : '_self' }}"
+                       class="nbf-social-card {{ $profile->youtube ? 'active' : 'inactive' }}">
+                        <div class="nbf-social-icon" style="background:#fef2f2;">
+                            <i data-lucide="youtube" style="color:#FF0000;width:20px;height:20px;"></i>
+                        </div>
+                        <div class="nbf-social-info">
+                            <span class="nbf-social-name">YouTube</span>
+                            <span class="nbf-social-handle">{{ $profile->youtube ? 'Ver canal' : 'No configurado' }}</span>
+                        </div>
+                        @if($profile->youtube)<i data-lucide="arrow-up-right" style="width:13px;height:13px;color:#94a3b8;margin-left:auto;flex-shrink:0;"></i>@endif
+                    </a>
                 </div>
             </div>
 
             <hr class="nbf-divider">
 
-            {{-- Professional Details Section --}}
+            {{-- Professional Details --}}
             <div class="nbf-section">
-                <h2 class="nbf-section-title">Datos Profesionales</h2>
-                
+                <div class="nbf-section-header">
+                    <div class="nbf-section-icon" style="background:rgba(47,147,245,.1);">
+                        <i data-lucide="briefcase" style="width:16px;height:16px;color:#2f93f5;"></i>
+                    </div>
+                    <h2 class="nbf-section-title">Datos Profesionales</h2>
+                </div>
+
                 <div class="nbf-detail-card">
                     <div class="nbf-detail-row is-vertical">
-                        <span class="nbf-detail-label">Biografía / Acerca de</span>
-                        <span class="nbf-detail-value" style="white-space: pre-wrap; font-weight: 400; line-height: 1.6;">
+                        <div class="nbf-detail-label-wrap">
+                            <i data-lucide="file-text" class="nbf-row-icon"></i>
+                            <span class="nbf-detail-label">Biografía / Acerca de</span>
+                        </div>
+                        <span class="nbf-detail-value" style="white-space:pre-wrap;font-weight:400;line-height:1.6;">
                             @if(empty($profile->bio))
-                                <span style="color:#a0aec0;">Escribe algo sobre tu trayectoria e instrumentos...</span>
+                                <span class="nbf-empty">Escribe algo sobre tu trayectoria e instrumentos...</span>
                             @else
                                 {!! nl2br(e(trim($profile->bio))) !!}
                             @endif
                         </span>
                     </div>
-
                     <div class="nbf-detail-row">
-                        <span class="nbf-detail-label">Tarifa Base (MXN / hr)</span>
+                        <div class="nbf-detail-label-wrap">
+                            <i data-lucide="dollar-sign" class="nbf-row-icon" style="color:#16a34a;"></i>
+                            <span class="nbf-detail-label">Tarifa Base</span>
+                        </div>
                         <span class="nbf-detail-value">
-                            {{ $profile->hourly_rate ? '$' . number_format($profile->hourly_rate, 0) : 'Por acordar' }}
+                            @if($profile->hourly_rate)
+                                <span class="nbf-rate-badge">${{ number_format($profile->hourly_rate,0) }} <small>MXN / hr</small></span>
+                            @else
+                                <span class="nbf-empty">Por acordar</span>
+                            @endif
                         </span>
                     </div>
                     <div class="nbf-detail-row">
-                        <span class="nbf-detail-label">Estado de Disponibilidad</span>
-                        <span class="nbf-detail-value" style="color: #2b6cb0;">Disponible</span>
+                        <div class="nbf-detail-label-wrap">
+                            <i data-lucide="activity" class="nbf-row-icon" style="color:#16a34a;"></i>
+                            <span class="nbf-detail-label">Estado</span>
+                        </div>
+                        <span class="nbf-availability-badge available">
+                            <span class="nbf-availability-dot"></span> Disponible
+                        </span>
                     </div>
-                    
                     <div class="nbf-detail-row is-vertical">
-                        <span class="nbf-detail-label">Notas de Cobertura</span>
-                        <span class="nbf-detail-value" style="font-weight: 400;">
+                        <div class="nbf-detail-label-wrap">
+                            <i data-lucide="map" class="nbf-row-icon"></i>
+                            <span class="nbf-detail-label">Zona de Cobertura</span>
+                        </div>
+                        <span class="nbf-detail-value {{ !$profile->coverage_notes ? 'nbf-empty' : '' }}" style="font-weight:400;">
                             {{ $profile->coverage_notes ?? 'Especifica hasta dónde puedes viajar para tocar.' }}
                         </span>
                     </div>
@@ -170,17 +312,26 @@
 
             <hr class="nbf-divider">
 
-            {{-- Services / Genres Section --}}
+            {{-- Genres --}}
             <div class="nbf-section">
-                <h2 class="nbf-section-title">Servicios y Categorías</h2>
-                
-                <div style="display:flex; flex-wrap:wrap; gap:12px;">
+                <div class="nbf-section-header">
+                    <div class="nbf-section-icon" style="background:rgba(245,158,11,.1);">
+                        <i data-lucide="music-2" style="width:16px;height:16px;color:#d97706;"></i>
+                    </div>
+                    <h2 class="nbf-section-title">Servicios y Géneros</h2>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;">
                     @forelse($profile->genres ?? [] as $genre)
-                        <div class="inline-tag" style="background:#fafafa; border:1px solid #e2e8f0; border-radius:6px;">
-                            <i data-lucide="music" style="width:14px;color:#cbd5e1;"></i> {{ $genre->name }}
+                        <div class="nbf-genre-chip">
+                            <i data-lucide="music" style="width:12px;height:12px;color:#6c3fc5;"></i>
+                            {{ $genre->name }}
                         </div>
                     @empty
-                        <div style="color:#a0aec0; width:100%; padding: 12px 16px; background:#fafafa; border:1px solid #e2e8f0; border-radius:6px; font-size: 14px;">No hay géneros asignados.</div>
+                        <div class="nbf-empty-genres">
+                            <i data-lucide="music-2" style="width:18px;height:18px;color:#cbd5e1;"></i>
+                            <span>Agrega tus géneros para ser encontrado más fácilmente</span>
+                            <button onclick="openEditModal()" class="nbf-add-genres-btn">+ Agregar géneros</button>
+                        </div>
                     @endforelse
                 </div>
             </div>
@@ -1206,39 +1357,20 @@
         
         {{-- Botón Cambiar Contraseña --}}
         @if($user->google_id)
-            <div title="Tu cuenta está vinculada con Google. La contraseña se gestiona desde tu cuenta de Google." style="cursor: not-allowed;">
-                <button type="button" disabled style="
-                    display: inline-flex; align-items: center; gap: 8px;
-                    background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0;
-                    padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; 
-                    cursor: not-allowed; opacity: 0.7;
-                ">
-                    <i data-lucide="key" style="width:16px; height:16px;"></i>
-                    Cambiar contraseña
+            <div title="Tu cuenta está vinculada con Google." style="cursor:not-allowed;">
+                <button type="button" disabled class="secondary-btn" style="opacity:.5;cursor:not-allowed;">
+                    <i data-lucide="key" style="width:16px;height:16px;"></i> Cambiar contraseña
                 </button>
             </div>
         @else
-            <button type="button" onclick="openPasswordModal()" style="
-                display: inline-flex; align-items: center; gap: 8px;
-                background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;
-                padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; 
-                cursor: pointer; transition: all 0.2s;
-            " onmouseover="this.style.background='#e2e8f0';" onmouseout="this.style.background='#f1f5f9';">
-                <i data-lucide="key" style="width:16px; height:16px;"></i>
-                Cambiar contraseña
+            <button type="button" onclick="openPasswordModal()" class="secondary-btn">
+                <i data-lucide="key" style="width:16px;height:16px;"></i> Cambiar contraseña
             </button>
         @endif
 
         {{-- Botón Eliminar Cuenta --}}
-        <button type="button" onclick="openDeleteModal()" style="
-            display: inline-flex; align-items: center; gap: 8px;
-            background: #fff0f0; color: #e11d48; border: 1px solid #ffe4e6;
-            padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; 
-            cursor: pointer; transition: all 0.2s;
-        " onmouseover="this.style.background='#ffe4e6'; this.style.borderColor='#fecdd3';" 
-           onmouseout="this.style.background='#fff0f0'; this.style.borderColor='#ffe4e6';">
-            <i data-lucide="trash-2" style="width:16px; height:16px;"></i>
-            Eliminar cuenta permanentemente
+        <button type="button" onclick="openDeleteModal()" class="danger-btn">
+            <i data-lucide="trash-2" style="width:16px;height:16px;"></i> Eliminar cuenta
         </button>
     </div>
 
@@ -1298,8 +1430,10 @@
                 </div>
                 
                 <div style="display:flex;justify-content:flex-end;gap:12px;">
-                    <button type="button" onclick="closePasswordModal()" style="background:#f1f5f9;color:#475569;border:none;padding:10px 16px;border-radius:6px;font-weight:600;cursor:pointer;">Cancelar</button>
-                    <button type="submit" style="background:#3b82f6;color:#fff;border:none;padding:10px 16px;border-radius:6px;font-weight:600;cursor:pointer;">Actualizar</button>
+                    <button type="button" onclick="closePasswordModal()" class="secondary-btn">Cancelar</button>
+                    <button type="submit" class="primary-btn">
+                        <i data-lucide="key" style="width:15px;height:15px;"></i> Actualizar
+                    </button>
                 </div>
             </form>
         </div>
@@ -1324,8 +1458,10 @@
                 @csrf
                 @method('DELETE')
                 <div style="display:flex;gap:12px;justify-content:center;">
-                    <button type="button" onclick="closeDeleteModal()" style="flex:1;background:#f1f5f9;color:#475569;border:none;padding:10px;border-radius:6px;font-weight:600;cursor:pointer;">Cancelar</button>
-                    <button type="submit" style="flex:1;background:#dc2626;color:#fff;border:none;padding:10px;border-radius:6px;font-weight:600;cursor:pointer;">Sí, eliminar</button>
+                    <button type="button" onclick="closeDeleteModal()" class="secondary-btn" style="flex:1;">Cancelar</button>
+                    <button type="submit" class="danger-btn" style="flex:1;">
+                        <i data-lucide="trash-2" style="width:15px;height:15px;"></i> Sí, eliminar
+                    </button>
                 </div>
             </form>
         </div>
