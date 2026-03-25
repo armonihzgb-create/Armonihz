@@ -26,8 +26,8 @@ class AvailabilityController extends Controller
                 'id' => 'manual_' . $ev->id,
                 'real_id' => $ev->id,
                 'title' => $ev->title,
-                'start' => $ev->start->toIso8601String(),
-                'end' => $ev->end->toIso8601String(),
+                'start' => $ev->start->format('Y-m-d'),
+                'end'   => $ev->end->format('Y-m-d'),
                 'backgroundColor' => $ev->color ?? ($ev->type === 'busy' ? '#dc2626' : '#22c55e'),
                 'borderColor' => 'transparent',
                 'extendedProps' => [

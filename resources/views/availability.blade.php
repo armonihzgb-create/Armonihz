@@ -169,16 +169,9 @@
                 });
 
                 if (formValues) {
-                    // FullCalendar all-day endStr is EXCLUSIVE (next day).
-                    // We subtract 1 day so the backend stores the correct inclusive end.
-                    let endStr = arg.endStr;
-                    if (arg.allDay) {
-                        const endDate = new Date(arg.endStr + 'T12:00:00');
-                        endDate.setDate(endDate.getDate() - 1);
-                        endStr = endDate.toISOString().split('T')[0]; // YYYY-MM-DD
-                    }
-
-                    // Send to backend via AJAX
+                    // Enviamos los strings exactos de FullCalendar.
+                    // El backend devuelve fechas Y-m-d (sin timezone)
+                    // para que FullCalendar no aplique ningún offset.
                     fetch('{{ route("availability.store") }}', {
                         method: 'POST',
                         headers: {
@@ -188,7 +181,7 @@
                         body: JSON.stringify({
                             title: formValues.title,
                             start: arg.startStr,
-                            end: endStr,
+                            end: arg.endStr,
                             type: formValues.type
                         })
                     }).then(res => res.json()).then(data => {
@@ -213,10 +206,26 @@
                     return;
                 }
 
-                // If manual, prompt to delete
+                // If manual, prompt to delete — showing block info
+                const evStart = arg.event.start
+                    ? arg.event.start.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+                    : '—';
+                const evEnd = arg.event.end
+                    ? arg.event.end.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+                    : evStart;
+                const evType = arg.event.extendedProps.type === 'busy' ? '🔴 Ocupado' : '🟢 Disponible';
+
                 const result = await Swal.fire({
-                    title: '¿Eliminar bloque?',
-                    text: `¿Deseas eliminar "${arg.event.title}"?`,
+                    title: '¿Eliminar este bloque?',
+                    html: `
+                        <div style="text-align:left; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:10px; padding:14px 16px; margin: 4px 0 8px; font-size:13px; line-height:1.8;">
+                            <div><strong>Nombre:</strong> ${arg.event.title}</div>
+                            <div><strong>Estado:</strong> ${evType}</div>
+                            <div><strong>Inicio:</strong> <span style="text-transform:capitalize">${evStart}</span></div>
+                            <div><strong>Fin:</strong> <span style="text-transform:capitalize">${evEnd}</span></div>
+                        </div>
+                        <p style="color:#64748b; font-size:13px; margin-top:10px;">Esta acción no se puede deshacer.</p>
+                    `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#dc2626',
