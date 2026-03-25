@@ -18,8 +18,8 @@
     {{-- LEGEND --}}
     <div class="av-toolbar" style="justify-content: flex-end;">
         <div class="av-legend">
-            <span class="av-legend-item"><span class="av-legend-dot av-dot-available"></span> Disponible</span>
-            <span class="av-legend-item"><span class="av-legend-dot av-dot-busy"></span> Bloqueado / Ocupado</span>
+            <span class="av-legend-item"><span class="av-legend-dot av-dot-available"></span> Disponible (Resaltado)</span>
+            <span class="av-legend-item"><span class="av-legend-dot av-dot-busy"></span> Ocupado (No disponible)</span>
             <span class="av-legend-item"><span class="av-legend-dot av-dot-system"></span> Reservas / Castings</span>
         </div>
     </div>
@@ -141,10 +141,10 @@
                             <span style="text-transform: capitalize;">${dateText}</span>
                         </div>
                         <div style="text-align: left; margin: 0 auto; width: 90%;">
-                            <label style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; display: block;">Tipo de bloque <span style="color:#ef4444">*</span></label>
+                            <label style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; display: block;">Estado de esta fecha/hora <span style="color:#ef4444">*</span></label>
                             <select id="swal-type" class="swal2-select" style="display:flex; margin: 0 0 20px 0; width: 100%; font-size: 14px; padding: 12px; border-radius: 8px; border: 1.5px solid #e2e8f0; background-color: #f8fafc; color: #0f172a; outline: none;">
-                                <option value="available">✅ Sector Disponible</option>
-                                <option value="busy">🚫 Sector Bloqueado / Ocupado</option>
+                                <option value="busy">🔴 Estaré Ocupado (Bloquear disponibilidad)</option>
+                                <option value="available">🟢 Estaré Disponible (Resaltar como fecha ideal)</option>
                             </select>
                             
                             <label style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; display: block;">Nota / Título (Opcional)</label>
@@ -162,7 +162,7 @@
                     },
                     preConfirm: () => {
                         return {
-                            title: document.getElementById('swal-title').value || (document.getElementById('swal-type').value === 'available' ? 'Disponible' : 'Ocupado'),
+                            title: document.getElementById('swal-title').value || (document.getElementById('swal-type').value === 'available' ? 'Disponible especial' : '🔴 Ocupado'),
                             type: document.getElementById('swal-type').value
                         }
                     }
@@ -216,7 +216,7 @@
                 });
 
                 if (result.isConfirmed) {
-                    fetch(`{{ url('/profile/availability') }}/${arg.event.extendedProps.real_id}`, {
+                    fetch(`{{ url('/availability') }}/${arg.event.extendedProps.real_id}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -239,7 +239,7 @@
                     return;
                 }
 
-                fetch(`{{ url('/profile/availability') }}/${arg.event.extendedProps.real_id}`, {
+                fetch(`{{ url('/availability') }}/${arg.event.extendedProps.real_id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

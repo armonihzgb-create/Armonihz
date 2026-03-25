@@ -33,7 +33,10 @@ class AvailabilityController extends Controller
                 'extendedProps' => [
                     'source' => 'manual',
                     'type' => $ev->type
-                ]
+                ],
+                // Estructura limpia para consumo de API Móvil
+                'event_source' => 'manual',
+                'event_type' => $ev->type,
             ];
         }
 
@@ -50,7 +53,11 @@ class AvailabilityController extends Controller
                 'extendedProps' => [
                     'source' => 'system',
                     'description' => 'Contratación directa.'
-                ]
+                ],
+                // Estructura limpia para consumo de API Móvil
+                'real_id' => $hr->id,
+                'event_source' => 'hiring',
+                'event_type' => 'busy',
             ];
         }
 
@@ -71,7 +78,11 @@ class AvailabilityController extends Controller
                         'extendedProps' => [
                             'source' => 'system',
                             'description' => 'Casting aceptado.'
-                        ]
+                        ],
+                        // Estructura limpia para consumo de API Móvil
+                        'real_id' => $app->event->id,
+                        'event_source' => 'casting',
+                        'event_type' => 'busy',
                     ];
                 } catch (\Exception $e) {
                     // Ignore unparseable dates
