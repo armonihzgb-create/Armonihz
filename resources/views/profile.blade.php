@@ -143,7 +143,7 @@
                             @if(empty($profile->bio))
                                 <span style="color:#a0aec0;">Escribe algo sobre tu trayectoria e instrumentos...</span>
                             @else
-                                {!! nl2br(e($profile->bio)) !!}
+                                {!! nl2br(e(trim($profile->bio))) !!}
                             @endif
                         </span>
                     </div>
@@ -224,7 +224,7 @@
                         </div>
                         @if($video->is_featured)
                         <div class="nbf-featured-badge">
-                            <i data-lucide="star" style="width:12px;height:12px;fill:currentColor;"></i> Destacado
+                            <i data-lucide="star" style="width:13px;height:13px;fill:currentColor;"></i>
                         </div>
                         @endif
                     </div>
@@ -529,10 +529,10 @@
             display: grid; gap: 12px;
         }
         .photos-grid {
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         }
         .videos-grid {
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
         }
         .nbf-media-item {
             position: relative; border-radius: 12px; overflow: hidden;
@@ -955,7 +955,7 @@
                                 <span style="width:28px;height:28px;background:#eff6ff;border-radius:8px;display:flex;align-items:center;justify-content:center;">
                                     <i data-lucide="facebook" style="width:14px;height:14px;color:#2563eb;"></i>
                                 </span>
-                                <span style="font-size:12px;color:#374151;font-weight:500;">{{ $profile->facebook }}</span>
+                                <span style="font-size:12px;color:#374151;font-weight:500;">Facebook</span>
                             </div>
                             @endif
                             @if($profile->youtube)
@@ -971,8 +971,38 @@
                             @endif
                         </div>
 
+                        {{-- Multimedia --}}
+                        @if(isset($media) && count($media) > 0)
+                        <div style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
+                            <h4 style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Portafolio</h4>
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;">
+                                @foreach($media->take(6) as $m)
+                                    @if($m->type === 'photo')
+                                        <div style="aspect-ratio:1;border-radius:7px;overflow:hidden;position:relative;">
+                                            <img src="{{ $m->url() }}" alt="Foto" style="width:100%;height:100%;object-fit:cover;">
+                                            @if($m->is_featured)
+                                                <span style="position:absolute;top:2px;left:2px;background:rgba(245,158,11,.9);border-radius:4px;padding:2px 3px;display:flex;align-items:center;">
+                                                    <i data-lucide="star" style="width:8px;height:8px;fill:#fff;color:#fff;"></i>
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <div style="aspect-ratio:1;border-radius:7px;overflow:hidden;background:#1a0b38;position:relative;display:flex;align-items:center;justify-content:center;">
+                                            <i data-lucide="play-circle" style="width:22px;height:22px;color:rgba(255,255,255,.8);"></i>
+                                            @if($m->is_featured)
+                                                <span style="position:absolute;top:2px;left:2px;background:rgba(245,158,11,.9);border-radius:4px;padding:2px 3px;display:flex;align-items:center;">
+                                                    <i data-lucide="star" style="width:8px;height:8px;fill:#fff;color:#fff;"></i>
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
                         {{-- Botón contratar (app) --}}
-                        <div style="padding:0 16px 24px;">
+                        <div style="padding:16px 16px 24px;">
                             <button style="
                                 width:100%;padding:13px;
                                 background:linear-gradient(135deg,#6c3fc5,#2f93f5);

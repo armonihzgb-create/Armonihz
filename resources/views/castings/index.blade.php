@@ -2,117 +2,7 @@
 
 @section('dashboard-content')
 
-    {{-- FLASH --}}
-    @if(session('success'))
-        <div id="flash-msg" style="position:fixed;top:20px;right:24px;z-index:9999;background:#22c55e;color:#fff;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;">
-            <i data-lucide="check-circle" style="width:18px;height:18px;"></i> {{ session('success') }}
-        </div>
-        <script>setTimeout(() => document.getElementById('flash-msg')?.remove(), 4000);</script>
-    @endif
-
-    {{-- PAGE HEADER --}}
-    <div class="casting-page-header">
-        <div>
-            <div class="casting-page-eyebrow">
-                <i data-lucide="megaphone" style="width:16px;height:16px;color:#6c3fc5;"></i>
-                <span>OPORTUNIDADES</span>
-            </div>
-            <h1 class="casting-page-title">Castings Activos</h1>
-            <p class="casting-page-subtitle">Eventos publicados por clientes — postúlate y gana contratos</p>
-        </div>
-        <a href="{{ route('castings.my-applications') }}" class="casting-secondary-btn">
-            <i data-lucide="file-text" style="width:15px;height:15px;"></i>
-            Mis postulaciones
-        </a>
-    </div>
-
-    {{-- FILTER BAR --}}
-    <div class="casting-filter-bar">
-        <a href="{{ route('castings.index') }}" class="casting-filter-chip {{ $filterType === 'all' ? 'active' : '' }}">
-            Todos <span class="casting-filter-count">{{ $events->count() }}</span>
-        </a>
-        @foreach($types as $type)
-            <a href="{{ route('castings.index', ['type' => $type]) }}" class="casting-filter-chip {{ $filterType === $type ? 'active' : '' }}">
-                {{ $type }}
-            </a>
-        @endforeach
-    </div>
-
-    {{-- EVENTS GRID --}}
-    @if($events->isEmpty())
-        <div class="casting-empty-state">
-            <div class="casting-empty-icon"><i data-lucide="calendar-x" style="width:40px;height:40px;color:#94a3b8;"></i></div>
-            <h3>Sin eventos disponibles</h3>
-            <p>Aún no hay castings activos{{ $filterType !== 'all' ? " de tipo \"$filterType\"" : '' }}. ¡Vuelve pronto!</p>
-        </div>
-    @else
-        <div class="casting-grid">
-            @foreach($events as $event)
-                <div class="casting-card {{ $event->already_applied ? 'casting-card--applied' : '' }}">
-
-                    {{-- Card Top Bar --}}
-                    <div class="casting-card-topbar">
-                      <span class="casting-tag">{{ $event->genre->name ?? $event->tipo_musica }}</span>
-                        <div style="display:flex;gap:6px;align-items:center;">
-                            @if($event->match_score > 0)
-                                <span class="casting-badge casting-badge--match">
-                                    <i data-lucide="zap" style="width:10px;height:10px;"></i> Compatible
-                                </span>
-                            @endif
-                            @if($event->already_applied)
-                                <span class="casting-badge casting-badge--applied">
-                                    ✓ Postulado
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Title --}}
-                    <h3 class="casting-card-title">{{ $event->titulo }}</h3>
-
-                    {{-- Details --}}
-                    <div class="casting-card-details">
-                        <div class="casting-card-detail-row" style="font-weight: 600; color: #334155; margin-bottom: 4px;">
-                            <i data-lucide="user" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
-                            <span>{{ $event->nombre_cliente }}</span>
-                        </div>
-                        <div class="casting-card-detail-row">
-                            <i data-lucide="map-pin" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
-                            <span>{{ $event->ubicacion }}</span>
-                        </div>
-                        <div class="casting-card-detail-row">
-                            <i data-lucide="calendar" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
-                            <span>{{ $event->fecha }}</span>
-                        </div>
-                        <div class="casting-card-detail-row">
-                            <i data-lucide="clock" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
-                            <span>{{ $event->duracion }}</span>
-                        </div>
-                    </div>
-
-                    {{-- Budget Highlight --}}
-                    <div class="casting-card-budget">
-                        <span class="casting-card-budget-label">Presupuesto del cliente</span>
-                        <span class="casting-card-budget-amount">${{ number_format($event->presupuesto, 0) }} <small>MXN</small></span>
-                    </div>
-
-                    {{-- Footer --}}
-                    <div class="casting-card-footer">
-                        <span class="casting-card-meta">
-                            <i data-lucide="users" style="width:13px;height:13px;"></i>
-                            {{ $event->applications_count }} {{ $event->applications_count === 1 ? 'propuesta' : 'propuestas' }}
-                            &nbsp;·&nbsp; {{ $event->created_at->diffForHumans() }}
-                        </span>
-                        <a href="{{ route('castings.show', $event->id) }}" class="casting-card-btn">
-                            {{ $event->already_applied ? 'Ver mi propuesta' : 'Ver detalles' }}
-                            <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
-                        </a>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    @endif
-
+    {{-- ── STYLES FIRST to prevent FOUC ──────────────────────── --}}
     <style>
         /* ── Page Header ─────────────────────────────── */
         .casting-page-header {
@@ -331,5 +221,116 @@
             .casting-grid { grid-template-columns: 1fr; }
         }
     </style>
+
+    {{-- FLASH --}}
+    @if(session('success'))
+        <div id="flash-msg" style="position:fixed;top:20px;right:24px;z-index:9999;background:#22c55e;color:#fff;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;">
+            <i data-lucide="check-circle" style="width:18px;height:18px;"></i> {{ session('success') }}
+        </div>
+        <script>setTimeout(() => document.getElementById('flash-msg')?.remove(), 4000);</script>
+    @endif
+
+    {{-- PAGE HEADER --}}
+    <div class="casting-page-header">
+        <div>
+            <div class="casting-page-eyebrow">
+                <i data-lucide="megaphone" style="width:16px;height:16px;color:#6c3fc5;"></i>
+                <span>OPORTUNIDADES</span>
+            </div>
+            <h1 class="casting-page-title">Castings Activos</h1>
+            <p class="casting-page-subtitle">Eventos publicados por clientes — postúlate y gana contratos</p>
+        </div>
+        <a href="{{ route('castings.my-applications') }}" class="casting-secondary-btn">
+            <i data-lucide="file-text" style="width:15px;height:15px;"></i>
+            Mis postulaciones
+        </a>
+    </div>
+
+    {{-- FILTER BAR --}}
+    <div class="casting-filter-bar">
+        <a href="{{ route('castings.index') }}" class="casting-filter-chip {{ $filterType === 'all' ? 'active' : '' }}">
+            Todos <span class="casting-filter-count">{{ $events->count() }}</span>
+        </a>
+        @foreach($types as $type)
+            <a href="{{ route('castings.index', ['type' => $type]) }}" class="casting-filter-chip {{ $filterType === $type ? 'active' : '' }}">
+                {{ $type }}
+            </a>
+        @endforeach
+    </div>
+
+    {{-- EVENTS GRID --}}
+    @if($events->isEmpty())
+        <div class="casting-empty-state">
+            <div class="casting-empty-icon"><i data-lucide="calendar-x" style="width:40px;height:40px;color:#94a3b8;"></i></div>
+            <h3>Sin eventos disponibles</h3>
+            <p>Aún no hay castings activos{{ $filterType !== 'all' ? " de tipo \"$filterType\"" : '' }}. ¡Vuelve pronto!</p>
+        </div>
+    @else
+        <div class="casting-grid">
+            @foreach($events as $event)
+                <div class="casting-card {{ $event->already_applied ? 'casting-card--applied' : '' }}">
+
+                    {{-- Card Top Bar --}}
+                    <div class="casting-card-topbar">
+                      <span class="casting-tag">{{ $event->genre->name ?? $event->tipo_musica }}</span>
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            @if($event->match_score > 0)
+                                <span class="casting-badge casting-badge--match">
+                                    <i data-lucide="zap" style="width:10px;height:10px;"></i> Compatible
+                                </span>
+                            @endif
+                            @if($event->already_applied)
+                                <span class="casting-badge casting-badge--applied">
+                                    ✓ Postulado
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Title --}}
+                    <h3 class="casting-card-title">{{ $event->titulo }}</h3>
+
+                    {{-- Details --}}
+                    <div class="casting-card-details">
+                        <div class="casting-card-detail-row" style="font-weight: 600; color: #334155; margin-bottom: 4px;">
+                            <i data-lucide="user" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
+                            <span>{{ $event->nombre_cliente }}</span>
+                        </div>
+                        <div class="casting-card-detail-row">
+                            <i data-lucide="map-pin" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
+                            <span>{{ $event->ubicacion }}</span>
+                        </div>
+                        <div class="casting-card-detail-row">
+                            <i data-lucide="calendar" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
+                            <span>{{ $event->fecha }}</span>
+                        </div>
+                        <div class="casting-card-detail-row">
+                            <i data-lucide="clock" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
+                            <span>{{ $event->duracion }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Budget Highlight --}}
+                    <div class="casting-card-budget">
+                        <span class="casting-card-budget-label">Presupuesto del cliente</span>
+                        <span class="casting-card-budget-amount">${{ number_format($event->presupuesto, 0) }} <small>MXN</small></span>
+                    </div>
+
+                    {{-- Footer --}}
+                    <div class="casting-card-footer">
+                        <span class="casting-card-meta">
+                            <i data-lucide="users" style="width:13px;height:13px;"></i>
+                            {{ $event->applications_count }} {{ $event->applications_count === 1 ? 'propuesta' : 'propuestas' }}
+                            &nbsp;·&nbsp; {{ $event->created_at->diffForHumans() }}
+                        </span>
+                        <a href="{{ route('castings.show', $event->id) }}" class="casting-card-btn">
+                            {{ $event->already_applied ? 'Ver mi propuesta' : 'Ver detalles' }}
+                            <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 
 @endsection

@@ -17,8 +17,9 @@ class ProfileController extends Controller
     {
         $user = User::findOrFail($id);
         $profile = $user->musicianProfile()->with('genres')->firstOrFail();
+        $media = $profile->media()->orderBy('is_featured', 'desc')->orderBy('created_at', 'desc')->get();
 
-        return view('profile-public', compact('user', 'profile'));
+        return view('profile-public', compact('user', 'profile', 'media'));
     }
 
     /**
