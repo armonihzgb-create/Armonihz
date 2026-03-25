@@ -15,32 +15,32 @@
         .nbf-section-title { color:#1e293b !important; font-weight:700 !important; font-size:16px !important; margin:0 !important; border-bottom:none !important; padding-bottom:0 !important; }
         .nbf-subsection-title { font-size:12px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.06em; margin:0 0 12px; }
 
-        /* Header action buttons ↓ better look */
-        .nbf-action-btn.primary { background:linear-gradient(135deg,#6c3fc5,#2f93f5) !important; color:#fff !important; border:none !important; box-shadow:0 4px 12px rgba(108,63,197,.3); }
-        .nbf-action-btn.primary:hover { opacity:.88 !important; transform:translateY(-1px); }
+        /* Header action buttons */
+        .nbf-action-btn.primary { background:#6c3fc5 !important; color:#fff !important; border:none !important; }
+        .nbf-action-btn.primary:hover { background:#5b32a8 !important; }
         .nbf-action-btn.secondary { background:rgba(255,255,255,.9) !important; border-color:#e2e8f0 !important; color:#475569 !important; }
         .nbf-action-btn.secondary:hover { background:#fff !important; border-color:#c4b5fd !important; color:#6c3fc5 !important; }
 
         /* Global modal buttons */
-        .primary-btn { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#6c3fc5,#2f93f5); color:#fff; border:none; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; box-shadow:0 4px 12px rgba(108,63,197,.3); }
-        .primary-btn:hover { opacity:.88; transform:translateY(-1px); box-shadow:0 6px 20px rgba(108,63,197,.4); }
+        .primary-btn { display:inline-flex; align-items:center; gap:8px; background:#6c3fc5; color:#fff; border:none; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
+        .primary-btn:hover { background:#5b32a8; }
         .primary-btn i, .primary-btn svg { width:15px; height:15px; }
         .secondary-btn { display:inline-flex; align-items:center; gap:8px; background:#f1f5f9; color:#475569; border:1.5px solid #e2e8f0; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
         .secondary-btn:hover { background:#e2e8f0; border-color:#cbd5e1; }
-        .danger-btn { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#ef4444,#dc2626); color:#fff; border:none; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; box-shadow:0 4px 12px rgba(220,38,38,.25); }
-        .danger-btn:hover { opacity:.88; transform:translateY(-1px); }
+        .danger-btn { display:inline-flex; align-items:center; gap:8px; background:#dc2626; color:#fff; border:none; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
+        .danger-btn:hover { background:#b91c1c; }
 
-        /* Completion card */
-        .nbf-completion-card { background:linear-gradient(135deg,rgba(108,63,197,.05),rgba(47,147,245,.06)); border:1px solid rgba(108,63,197,.12); border-radius:14px; padding:18px 22px; margin-bottom:32px; }
-        .nbf-completion-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-        .nbf-completion-title { font-size:14px; font-weight:700; color:#1e293b; margin:0 0 2px; }
-        .nbf-completion-sub { font-size:12px; color:#64748b; margin:0; }
-        .nbf-completion-badge { font-size:18px; font-weight:800; padding:6px 14px; border-radius:10px; flex-shrink:0; }
+        /* Completion card — subtle */
+        .nbf-completion-card { background:#f8fafc; border:1px solid #e8edf3; border-radius:10px; padding:12px 18px; margin-bottom:28px; display:flex; align-items:center; gap:16px; }
+        .nbf-completion-header { display:flex; align-items:center; justify-content:space-between; flex:1; gap:12px; }
+        .nbf-completion-title { font-size:13px; font-weight:600; color:#64748b; margin:0 0 2px; }
+        .nbf-completion-sub { font-size:11px; color:#94a3b8; margin:0; display:none; }
+        .nbf-completion-badge { font-size:13px; font-weight:700; padding:3px 10px; border-radius:99px; flex-shrink:0; }
         .nbf-completion-badge.good { color:#16a34a; background:#f0fdf4; }
         .nbf-completion-badge.mid  { color:#d97706; background:#fffbeb; }
         .nbf-completion-badge.low  { color:#dc2626; background:#fef2f2; }
-        .nbf-completion-bar { height:6px; background:#e2e8f0; border-radius:99px; overflow:hidden; }
-        .nbf-completion-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,#6c3fc5,#2f93f5); transition:width .6s ease; }
+        .nbf-completion-bar { height:4px; background:#e2e8f0; border-radius:99px; overflow:hidden; flex:1; min-width:80px; }
+        .nbf-completion-fill { height:100%; border-radius:99px; background:#6c3fc5; transition:width .6s ease; }
 
         /* Section header */
         .nbf-section-header { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
@@ -154,16 +154,11 @@
 
             {{-- Profile Completion --}}
             <div class="nbf-completion-card">
-                <div class="nbf-completion-header">
-                    <div>
-                        <h3 class="nbf-completion-title">Tu perfil está al {{ $completion }}%</h3>
-                        <p class="nbf-completion-sub">Un perfil completo atrae 3× más clientes — ¡completa los campos vacíos!</p>
-                    </div>
-                    <span class="nbf-completion-badge {{ $completion >= 80 ? 'good' : ($completion >= 50 ? 'mid' : 'low') }}">{{ $completion }}%</span>
-                </div>
+                <span class="nbf-completion-badge {{ $completion >= 80 ? 'good' : ($completion >= 50 ? 'mid' : 'low') }}">{{ $completion }}%</span>
                 <div class="nbf-completion-bar">
                     <div class="nbf-completion-fill" style="width:{{ $completion }}%;"></div>
                 </div>
+                <span style="font-size:12px;color:#94a3b8;white-space:nowrap;">Perfil completo</span>
             </div>
 
             {{-- Personal Details --}}
@@ -216,7 +211,7 @@
                        target="{{ $profile->instagram ? '_blank' : '_self' }}"
                        class="nbf-social-card {{ $profile->instagram ? 'active' : 'inactive' }}">
                         <div class="nbf-social-icon" style="background:#fdf4ff;">
-                            <i data-lucide="instagram" style="color:#E1306C;width:20px;height:20px;"></i>
+                            <i class="fa-brands fa-instagram" style="color:#E1306C;font-size:18px;"></i>
                         </div>
                         <div class="nbf-social-info">
                             <span class="nbf-social-name">Instagram</span>
@@ -228,7 +223,7 @@
                        target="{{ $profile->facebook ? '_blank' : '_self' }}"
                        class="nbf-social-card {{ $profile->facebook ? 'active' : 'inactive' }}">
                         <div class="nbf-social-icon" style="background:#eff6ff;">
-                            <i data-lucide="facebook" style="color:#1877F2;width:20px;height:20px;"></i>
+                            <i class="fa-brands fa-facebook-f" style="color:#1877F2;font-size:18px;"></i>
                         </div>
                         <div class="nbf-social-info">
                             <span class="nbf-social-name">Facebook</span>
@@ -240,7 +235,7 @@
                        target="{{ $profile->youtube ? '_blank' : '_self' }}"
                        class="nbf-social-card {{ $profile->youtube ? 'active' : 'inactive' }}">
                         <div class="nbf-social-icon" style="background:#fef2f2;">
-                            <i data-lucide="youtube" style="color:#FF0000;width:20px;height:20px;"></i>
+                            <i class="fa-brands fa-youtube" style="color:#FF0000;font-size:18px;"></i>
                         </div>
                         <div class="nbf-social-info">
                             <span class="nbf-social-name">YouTube</span>
