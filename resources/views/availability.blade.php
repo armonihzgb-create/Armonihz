@@ -169,6 +169,15 @@
                 });
 
                 if (formValues) {
+                    // FullCalendar all-day endStr is EXCLUSIVE (next day).
+                    // We subtract 1 day so the backend stores the correct inclusive end.
+                    let endStr = arg.endStr;
+                    if (arg.allDay) {
+                        const endDate = new Date(arg.endStr + 'T12:00:00');
+                        endDate.setDate(endDate.getDate() - 1);
+                        endStr = endDate.toISOString().split('T')[0]; // YYYY-MM-DD
+                    }
+
                     // Send to backend via AJAX
                     fetch('{{ route("availability.store") }}', {
                         method: 'POST',
@@ -179,7 +188,7 @@
                         body: JSON.stringify({
                             title: formValues.title,
                             start: arg.startStr,
-                            end: arg.endStr,
+                            end: endStr,
                             type: formValues.type
                         })
                     }).then(res => res.json()).then(data => {
