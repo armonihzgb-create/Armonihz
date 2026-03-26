@@ -179,7 +179,7 @@
                 {{-- Footer --}}
                 <div class="rv-card-footer">
                     @if(!$rv['reply'])
-                    <button class="rv-reply-btn" onclick="alert('Próximamente')">
+                    <button class="rv-reply-btn" onclick="Swal.fire({icon:'info', title:'Próximamente', text:'La funcionalidad para responder reseñas estará disponible muy pronto.', confirmButtonColor:'#6c3fc5'})">
                         <i data-lucide="corner-up-left" style="width:13px;height:13px;"></i>
                         Responder
                     </button>

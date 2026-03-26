@@ -23,11 +23,11 @@
             <p class="rqs-subtitle">Recibida el 14 Oct, 2026 · 10:30 AM</p>
         </div>
         <div class="rqs-action-btns">
-            <button class="rqs-reject-btn" onclick="alert('Próximamente')">
+            <button class="rqs-reject-btn" onclick="Swal.fire({icon:'info', title:'Próximamente', text:'Esta acción estará disponible plenamente en la siguiente versión.', confirmButtonColor:'#6c3fc5'})">
                 <i data-lucide="x" style="width:15px;height:15px;"></i>
                 Rechazar
             </button>
-            <button class="rqs-accept-btn" onclick="alert('Próximamente')">
+            <button class="rqs-accept-btn" onclick="Swal.fire({icon:'info', title:'Próximamente', text:'Esta acción estará disponible plenamente en la siguiente versión.', confirmButtonColor:'#6c3fc5'})">
                 <i data-lucide="check" style="width:15px;height:15px;"></i>
                 Aceptar solicitud
             </button>
@@ -161,7 +161,7 @@
                             <i data-lucide="info" style="width:12px;height:12px;"></i>
                             Al responder, el estado cambiará a <strong>Respondida</strong>.
                         </p>
-                        <button type="button" class="rqs-send-btn" onclick="alert('Próximamente')">
+                        <button type="button" class="rqs-send-btn" onclick="Swal.fire({icon:'info', title:'Próximamente', text:'Esta acción estará disponible plenamente en la siguiente versión.', confirmButtonColor:'#6c3fc5'})">
                             <i data-lucide="send" style="width:14px;height:14px;"></i>
                             Enviar respuesta
                         </button>

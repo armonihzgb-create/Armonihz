@@ -30,9 +30,55 @@
 
     @yield('scripts')
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             lucide.createIcons();
+
+            // 1. Monkey-patch window.alert
+            window.alert = function(message) {
+                Swal.fire({
+                    text: message,
+                    confirmButtonColor: '#6c3fc5',
+                    confirmButtonText: 'Entendido'
+                });
+            };
+
+            // 2. Handle Laravel Session Flash Messages
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: "{{ session('success') }}",
+                    confirmButtonColor: '#6c3fc5',
+                    timer: 4000
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "{{ session('error') }}",
+                    confirmButtonColor: '#6c3fc5'
+                });
+            @endif
+
+            @if(session('info'))
+                Swal.fire({
+                    icon: 'info',
+                    text: "{{ session('info') }}",
+                    confirmButtonColor: '#6c3fc5'
+                });
+            @endif
+
+            @if(session('warning'))
+                Swal.fire({
+                    icon: 'warning',
+                    text: "{{ session('warning') }}",
+                    confirmButtonColor: '#6c3fc5'
+                });
+            @endif
         });
     </script>
 </body>

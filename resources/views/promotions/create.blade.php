@@ -171,7 +171,7 @@
                     <span id="total-price">$250 MXN</span>
                 </div>
 
-                <button type="button" class="promo-submit-btn" onclick="alert('La funcionalidad de pago estará disponible próximamente.')">
+                <button type="button" class="promo-submit-btn" onclick="Swal.fire({icon:'info', title:'Sistema de Pago', text:'La funcionalidad de pago seguro y activación inmediata estará disponible próximamente.', confirmButtonColor:'#6c3fc5'})">
                     <i data-lucide="zap" style="width:16px;height:16px;"></i>
                     Activar Promoción
                 </button>
