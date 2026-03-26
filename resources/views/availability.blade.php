@@ -258,17 +258,6 @@
         if (currentMode === 'time') {
             const tStart = document.getElementById('timeStart').value;
             const tEnd   = document.getElementById('timeEnd').value;
-            if (tStart >= tEnd) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Horario inválido',
-                    text: 'La hora de fin debe ser posterior a la de inicio.',
-                    confirmButtonColor: '#6c3fc5'
-                });
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-floppy-disk" style="margin-right:6px;"></i> Guardar bloque';
-                return;
-            }
             startStr = selectedDate + 'T' + tStart + ':00';
             endStr   = selectedDate + 'T' + tEnd + ':00';
             title    = note || `🔴 Ocupado ${tStart}–${tEnd}`;
