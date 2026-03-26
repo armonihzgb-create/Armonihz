@@ -12,9 +12,7 @@
     <script>
         (function() {
             var storedTheme = localStorage.getItem('theme');
-            if (storedTheme) {
-                document.documentElement.setAttribute('data-theme', storedTheme);
-            } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            if (storedTheme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
         })();

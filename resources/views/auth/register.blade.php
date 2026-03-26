@@ -26,7 +26,7 @@
         {{-- Lado Derecho --}}
         <div class="auth-right" style="position: relative;">
             <!-- Toggle Modo Oscuro -->
-            <button onclick="toggleDarkMode()" style="position: absolute; top: 24px; right: 24px; background: none; border: none; cursor: pointer; color: var(--text-dim); z-index: 10;">
+            <button onclick="toggleDarkMode()" class="icon-btn" style="position: absolute; top: 24px; right: 24px; cursor: pointer; color: var(--text-dim); z-index: 10;">
                 <i data-lucide="moon" class="theme-toggle-icon"></i>
             </button>
             <div class="auth-container" style="max-width: 480px;">

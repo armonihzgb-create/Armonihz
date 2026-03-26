@@ -112,6 +112,21 @@ button,
     gap: 8px !important;
 }
 
+/* Excepción: botón de icono (como el toggle de tema o pwd) */
+button.icon-btn,
+button.mobile-menu-btn,
+button.mobile-close-btn,
+button.pwd-toggle,
+.theme-btn {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: var(--text-dim) !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 8px !important;
+    border-radius: 8px !important;
+}
+
 button:hover,
 .primary-btn:hover,
 .auth-btn:hover {
