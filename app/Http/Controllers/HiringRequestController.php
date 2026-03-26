@@ -43,10 +43,11 @@ class HiringRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreHiringRequestRequest $request)
+   public function store(StoreHiringRequestRequest $request)
     {
         $user = $request->user();
 
+        // 1. Guardar en la base de datos
         $hiringRequest = HiringRequest::create(array_merge(
             $request->validated(),
         [
@@ -55,13 +56,20 @@ class HiringRequestController extends Controller
         ]
         ));
 
-        // Eager load relationships to match standard returns
+        // 2. Cargar relaciones
         $hiringRequest->load(['client', 'musicianProfile', 'musicianProfile.user']);
 
-        if ($hiringRequest->musicianProfile->user) {
-            $hiringRequest->musicianProfile->user->notify(new HiringRequestCreatedNotification($hiringRequest));
+        // 3. Intentar enviar la notificación de forma segura
+        try {
+            if ($hiringRequest->musicianProfile && $hiringRequest->musicianProfile->user) {
+                $hiringRequest->musicianProfile->user->notify(new HiringRequestCreatedNotification($hiringRequest));
+            }
+        } catch (\Exception $e) {
+            // Si falla el correo/notificación, lo registramos en los logs de Laravel pero NO detenemos la app
+            \Illuminate\Support\Facades\Log::error('Error enviando notificación de contratación: ' . $e->getMessage());
         }
 
+        // 4. Devolver la respuesta exitosa a la app móvil
         return $this->successResponse(
             new HiringRequestResource($hiringRequest),
             'Hiring request created successfully',
