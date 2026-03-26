@@ -7,6 +7,7 @@ use App\Http\Controllers\ClientController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClientEventController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\HiringRequestController;
 
 Route::prefix('v1')->group(function () {
 
@@ -70,9 +71,9 @@ Route::prefix('v1')->group(function () {
             Route::get('/client/favorites', [App\Http\Controllers\FavoriteController::class, 'index']);
 
             // 👇 AHORA SÍ, LAS RUTAS DE HIRING-REQUESTS ESTÁN PROTEGIDAS POR FIREBASE 👇
-            Route::post('hiring-requests', [App\Http\Controllers\HiringRequestController::class , 'store']);
-            Route::apiResource('hiring-requests', App\Http\Controllers\HiringRequestController::class)->only(['index', 'show']);
-            Route::patch('hiring-requests/{id}/status', [App\Http\Controllers\HiringRequestController::class , 'updateStatus']);
+            Route::post('hiring-requests', [HiringRequestController::class , 'store']);
+            Route::apiResource('hiring-requests', HiringRequestController::class)->only(['index', 'show']);
+            Route::patch('hiring-requests/{id}/status', [HiringRequestController::class , 'updateStatus']);
             Route::post('hiring-requests/{id}/respond', [HiringRequestController::class, 'respondToCounterOffer']);
         }
         );
