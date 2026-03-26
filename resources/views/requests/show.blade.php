@@ -49,13 +49,13 @@
         </div>
         
         {{-- Solo mostramos los botones de acción si está pendiente --}}
-        @if($hiringRequest->status === 'pending')
+      @if($hiringRequest->status === 'pending')
         <div class="rqs-action-btns">
-            <button class="rqs-reject-btn" onclick="Swal.fire({icon:'info', title:'Próximamente', text:'Esta acción estará disponible plenamente en la siguiente versión.', confirmButtonColor:'#6c3fc5'})">
+            <button class="rqs-reject-btn" onclick="cambiarEstado('rejected')">
                 <i data-lucide="x" style="width:15px;height:15px;"></i>
                 Rechazar
             </button>
-            <button class="rqs-accept-btn" onclick="Swal.fire({icon:'info', title:'Próximamente', text:'Esta acción estará disponible plenamente en la siguiente versión.', confirmButtonColor:'#6c3fc5'})">
+            <button class="rqs-accept-btn" onclick="cambiarEstado('accepted')">
                 <i data-lucide="check" style="width:15px;height:15px;"></i>
                 Aceptar solicitud
             </button>
@@ -343,5 +343,68 @@
             .rqs-client-stats { grid-template-columns: 1fr 1fr; }
         }
     </style>
+
+    {{-- SCRIPT PARA CAMBIAR EL ESTADO SIN RECARGAR LA PÁGINA --}}
+    <script>
+        function cambiarEstado(nuevoEstado) {
+            const accion = nuevoEstado === 'accepted' ? 'aceptar' : 'rechazar';
+            const confirmColor = nuevoEstado === 'accepted' ? '#16a34a' : '#dc2626';
+
+            Swal.fire({
+                title: `¿Estás seguro de ${accion} esta solicitud?`,
+                text: nuevoEstado === 'accepted' ? 'Este evento se bloqueará automáticamente en tu calendario de disponibilidad.' : 'El cliente será notificado y esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: confirmColor,
+                cancelButtonColor: '#64748b',
+                confirmButtonText: `Sí, ${accion}`,
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    
+                    // Mostrar loading
+                    Swal.fire({
+                        title: 'Procesando...',
+                        text: 'Actualizando solicitud',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    // Hacer la petición al servidor
+                    fetch(`/requests/{{ $hiringRequest->id }}/status`, {
+                        method: 'POST', // Usamos POST con _method PATCH (Truco de Laravel)
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            _method: 'PATCH',
+                            status: nuevoEstado
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            Swal.fire({
+                                title: '¡Listo!',
+                                text: 'La solicitud ha sido actualizada exitosamente.',
+                                icon: 'success',
+                                confirmButtonColor: '#6c3fc5'
+                            }).then(() => {
+                                // Recargar la página para ver los nuevos colores
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', 'No se pudo actualizar.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Problema de conexión.', 'error');
+                    });
+                }
+            });
+        }
+    </script>
 
 @endsection

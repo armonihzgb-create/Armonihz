@@ -16,26 +16,24 @@ class HiringRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+  public function index(Request $request)
     {
-        $user = $request->user();
+        // 1. Obtenemos el cliente usando el UID de Firebase (igual que en el método store)
+        $firebaseUid = $request->attributes->get('firebase_uid');
+        $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
 
-        $query = HiringRequest::with(['client', 'musicianProfile']);
-
-        if ($user->role === 'cliente') {
-            $query->where('client_id', $user->id);
-        }
-        elseif ($user->role === 'musico') {
-            $query->whereHas('musicianProfile', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            });
+        if (!$cliente) {
+            return response()->json(['data' => []], 200); // Si no hay cliente, devolvemos lista vacía
         }
 
-        $requests = $query->paginate(10);
-        return $this->successResponse(
-            HiringRequestResource::collection($requests)->response()->getData(true),
-            'Hiring requests retrieved successfully'
-        );
+        // 2. Buscamos todas sus solicitudes y traemos también los datos del músico
+        $requests = HiringRequest::with('musicianProfile')
+            ->where('client_id', $cliente->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // 3. Devolvemos la respuesta en formato JSON
+        return response()->json(['data' => $requests], 200);
     }
 
     /**

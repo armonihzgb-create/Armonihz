@@ -18,6 +18,8 @@ class HiringRequest extends Model
         'budget',
        'status',
         'end_time',
+        'musician_message',
+        'counter_offer'
     ];
 
     protected $casts = [
