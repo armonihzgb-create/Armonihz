@@ -16,7 +16,8 @@ class AvailabilityController extends Controller
     public function getEvents()
     {
         $profile = Auth::user()->musicianProfile;
-        if (!$profile) return response()->json([]);
+        if (!$profile)
+            return response()->json([]);
 
         $events = [];
 
@@ -24,36 +25,37 @@ class AvailabilityController extends Controller
         foreach ($profile->calendarEvents as $ev) {
             // Detectar si es día completo: hora 00:00 inicio y 23:59 fin
             $isAllDay = ($ev->start->hour === 0 && $ev->start->minute === 0
-                      && ($ev->end->hour === 23 || $ev->end->hour === 0)
-                      && ($ev->end->minute === 59 || $ev->end->minute === 0));
+                && ($ev->end->hour === 23 || $ev->end->hour === 0)
+                && ($ev->end->minute === 59 || $ev->end->minute === 0));
 
             if ($isAllDay) {
                 $events[] = [
-                    'id'              => 'manual_' . $ev->id,
-                    'real_id'         => $ev->id,
-                    'title'           => $ev->title,
-                    'start'           => $ev->start->format('Y-m-d'),
-                    'end'             => $ev->end->addDay()->format('Y-m-d'), // FullCalendar end exclusive
-                    'allDay'          => true,
+                    'id' => 'manual_' . $ev->id,
+                    'real_id' => $ev->id,
+                    'title' => $ev->title,
+                    'start' => $ev->start->format('Y-m-d'),
+                    'end' => $ev->end->addDay()->format('Y-m-d'), // FullCalendar end exclusive
+                    'allDay' => true,
                     'backgroundColor' => $ev->color ?? '#dc2626',
-                    'borderColor'     => 'transparent',
-                    'extendedProps'   => ['source' => 'manual', 'type' => $ev->type, 'real_id' => $ev->id],
-                    'event_source'    => 'manual',
-                    'event_type'      => $ev->type,
+                    'borderColor' => 'transparent',
+                    'extendedProps' => ['source' => 'manual', 'type' => $ev->type, 'real_id' => $ev->id],
+                    'event_source' => 'manual',
+                    'event_type' => $ev->type,
                 ];
-            } else {
+            }
+            else {
                 $events[] = [
-                    'id'              => 'manual_' . $ev->id,
-                    'real_id'         => $ev->id,
-                    'title'           => $ev->title,
-                    'start'           => $ev->start->format('Y-m-d\TH:i:s'),
-                    'end'             => $ev->end->format('Y-m-d\TH:i:s'),
-                    'allDay'          => false,
+                    'id' => 'manual_' . $ev->id,
+                    'real_id' => $ev->id,
+                    'title' => $ev->title,
+                    'start' => $ev->start->format('Y-m-d\TH:i:s'),
+                    'end' => $ev->end->format('Y-m-d\TH:i:s'),
+                    'allDay' => false,
                     'backgroundColor' => '#ef4444',
-                    'borderColor'     => 'transparent',
-                    'extendedProps'   => ['source' => 'manual', 'type' => $ev->type, 'real_id' => $ev->id],
-                    'event_source'    => 'manual',
-                    'event_type'      => $ev->type,
+                    'borderColor' => 'transparent',
+                    'extendedProps' => ['source' => 'manual', 'type' => $ev->type, 'real_id' => $ev->id],
+                    'event_source' => 'manual',
+                    'event_type' => $ev->type,
                 ];
             }
         }
@@ -61,17 +63,21 @@ class AvailabilityController extends Controller
         // 2. Contrataciones Directas Aceptadas
         $hiringRequests = $profile->hiringRequests()->where('status', 'accepted')->get();
         foreach ($hiringRequests as $hr) {
+            $start = $hr->event_date->copy();
+            // Si existe end_time en la base de datos lo usamos, si no, default 3 horas
+            $end = $hr->end_time ? $hr->end_time->copy() : $start->copy()->addHours(3);
+
             $events[] = [
-                'id'              => 'hiring_' . $hr->id,
-                'title'           => '💍 Evento Privado',
-                'start'           => $hr->event_date->toIso8601String(),
-                'end'             => $hr->end_time ? $hr->end_time->toIso8601String() : $hr->event_date->addHours(3)->toIso8601String(),    
+                'id' => 'hiring_' . $hr->id,
+                'title' => '💍 Evento Privado',
+                'start' => $start->toIso8601String(),
+                'end' => $end->toIso8601String(),
                 'backgroundColor' => '#4f46e5',
-                'borderColor'     => 'transparent',
-                'extendedProps'   => ['source' => 'system', 'description' => 'Contratación directa.'],
-                'real_id'         => $hr->id,
-                'event_source'    => 'hiring',
-                'event_type'      => 'busy',
+                'borderColor' => 'transparent',
+                'extendedProps' => ['source' => 'system', 'description' => 'Contratación directa.'],
+                'real_id' => $hr->id,
+                'event_source' => 'hiring',
+                'event_type' => 'busy',
             ];
         }
 
@@ -80,20 +86,29 @@ class AvailabilityController extends Controller
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
                 try {
-                    $start = Carbon::parse($app->event->fecha);
+                    $start = Carbon::createFromFormat('d/m/Y', $app->event->fecha)->startOfDay();
+                    
+                    // Si el evento tiene un horario guardado en el título o descripción, 
+                    // o si ClientEvent tuviera hora_inicio, se asignaría aquí.
+                    // Por ahora usamos la duración guardada en el evento.
+                    $duration = (int) $app->event->duracion ?: 3;
+                    $end = $start->copy()->addHours($duration);
+
                     $events[] = [
-                        'id'              => 'casting_' . $app->id,
-                        'title'           => '🎤 Casting: ' . $app->event->titulo,
-                        'start'           => $start->toIso8601String(),
-                        'end'             => $start->addHours(3)->toIso8601String(),
+                        'id' => 'casting_' . $app->id,
+                        'title' => '🎤 Casting: ' . $app->event->titulo,
+                        'start' => $start->toIso8601String(),
+                        'end' => $end->toIso8601String(),
                         'backgroundColor' => '#9333ea',
-                        'borderColor'     => 'transparent',
-                        'extendedProps'   => ['source' => 'system', 'description' => 'Casting aceptado.'],
-                        'real_id'         => $app->event->id,
-                        'event_source'    => 'casting',
-                        'event_type'      => 'busy',
+                        'borderColor' => 'transparent',
+                        'extendedProps' => ['source' => 'system', 'description' => 'Casting aceptado.'],
+                        'real_id' => $app->event->id,
+                        'event_source' => 'casting',
+                        'event_type' => 'busy',
                     ];
-                } catch (\Exception $e) { /* ignore */ }
+                }
+                catch (\Exception $e) { /* ignore */
+                }
             }
         }
 
@@ -116,22 +131,30 @@ class AvailabilityController extends Controller
         $request->validate([
             'title' => 'required|string|max:120',
             'start' => 'required|string',
-            'end'   => 'required|string',
-            'type'  => 'required|in:available,busy',
+            'end' => 'required|string',
+            'type' => 'required|in:available,busy',
         ]);
 
         $profile = Auth::user()->musicianProfile;
-        if (!$profile) abort(403);
+        if (!$profile)
+            abort(403);
 
         // Detectar si es día completo (sin hora "T") o rango de horas
         $isAllDay = !str_contains($request->start, 'T');
 
         if ($isAllDay) {
-            $start = Carbon::parse($request->start)->startOfDay();       // 00:00:00
-            $end   = Carbon::parse($request->end)->setTime(23, 59, 59);  // 23:59:59
-        } else {
+            $start = Carbon::parse($request->start)->startOfDay(); // 00:00:00
+            $end = Carbon::parse($request->end)->setTime(23, 59, 59); // 23:59:59
+        }
+        else {
             $start = Carbon::parse($request->start);
-            $end   = Carbon::parse($request->end);
+            $end = Carbon::parse($request->end);
+
+            // Lógica Cross-Midnight: si el fin es anterior o igual al inicio (ej. 22:00 a 01:00)
+            // se asume que el fin es del día siguiente.
+            if ($end->lessThanOrEqualTo($start)) {
+                $end->addDay();
+            }
         }
 
         if ($start->isPast() && !$start->isToday()) {
@@ -140,12 +163,13 @@ class AvailabilityController extends Controller
 
         // Check for existing overlapping manual blocks
         $overlap = MusicianCalendarEvent::where('musician_profile_id', $profile->id)
-            ->where(function($q) use ($start, $end) {
-                // If it's allDay (00:00 to 23:59), an exact start match is enough for broad "already blocked" check
-                $q->where(function($q2) use ($start, $end) {
+            ->where(function ($q) use ($start, $end) {
+            // If it's allDay (00:00 to 23:59), an exact start match is enough for broad "already blocked" check
+            $q->where(function ($q2) use ($start, $end) {
                     $q2->where('start', '<', $end)
-                       ->where('end', '>', $start);
-                });
+                        ->where('end', '>', $start);
+                }
+                );
             })->exists();
 
         if ($overlap) {
@@ -154,18 +178,18 @@ class AvailabilityController extends Controller
 
         $ev = MusicianCalendarEvent::create([
             'musician_profile_id' => $profile->id,
-            'title'               => $request->title,
-            'start'               => $start,
-            'end'                 => $end,
-            'type'                => $request->type,
-            'color'               => '#dc2626',
+            'title' => $request->title,
+            'start' => $start,
+            'end' => $end,
+            'type' => $request->type,
+            'color' => '#dc2626',
         ]);
 
         return response()->json([
-            'success'      => true,
-            'event'        => $ev,
+            'success' => true,
+            'event' => $ev,
             'event_source' => 'manual',
-            'event_type'   => $ev->type,
+            'event_type' => $ev->type,
         ]);
     }
 
@@ -183,10 +207,16 @@ class AvailabilityController extends Controller
 
         if ($isAllDay) {
             $start = Carbon::parse($request->start)->startOfDay();
-            $end   = Carbon::parse($request->end)->subDay()->setTime(23, 59, 59); // end is exclusive in FC
-        } else {
+            $end = Carbon::parse($request->end)->subDay()->setTime(23, 59, 59); // end is exclusive in FC
+        }
+        else {
             $start = Carbon::parse($request->start);
-            $end   = Carbon::parse($request->end ?: $request->start);
+            $end = Carbon::parse($request->end ?: $request->start);
+
+            // Lógica Cross-Midnight para actualización
+            if ($end->lessThanOrEqualTo($start)) {
+                $end->addDay();
+            }
         }
 
         if ($start->isPast() && !$start->isToday()) {
@@ -196,10 +226,10 @@ class AvailabilityController extends Controller
         // Check for existing overlapping manual blocks (excluding self)
         $overlap = MusicianCalendarEvent::where('musician_profile_id', $profile->id)
             ->where('id', '!=', $id)
-            ->where(function($q) use ($start, $end) {
-                $q->where('start', '<', $end)
+            ->where(function ($q) use ($start, $end) {
+            $q->where('start', '<', $end)
                 ->where('end', '>', $start);
-            })->exists();
+        })->exists();
 
         if ($overlap) {
             return response()->json(['success' => false, 'message' => 'Ya existe un bloqueo en este horario.'], 422);
