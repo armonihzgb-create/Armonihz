@@ -112,4 +112,33 @@ class HiringRequestController extends Controller
 
         return $this->successResponse(new HiringRequestResource($hiringRequest), 'Status updated successfully');
     }
+
+    public function respondToCounterOffer(Request $request, $id)
+    {
+        $firebaseUid = $request->attributes->get('firebase_uid');
+        $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
+
+        // Buscamos la solicitud y nos aseguramos de que sea de este cliente
+        $hiringRequest = HiringRequest::where('id', $id)
+            ->where('client_id', $cliente->id)
+            ->firstOrFail();
+
+        $request->validate([
+            'status' => 'required|in:accepted,rejected'
+        ]);
+
+        $hiringRequest->status = $request->status;
+        
+        // Si acepta, el nuevo precio se convierte en el oficial
+        if ($request->status === 'accepted' && $hiringRequest->counter_offer) {
+            $hiringRequest->budget = $hiringRequest->counter_offer;
+        }
+
+        $hiringRequest->save();
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Respuesta guardada correctamente'
+        ]);
+    }
 }

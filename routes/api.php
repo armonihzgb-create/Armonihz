@@ -73,6 +73,7 @@ Route::prefix('v1')->group(function () {
             Route::post('hiring-requests', [App\Http\Controllers\HiringRequestController::class , 'store']);
             Route::apiResource('hiring-requests', App\Http\Controllers\HiringRequestController::class)->only(['index', 'show']);
             Route::patch('hiring-requests/{id}/status', [App\Http\Controllers\HiringRequestController::class , 'updateStatus']);
+            Route::post('hiring-requests/{id}/respond', [HiringRequestController::class, 'respondToCounterOffer']);
         }
         );
     });
