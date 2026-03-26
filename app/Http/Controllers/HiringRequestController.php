@@ -43,37 +43,35 @@ class HiringRequestController extends Controller
      */
  public function store(StoreHiringRequestRequest $request)
     {
-        try {
-            $user = $request->user();
+        // 1. Recuperamos el UID de Firebase que tu middleware inyectó
+        $firebaseUid = $request->attributes->get('firebase_uid');
 
-            // 1. Guardar en la base de datos
-            $hiringRequest = HiringRequest::create(array_merge(
-                $request->validated(),
-            [
-                'client_id' => $user->id,
-                'status' => 'pending'
-            ]
-            ));
+        // 2. Buscamos al cliente. 
+        // Nota: Si tus contrataciones (client_id) apuntan a la tabla "users" en lugar de "clients", 
+        // cambia "Client" por "User" en la siguiente línea.
+        $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
 
-            // 2. Cargar relaciones
-            $hiringRequest->load(['client', 'musicianProfile']);
-
-            // 3. Devolver la respuesta exitosa
-            return $this->successResponse(
-                new HiringRequestResource($hiringRequest),
-                'Hiring request created successfully',
-                201
-            );
-            
-        } catch (\Exception $e) {
-            // 🔥 ESTO NOS DIRÁ EXACTAMENTE QUÉ ESTÁ FALLANDO 🔥
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile()
-            ], 500);
+        if (!$cliente) {
+            return response()->json(['success' => false, 'message' => 'Cliente no encontrado'], 404);
         }
+
+        // 3. Guardar en la base de datos
+        $hiringRequest = HiringRequest::create(array_merge(
+            $request->validated(),
+        [
+            'client_id' => $cliente->id, // Usamos el ID del cliente de tu BD
+            'status' => 'pending'
+        ]
+        ));
+
+        // 4. Cargar relaciones
+        $hiringRequest->load(['client', 'musicianProfile']);
+
+        return $this->successResponse(
+            new \App\Http\Resources\HiringRequestResource($hiringRequest),
+            'Hiring request created successfully',
+            201
+        );
     }
 
     /**
