@@ -68,10 +68,17 @@ class AvailabilityController extends Controller
             $end = $start->copy()->addHours(3);
 
             $events[] = [
+<<<<<<< HEAD
                 'id' => 'hiring_' . $hr->id,
                 'title' => '💍 Evento Privado',
                 'start' => $start->toIso8601String(),
                 'end' => $end->toIso8601String(),
+=======
+                'id'              => 'hiring_' . $hr->id,
+                'title'           => '💍 Evento Privado',
+                'start'           => $hr->event_date->toIso8601String(),
+                'end'             => $hr->end_time ? $hr->end_time->toIso8601String() : $hr->event_date->addHours(3)->toIso8601String(),    
+>>>>>>> ffe7bfa72c5829bdd112c101a8538c31a233403c
                 'backgroundColor' => '#4f46e5',
                 'borderColor' => 'transparent',
                 'extendedProps' => ['source' => 'system', 'description' => 'Contratación directa.'],

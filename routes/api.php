@@ -24,6 +24,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/musicians', [MusicianProfileController::class , 'index'])->middleware('throttle:public-api');
         Route::get('/musicians/{id}', [MusicianProfileController::class , 'show'])->middleware('throttle:public-api');
+        Route::get('/musicians/{id}/availability', [App\Http\Controllers\MusicianProfileController::class, 'getAvailability']);
 
         Route::get('/promotions', [App\Http\Controllers\PromotionController::class , 'index'])->middleware('throttle:public-api');
         Route::get('/test-notification', [ClientController::class, 'testNotification']);
@@ -37,10 +38,6 @@ Route::prefix('v1')->group(function () {
 
             Route::post('/musicians/{id}/view', [ProfileViewController::class , 'record']);
             Route::put('/musicians/{id}', [MusicianProfileController::class , 'update']);
-
-            Route::post('hiring-requests', [App\Http\Controllers\HiringRequestController::class , 'store'])->middleware('throttle:hiring');
-            Route::apiResource('hiring-requests', App\Http\Controllers\HiringRequestController::class)->only(['index', 'show']);
-            Route::patch('hiring-requests/{id}/status', [App\Http\Controllers\HiringRequestController::class , 'updateStatus']);
 
             Route::post('promotions', [App\Http\Controllers\PromotionController::class , 'store'])->middleware('throttle:promotions');
             Route::apiResource('promotions', App\Http\Controllers\PromotionController::class)->except(['index', 'store']);
@@ -71,6 +68,11 @@ Route::prefix('v1')->group(function () {
             Route::post('/client/favorites/{id}', [App\Http\Controllers\FavoriteController::class, 'addFavorite']);
             Route::delete('/client/favorites/{id}', [App\Http\Controllers\FavoriteController::class, 'removeFavorite']);
             Route::get('/client/favorites', [App\Http\Controllers\FavoriteController::class, 'index']);
+
+            // 👇 AHORA SÍ, LAS RUTAS DE HIRING-REQUESTS ESTÁN PROTEGIDAS POR FIREBASE 👇
+            Route::post('hiring-requests', [App\Http\Controllers\HiringRequestController::class , 'store']);
+            Route::apiResource('hiring-requests', App\Http\Controllers\HiringRequestController::class)->only(['index', 'show']);
+            Route::patch('hiring-requests/{id}/status', [App\Http\Controllers\HiringRequestController::class , 'updateStatus']);
         }
         );
     });

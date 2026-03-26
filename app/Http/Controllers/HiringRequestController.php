@@ -8,8 +8,6 @@ use App\Http\Resources\HiringRequestResource;
 use App\Models\HiringRequest;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponseTrait;
-use App\Notifications\HiringRequestCreatedNotification;
-use App\Notifications\HiringRequestStatusUpdatedNotification;
 
 class HiringRequestController extends Controller
 {
@@ -43,27 +41,33 @@ class HiringRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreHiringRequestRequest $request)
+ public function store(StoreHiringRequestRequest $request)
     {
-        $user = $request->user();
+        // 1. Recuperamos el UID de Firebase que inyectó el middleware
+        $firebaseUid = $request->attributes->get('firebase_uid');
 
+        // 2. Buscamos al cliente en el modelo correcto (Client, no User)
+        $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
+
+        // Verificamos que el cliente realmente exista en la BD antes de continuar
+        if (!$cliente) {
+            return response()->json(['success' => false, 'message' => 'Cliente no encontrado. UID: ' . $firebaseUid], 404);
+        }
+
+        // 3. Guardar en la base de datos usando el ID correcto
         $hiringRequest = HiringRequest::create(array_merge(
             $request->validated(),
         [
-            'client_id' => $user->id,
+            'client_id' => $cliente->id, 
             'status' => 'pending'
         ]
         ));
 
-        // Eager load relationships to match standard returns
-        $hiringRequest->load(['client', 'musicianProfile', 'musicianProfile.user']);
-
-        if ($hiringRequest->musicianProfile->user) {
-            $hiringRequest->musicianProfile->user->notify(new HiringRequestCreatedNotification($hiringRequest));
-        }
+        // 4. Cargar relaciones
+        $hiringRequest->load(['client', 'musicianProfile']);
 
         return $this->successResponse(
-            new HiringRequestResource($hiringRequest),
+            new \App\Http\Resources\HiringRequestResource($hiringRequest),
             'Hiring request created successfully',
             201
         );
@@ -107,10 +111,6 @@ class HiringRequestController extends Controller
         $hiringRequest->update([
             'status' => $request->validated()['status']
         ]);
-
-        if ($hiringRequest->client) {
-            $hiringRequest->client->notify(new HiringRequestStatusUpdatedNotification($hiringRequest));
-        }
 
         return $this->successResponse(new HiringRequestResource($hiringRequest), 'Status updated successfully');
     }

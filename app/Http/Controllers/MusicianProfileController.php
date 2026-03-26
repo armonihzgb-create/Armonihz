@@ -122,4 +122,34 @@ class MusicianProfileController extends Controller
             'Profile updated successfully'
         );
     }
+
+    public function getAvailability($id)
+    {
+        $profile = \App\Models\MusicianProfile::findOrFail($id);
+        $busyDates = [];
+
+        // 1. Bloqueos manuales del músico
+        $manualEvents = $profile->calendarEvents()->get();
+        foreach ($manualEvents as $ev) {
+            $busyDates[] = [
+                'start' => $ev->start->format('Y-m-d H:i:s'),
+                'end' => $ev->end->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        // 2. Contrataciones ya aceptadas
+        $hiringRequests = $profile->hiringRequests()->where('status', 'accepted')->get();
+        foreach ($hiringRequests as $hr) {
+            $busyDates[] = [
+                'start' => $hr->event_date->format('Y-m-d H:i:s'),
+                // Asumimos 3 horas de evento por defecto si no hay campo de duración
+                'end' => $hr->event_date->addHours(3)->format('Y-m-d H:i:s'), 
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $busyDates
+        ]);
+    }
 }
