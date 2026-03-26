@@ -126,7 +126,7 @@
                      data-text="signin_with"
                      data-size="large"
                      data-logo_alignment="left"
-                     data-width="350">
+                     data-width="300">
                 </div>
                 {{-- Hidden form to POST Firebase credential to Laravel --}}
                 <form id="google-form" method="POST" action="{{ route('auth.google.callback') }}" style="display:none">

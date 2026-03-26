@@ -217,7 +217,8 @@ body .pwd-toggle svg {
     display: flex;
     width: 100%;
     min-height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* Columna Izquierda (Imagen/Branding) */
@@ -275,7 +276,12 @@ body .pwd-toggle svg {
     padding: 40px;
     background: #ffffff;
     max-width: 600px;
-    /* Limite de ancho para la forma */
+}
+
+@media (max-width: 600px) {
+    .auth-right {
+        padding: 24px 16px;
+    }
 }
 
 .auth-container {
@@ -324,6 +330,19 @@ body .pwd-toggle svg {
 .auth-logo img {
     display: block;
     margin: 0 auto;
+}
+
+.form-row-auth {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 500px) {
+    .form-row-auth {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
 }
 
 /* Formulario */
@@ -1153,6 +1172,7 @@ select {
 
     .form-row {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .profile-header-card {

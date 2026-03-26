@@ -49,7 +49,7 @@
                     @csrf
 
                     {{-- Nombre + Ciudad --}}
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-row-auth">
                         <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                             <label>Nombre Artístico *</label>
                             <input type="text" name="name"
