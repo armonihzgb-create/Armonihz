@@ -4,14 +4,28 @@
 
 <div class="dashboard-wrapper">
 
+    {{-- MOBILE HEADER --}}
+    <div class="mobile-header">
+        <div class="mobile-brand">
+            <img src="{{ asset('images/Armonihz_logo.png') }}" alt="Armonihz">
+            <span>Admin</span>
+        </div>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i data-lucide="menu"></i>
+        </button>
+    </div>
+
     {{-- SIDEBAR ADMIN --}}
-    <aside class="sidebar">
+    <aside class="sidebar" id="dashboard-sidebar">
         <div class="sidebar-brand">
             <img src="{{ asset('images/Armonihz_logo.png') }}" alt="Armonihz">
             <div class="brand-text">
                 <h3>Armonihz</h3>
                 <span class="admin-badge">Admin</span>
             </div>
+            <button class="mobile-close-btn" onclick="toggleMobileMenu()">
+                <i data-lucide="x"></i>
+            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -114,6 +128,27 @@
         m.style.display = 'none';
         document.body.style.overflow = '';
     }
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+        const sidebar = document.getElementById('dashboard-sidebar');
+        sidebar.classList.toggle('active');
+        if (sidebar.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+        const sidebar = document.getElementById('dashboard-sidebar');
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        if (sidebar && sidebar.classList.contains('active')) {
+            if (!sidebar.contains(e.target) && (!menuBtn || !menuBtn.contains(e.target))) {
+                toggleMobileMenu();
+            }
+        }
+    });
     document.getElementById('logout-modal').addEventListener('click', function(e) {
         if (e.target === this) hideLogoutModal();
     });

@@ -173,6 +173,17 @@
         }
     }
 
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+        const sidebar = document.getElementById('dashboard-sidebar');
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        if (sidebar && sidebar.classList.contains('active')) {
+            if (!sidebar.contains(e.target) && (!menuBtn || !menuBtn.contains(e.target))) {
+                toggleMobileMenu();
+            }
+        }
+    });
+
     // Close on backdrop click (Logout)
     document.getElementById('logout-modal').addEventListener('click', function(e) {
         if (e.target === this) hideLogoutModal();
