@@ -171,14 +171,24 @@ public function syncClient(Request $request)
     $nombre   = !empty($request->nombre)   ? $request->nombre   : ($partes[0] ?? '');
     $apellido = !empty($request->apellido) ? $request->apellido : ($partes[1] ?? '');
 
-    $user = User::updateOrCreate(
-        ['email' => $request->email],
-        [
+    $user = User::where('email', $request->email)->first();
+    
+    if (!$user) {
+        $user = User::create([
+            'email'        => $request->email,
             'name'         => $nombreCompleto,
             'firebase_uid' => $firebaseUid,
-            'role'         => 'cliente'
-        ]
-    );
+            'role'         => 'cliente',
+            // Default password for social/api users if not provided
+            'password'     => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(16)),
+        ]);
+    } else {
+        // Update name and firebase_uid, but PRESERVE the existing role
+        $user->update([
+            'name'         => $nombreCompleto,
+            'firebase_uid' => $firebaseUid,
+        ]);
+    }
 
     $cliente = Client::where('firebase_uid', $firebaseUid)->first();
 
