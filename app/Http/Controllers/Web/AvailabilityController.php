@@ -63,22 +63,15 @@ class AvailabilityController extends Controller
         // 2. Contrataciones Directas Aceptadas
         $hiringRequests = $profile->hiringRequests()->where('status', 'accepted')->get();
         foreach ($hiringRequests as $hr) {
-            // hiring_requests doesn't have duration yet, using 3h as default for now
             $start = $hr->event_date->copy();
-            $end = $start->copy()->addHours(3);
+            // Si existe end_time en la base de datos lo usamos, si no, default 3 horas
+            $end = $hr->end_time ? $hr->end_time->copy() : $start->copy()->addHours(3);
 
             $events[] = [
-<<<<<<< HEAD
                 'id' => 'hiring_' . $hr->id,
                 'title' => '💍 Evento Privado',
                 'start' => $start->toIso8601String(),
                 'end' => $end->toIso8601String(),
-=======
-                'id'              => 'hiring_' . $hr->id,
-                'title'           => '💍 Evento Privado',
-                'start'           => $hr->event_date->toIso8601String(),
-                'end'             => $hr->end_time ? $hr->end_time->toIso8601String() : $hr->event_date->addHours(3)->toIso8601String(),    
->>>>>>> ffe7bfa72c5829bdd112c101a8538c31a233403c
                 'backgroundColor' => '#4f46e5',
                 'borderColor' => 'transparent',
                 'extendedProps' => ['source' => 'system', 'description' => 'Contratación directa.'],
