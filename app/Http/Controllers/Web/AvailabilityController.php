@@ -138,6 +138,20 @@ class AvailabilityController extends Controller
             return response()->json(['success' => false, 'message' => 'No puedes crear bloques en fechas pasadas.'], 422);
         }
 
+        // Check for existing overlapping manual blocks
+        $overlap = MusicianCalendarEvent::where('musician_profile_id', $profile->id)
+            ->where(function($q) use ($start, $end) {
+                // If it's allDay (00:00 to 23:59), an exact start match is enough for broad "already blocked" check
+                $q->where(function($q2) use ($start, $end) {
+                    $q2->where('start', '<', $end)
+                       ->where('end', '>', $start);
+                });
+            })->exists();
+
+        if ($overlap) {
+            return response()->json(['success' => false, 'message' => 'Ya existe un bloqueo que se cruza con este horario.'], 422);
+        }
+
         $ev = MusicianCalendarEvent::create([
             'musician_profile_id' => $profile->id,
             'title'               => $request->title,
@@ -177,6 +191,18 @@ class AvailabilityController extends Controller
 
         if ($start->isPast() && !$start->isToday()) {
             return response()->json(['success' => false, 'message' => 'No puedes mover bloques a fechas pasadas.'], 422);
+        }
+
+        // Check for existing overlapping manual blocks (excluding self)
+        $overlap = MusicianCalendarEvent::where('musician_profile_id', $profile->id)
+            ->where('id', '!=', $id)
+            ->where(function($q) use ($start, $end) {
+                $q->where('start', '<', $end)
+                ->where('end', '>', $start);
+            })->exists();
+
+        if ($overlap) {
+            return response()->json(['success' => false, 'message' => 'Ya existe un bloqueo en este horario.'], 422);
         }
 
         $ev->update(['start' => $start, 'end' => $end]);

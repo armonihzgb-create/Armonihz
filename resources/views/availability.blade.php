@@ -198,8 +198,9 @@
         </div>
     </div>
 
-    {{-- FullCalendar JS --}}
+    {{-- FullCalendar + SweetAlert2 JS --}}
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
     // ── State ──────────────────────────────────────────────────
@@ -254,17 +255,16 @@
         const note = document.getElementById('noteInput').value.trim();
         let startStr, endStr, title;
 
-        if (currentMode === 'full') {
-            // All-day block: send YYYY-MM-DD, backend sets time to 00:00/23:59
-            startStr = selectedDate;
-            endStr   = selectedDate;
-            title    = note || '🔴 Día ocupado';
-        } else {
-            // Time-range block
+        if (currentMode === 'time') {
             const tStart = document.getElementById('timeStart').value;
             const tEnd   = document.getElementById('timeEnd').value;
             if (tStart >= tEnd) {
-                alert('La hora de fin debe ser posterior a la de inicio.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario inválido',
+                    text: 'La hora de fin debe ser posterior a la de inicio.',
+                    confirmButtonColor: '#6c3fc5'
+                });
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-floppy-disk" style="margin-right:6px;"></i> Guardar bloque';
                 return;
@@ -272,6 +272,11 @@
             startStr = selectedDate + 'T' + tStart + ':00';
             endStr   = selectedDate + 'T' + tEnd + ':00';
             title    = note || `🔴 Ocupado ${tStart}–${tEnd}`;
+        } else {
+            // All-day block: send YYYY-MM-DD
+            startStr = selectedDate;
+            endStr   = selectedDate;
+            title    = note || '🔴 Día ocupado';
         }
 
         fetch('{{ route("availability.store") }}', {
@@ -279,11 +284,26 @@
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
             body: JSON.stringify({ title, start: startStr, end: endStr, type: 'busy' })
         })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
+        .then(async r => {
+            const data = await r.json();
+            if (r.ok && data.success) {
                 calendar.refetchEvents();
                 closeAddModal();
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Bloque guardado',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'No se pudo guardar el bloque.',
+                    confirmButtonColor: '#6c3fc5'
+                });
             }
         })
         .finally(() => {
@@ -422,6 +442,17 @@
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     body: JSON.stringify({ start: info.event.startStr, end: info.event.endStr || info.event.startStr })
+                }).then(async r => {
+                    if (!r.ok) {
+                        const data = await r.json();
+                        info.revert();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'No permitido',
+                            text: data.message || 'Error al actualizar el bloque.',
+                            confirmButtonColor: '#6c3fc5'
+                        });
+                    }
                 });
             }
         });
