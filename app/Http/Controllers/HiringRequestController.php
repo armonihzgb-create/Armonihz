@@ -8,8 +8,6 @@ use App\Http\Resources\HiringRequestResource;
 use App\Models\HiringRequest;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponseTrait;
-use App\Notifications\HiringRequestCreatedNotification;
-use App\Notifications\HiringRequestStatusUpdatedNotification;
 
 class HiringRequestController extends Controller
 {
@@ -47,7 +45,7 @@ class HiringRequestController extends Controller
     {
         $user = $request->user();
 
-        // 1. Guardar en la base de datos
+        // 1. Guardar en la base de datos (Sin notificaciones)
         $hiringRequest = HiringRequest::create(array_merge(
             $request->validated(),
         [
@@ -56,20 +54,10 @@ class HiringRequestController extends Controller
         ]
         ));
 
-        // 2. Cargar relaciones
+        // 2. Cargar relaciones para devolver la respuesta estructurada
         $hiringRequest->load(['client', 'musicianProfile', 'musicianProfile.user']);
 
-        // 3. Intentar enviar la notificación de forma segura
-        try {
-            if ($hiringRequest->musicianProfile && $hiringRequest->musicianProfile->user) {
-                $hiringRequest->musicianProfile->user->notify(new HiringRequestCreatedNotification($hiringRequest));
-            }
-        } catch (\Exception $e) {
-            // Si falla el correo/notificación, lo registramos en los logs de Laravel pero NO detenemos la app
-            \Illuminate\Support\Facades\Log::error('Error enviando notificación de contratación: ' . $e->getMessage());
-        }
-
-        // 4. Devolver la respuesta exitosa a la app móvil
+        // 3. Devolver la respuesta exitosa a la app móvil
         return $this->successResponse(
             new HiringRequestResource($hiringRequest),
             'Hiring request created successfully',
@@ -115,10 +103,6 @@ class HiringRequestController extends Controller
         $hiringRequest->update([
             'status' => $request->validated()['status']
         ]);
-
-        if ($hiringRequest->client) {
-            $hiringRequest->client->notify(new HiringRequestStatusUpdatedNotification($hiringRequest));
-        }
 
         return $this->successResponse(new HiringRequestResource($hiringRequest), 'Status updated successfully');
     }
