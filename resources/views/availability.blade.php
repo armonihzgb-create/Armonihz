@@ -97,6 +97,28 @@
             .av-modal { max-width:95vw; margin:0 12px; }
         }
     </style>
+    <style>
+        /* Responsive adjustments for FullCalendar Toolbar */
+        @media (max-width: 768px) {
+            .fc .fc-toolbar {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .fc .fc-toolbar-title {
+                font-size: 1.2em !important;
+            }
+            .legend-box {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .calendar-layout {
+                grid-template-columns: 1fr;
+            }
+            .calendar-container {
+                padding: 16px; /* Less padding on mobile */
+            }
+        }
+    </style>
 
     {{-- PAGE HEADER --}}
     <div class="av-header">

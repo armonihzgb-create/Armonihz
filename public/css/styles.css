@@ -520,7 +520,45 @@ select {
     top: 0;
     height: 100vh;
     flex-shrink: 0;
+    z-index: 100; /* Sidebar over content */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Header Móvil (Hamburguesa) */
+.mobile-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+}
+
+.mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text-main);
+}
+.mobile-brand img { width: 32px; height: auto; }
+
+.mobile-menu-btn, .mobile-close-btn {
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-main) !important;
+    padding: 8px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px !important;
+}
+.mobile-menu-btn:hover, .mobile-close-btn:hover { background: var(--bg-secondary) !important; }
+.mobile-menu-btn i, .mobile-close-btn i { width: 24px; height: 24px; }
 
 .sidebar-brand {
     display: flex;
@@ -528,6 +566,12 @@ select {
     gap: 12px;
     padding: 0 12px 32px 12px;
 }
+
+.mobile-close-btn {
+    display: none;
+    margin-left: auto;
+}
+
 
 .sidebar-brand img {
     width: 50px;
@@ -630,6 +674,7 @@ select {
     flex-grow: 1;
     padding: 32px 40px;
     overflow-y: auto;
+    width: 100%;
 }
 
 .dashboard-header {
@@ -818,11 +863,44 @@ select {
         flex-direction: column;
     }
 
+    .mobile-header {
+        display: flex;
+    }
+
     .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        padding: 16px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 280px;
+        height: 100vh;
+        transform: translateX(-100%); /* Oculto por defecto */
+        box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+        padding-top: 24px;
+    }
+
+    .sidebar.active {
+        transform: translateX(0); /* Mostrar */
+    }
+
+    .mobile-close-btn {
+        display: flex;
+    }
+
+    /* Fondo oscuro al abrir menú */
+    .dashboard-wrapper::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 95;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+    }
+
+    body:has(.sidebar.active) .dashboard-wrapper::before {
+        opacity: 1;
+        pointer-events: auto;
     }
 
     .content-grid {
@@ -830,7 +908,7 @@ select {
     }
 
     .dashboard-content {
-        padding: 20px;
+        padding: 20px 16px;
     }
 }
 
@@ -1476,9 +1554,7 @@ select {
 }
 
 /* Estado: Disponible (Por defecto o marcado explícito) */
-.day.available {
-    /* Puedes dejarlo blanco o darle un tinte verde muy suave */
-}
+/* .day.available { } */
 
 /* Estado: Ocupado */
 .day.occupied {

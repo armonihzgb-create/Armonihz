@@ -5,11 +5,25 @@
 {{-- Contenedor Principal (Flexbox) --}}
 <div class="dashboard-wrapper">
 
+    {{-- MOBILE HEADER (Visible only on < 768px) --}}
+    <div class="mobile-header">
+        <div class="mobile-brand">
+            <img src="{{ asset('images/Armonihz_logo.png') }}" alt="Armonihz">
+            <span>Armonihz</span>
+        </div>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i data-lucide="menu"></i>
+        </button>
+    </div>
+
     {{-- SIDEBAR --}}
-    <aside class="sidebar">
+    <aside class="sidebar" id="dashboard-sidebar">
         <div class="sidebar-brand">
             <img src="{{ asset('images/Armonihz_logo.png') }}" alt="Armonihz">
             <h3>Armonihz</h3>
+            <button class="mobile-close-btn" onclick="toggleMobileMenu()">
+                <i data-lucide="x"></i>
+            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -147,7 +161,19 @@
         m.style.display = 'none';
         document.body.style.overflow = '';
     }
-    // Close on backdrop click
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+        const sidebar = document.getElementById('dashboard-sidebar');
+        sidebar.classList.toggle('active');
+        // Prevent body scroll when menu is open
+        if (sidebar.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Close on backdrop click (Logout)
     document.getElementById('logout-modal').addEventListener('click', function(e) {
         if (e.target === this) hideLogoutModal();
     });

@@ -82,21 +82,6 @@
         .nbf-add-genres-btn:hover { opacity:.85; }
     </style>
 
-    {{-- SUCCESS FLASH --}}
-    @if(session('success'))
-        <div id="flash-msg" style="
-            position: fixed; top: 20px; right: 24px; z-index: 9999;
-            background: #22c55e; color: #fff;
-            padding: 14px 24px; border-radius: 10px;
-            font-size: 14px; font-weight: 600;
-            box-shadow: 0 4px 20px rgba(0,0,0,.15);
-            display: flex; align-items: center; gap: 10px;
-        ">
-            <i data-lucide="check-circle" style="width:18px;height:18px;"></i>
-            {{ session('success') }}
-        </div>
-        <script>setTimeout(() => document.getElementById('flash-msg')?.remove(), 3500);</script>
-    @endif
 
     {{-- ── NBF COVER + FORM LAYOUT ─────────────────────────────────────────────────── --}}
     <div class="nbf-layout">
@@ -635,6 +620,24 @@
         }
 
         @media (max-width: 768px) {
+            .nbf-info-bar {
+                flex-direction: column;
+                padding: 70px 24px 24px 24px;
+                align-items: center;
+                text-align: center;
+            }
+            .nbf-header-actions {
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .nbf-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .nbf-avatar-container { left: 50%; transform: translateX(-50%); }
+            .nbf-stats-links { justify-content: center; margin-bottom: 20px; }
+            .nbf-content { padding: 24px 16px; }
             .nbf-detail-row {
                 grid-template-columns: 1fr;
                 gap: 6px;

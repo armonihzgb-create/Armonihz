@@ -3,12 +3,6 @@
 @section('dashboard-content')
 
     {{-- FLASH --}}
-    @if(session('success'))
-        <div id="flash-msg" style="position:fixed;top:20px;right:24px;z-index:9999;background:#22c55e;color:#fff;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;align-items:center;gap:10px;">
-            <i data-lucide="check-circle" style="width:18px;height:18px;"></i> {{ session('success') }}
-        </div>
-        <script>setTimeout(() => document.getElementById('flash-msg')?.remove(), 5000);</script>
-    @endif
 
     {{-- BREADCRUMB --}}
     <div class="cs-breadcrumb">
