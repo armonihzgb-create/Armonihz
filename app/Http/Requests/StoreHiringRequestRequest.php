@@ -27,6 +27,7 @@ class StoreHiringRequestRequest extends FormRequest
             'event_location' => 'required|string|max:255',
             'description' => 'required|string',
             'budget' => 'required|numeric|min:0',
+            'end_time' => 'required|date|after:event_date',
         ];
     }
 }

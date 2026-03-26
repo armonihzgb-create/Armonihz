@@ -16,11 +16,13 @@ class HiringRequest extends Model
         'event_location',
         'description',
         'budget',
-        'status',
+       'status',
+        'end_time',
     ];
 
     protected $casts = [
         'event_date' => 'datetime',
+        'end_time' => 'datetime',
     ];
 
     public function client()
