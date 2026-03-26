@@ -2,275 +2,233 @@
 
 @section('dashboard-content')
 
-    {{-- PAGE HEADER --}}
-    <div class="rq-header">
-        <div>
-            <div class="rq-eyebrow">
-                <i data-lucide="inbox" style="width:14px;height:14px;color:#6c3fc5;"></i>
-                BANDEJA DE ENTRADA
-            </div>
-            <h1 class="rq-title">Solicitudes de Contratación</h1>
-            <p class="rq-subtitle">Gestiona las propuestas que los clientes te han enviado.</p>
+    {{-- HEADER --}}
+    <div class="req-header">
+        <div class="req-eyebrow">
+            <i data-lucide="inbox" style="width:14px;height:14px;color:#6c3fc5;"></i>
+            BANDEJA DE ENTRADA
         </div>
+        <h1 class="req-title">Solicitudes de Contratación</h1>
+        <p class="req-subtitle">Gestiona las propuestas que los clientes te han enviado.</p>
     </div>
 
-    {{-- FILTER TABS --}}
-    <div class="rq-filter-bar">
-        <button class="rq-filter-chip active">Todas <span class="rq-chip-count">5</span></button>
-        <button class="rq-filter-chip">Pendientes <span class="rq-chip-count" style="background:#fef9c3;color:#ca8a04;">3</span></button>
-        <button class="rq-filter-chip">Respondidas <span class="rq-chip-count" style="background:#eff6ff;color:#2563eb;">1</span></button>
-        <button class="rq-filter-chip">Confirmadas <span class="rq-chip-count" style="background:#f0fdf4;color:#16a34a;">1</span></button>
+    {{-- FILTERS (Aún no funcionales, pero visuales) --}}
+    <div class="req-filters">
+        <button class="req-filter-btn req-filter--active">
+            Todas <span class="req-count">{{ $requests->count() }}</span>
+        </button>
+        <button class="req-filter-btn">
+            Pendientes <span class="req-count req-count--yellow">{{ $requests->where('status', 'pending')->count() }}</span>
+        </button>
+        <button class="req-filter-btn">
+            Confirmadas <span class="req-count req-count--green">{{ $requests->where('status', 'accepted')->count() }}</span>
+        </button>
     </div>
 
     {{-- REQUESTS LIST --}}
-    @php
-        $samples = [
-            [
-                'id'       => 1,
-                'name'     => 'Juan Pérez',
-                'initials' => 'JP',
-                'color'    => '#ede9fe',
-                'tcolor'   => '#6c3fc5',
-                'event'    => 'Boda Civil',
-                'desc'     => 'Música para boda de 150 personas en salón',
-                'location' => 'Guadalajara, Jal.',
-                'date_d'   => '15',
-                'date_m'   => 'OCT',
-                'budget'   => '$18,000',
-                'status'   => 'pending',
-                'slabel'   => '⏳ Pendiente',
-                'sclass'   => 'rq-badge--yellow',
-                'received' => 'Hace 2 horas',
-            ],
-            [
-                'id'       => 2,
-                'name'     => 'María Rodríguez',
-                'initials' => 'MR',
-                'color'    => '#f0fdf4',
-                'tcolor'   => '#16a34a',
-                'event'    => 'Fiesta de Quinceañera',
-                'desc'     => 'Banda para fiesta de 80 personas al aire libre',
-                'location' => 'Puebla, Pue.',
-                'date_d'   => '20',
-                'date_m'   => 'OCT',
-                'budget'   => '$12,000',
-                'status'   => 'accepted',
-                'slabel'   => '✓ Confirmada',
-                'sclass'   => 'rq-badge--green',
-                'received' => 'Ayer',
-            ],
-            [
-                'id'       => 3,
-                'name'     => 'Carlos Sánchez',
-                'initials' => 'CS',
-                'color'    => '#eff6ff',
-                'tcolor'   => '#2563eb',
-                'event'    => 'Cumpleaños empresarial',
-                'desc'     => 'Música en vivo para evento corporativo',
-                'location' => 'Ciudad de México',
-                'date_d'   => '28',
-                'date_m'   => 'OCT',
-                'budget'   => '$25,000',
-                'status'   => 'replied',
-                'slabel'   => '💬 Respondida',
-                'sclass'   => 'rq-badge--blue',
-                'received' => 'Hace 3 días',
-            ],
-            [
-                'id'       => 4,
-                'name'     => 'Ana López',
-                'initials' => 'AL',
-                'color'    => '#fefce8',
-                'tcolor'   => '#ca8a04',
-                'event'    => 'Boda Religiosa',
-                'desc'     => 'Repertorio clásico para ceremonia y recepción',
-                'location' => 'Tehuacán, Pue.',
-                'date_d'   => '5',
-                'date_m'   => 'NOV',
-                'budget'   => '$15,000',
-                'status'   => 'pending',
-                'slabel'   => '⏳ Pendiente',
-                'sclass'   => 'rq-badge--yellow',
-                'received' => 'Hace 4 días',
-            ],
-            [
-                'id'       => 5,
-                'name'     => 'Roberto Díaz',
-                'initials' => 'RD',
-                'color'    => '#fef2f2',
-                'tcolor'   => '#dc2626',
-                'event'    => 'Festival de barrio',
-                'desc'     => 'Tocada en plaza pública, 3 horas de duración',
-                'location' => 'Oaxaca, Oax.',
-                'date_d'   => '12',
-                'date_m'   => 'NOV',
-                'budget'   => '$8,000',
-                'status'   => 'pending',
-                'slabel'   => '⏳ Pendiente',
-                'sclass'   => 'rq-badge--yellow',
-                'received' => 'Hace 5 días',
-            ],
-        ];
-    @endphp
+    <div class="req-list">
+        
+        @if($requests->isEmpty())
+            <div style="padding: 40px; text-align: center; color: #64748b;">
+                <i data-lucide="inbox" style="width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                <h3>Aún no tienes solicitudes</h3>
+                <p>Las propuestas de contratación aparecerán aquí.</p>
+            </div>
+        @else
+            @foreach($requests as $req)
+                @php
+                    // Preparamos los datos del cliente
+                    $clientName = $req->client->nombre ? ($req->client->nombre . ' ' . $req->client->apellido) : 'Cliente Anónimo';
+                    $initials = strtoupper(substr($req->client->nombre ?? 'C', 0, 1) . substr($req->client->apellido ?? 'A', 0, 1));
+                    
+                    // Colores de estado
+                    $statusColor = match($req->status) {
+                        'pending' => 'yellow',
+                        'accepted' => 'green',
+                        'rejected' => 'red',
+                        default => 'gray'
+                    };
+                    
+                    $statusText = match($req->status) {
+                        'pending' => 'Pendiente',
+                        'accepted' => 'Confirmada',
+                        'rejected' => 'Rechazada',
+                        default => ucfirst($req->status)
+                    };
+                    
+                    $statusIcon = match($req->status) {
+                        'pending' => 'hourglass',
+                        'accepted' => 'check',
+                        'rejected' => 'x',
+                        default => 'help-circle'
+                    };
+                @endphp
 
-    <div class="rq-list">
-        @foreach($samples as $req)
-        <div class="rq-card {{ $req['status'] === 'accepted' ? 'rq-card--accepted' : '' }}">
+                <div class="req-card {{ $req->status === 'accepted' ? 'req-card--accepted' : '' }}">
+                    
+                    {{-- 1. Client Info --}}
+                    <div class="req-client">
+                        <div class="req-avatar" style="background:#ede9fe; color:#6c3fc5;">
+                            {{ $initials }}
+                        </div>
+                        <div>
+                            <span class="req-client-name">{{ $clientName }}</span>
+                            <span class="req-time">
+                                <i data-lucide="clock" style="width:11px;height:11px;"></i>
+                                {{ $req->created_at->diffForHumans() }}
+                            </span>
+                        </div>
+                    </div>
 
-            {{-- Avatar + name --}}
-            <div class="rq-card-client">
-                <div class="rq-avatar" style="background:{{ $req['color'] }};color:{{ $req['tcolor'] }};">
-                    {{ $req['initials'] }}
+                    {{-- 2. Event Info --}}
+                    <div class="req-event">
+                        <span class="req-event-type">
+                            <i data-lucide="music" style="width:13px;height:13px;color:#6c3fc5;"></i>
+                            Evento a la medida
+                        </span>
+                        <span class="req-event-desc">{{ \Illuminate\Support\Str::limit($req->description, 60) }}</span>
+                        <span class="req-event-loc">
+                            <i data-lucide="map-pin" style="width:12px;height:12px;"></i>
+                            {{ $req->event_location }}
+                        </span>
+                    </div>
+
+                    {{-- 3. Date --}}
+                    <div class="req-date">
+                        <span class="req-month">{{ strtoupper($req->event_date->translatedFormat('M')) }}</span>
+                        <span class="req-day">{{ $req->event_date->format('d') }}</span>
+                    </div>
+
+                    {{-- 4. Budget --}}
+                    <div class="req-budget">
+                        <span class="req-budget-label">Presupuesto</span>
+                        <span class="req-price">${{ number_format($req->budget, 0) }} <small>MXN</small></span>
+                    </div>
+
+                    {{-- 5. Actions --}}
+                    <div class="req-actions">
+                        <span class="req-badge req-badge--{{ $statusColor }}">
+                            <i data-lucide="{{ $statusIcon }}" style="width:12px;height:12px;"></i>
+                            {{ $statusText }}
+                        </span>
+                        <a href="{{ url('/requests/' . $req->id) }}" class="req-detail-btn">
+                            Ver detalle <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
+                        </a>
+                    </div>
                 </div>
-                <div>
-                    <span class="rq-client-name">{{ $req['name'] }}</span>
-                    <span class="rq-client-meta">
-                        <i data-lucide="clock" style="width:11px;height:11px;"></i>
-                        {{ $req['received'] }}
-                    </span>
-                </div>
-            </div>
+            @endforeach
+        @endif
 
-            {{-- Event info --}}
-            <div class="rq-card-event">
-                <span class="rq-event-type">
-                    <i data-lucide="music" style="width:12px;height:12px;color:#6c3fc5;"></i>
-                    {{ $req['event'] }}
-                </span>
-                <span class="rq-event-desc">{{ $req['desc'] }}</span>
-                <span class="rq-event-location">
-                    <i data-lucide="map-pin" style="width:12px;height:12px;"></i>
-                    {{ $req['location'] }}
-                </span>
-            </div>
-
-            {{-- Date --}}
-            <div class="rq-date-box">
-                <span class="rq-date-m">{{ $req['date_m'] }}</span>
-                <span class="rq-date-d">{{ $req['date_d'] }}</span>
-            </div>
-
-            {{-- Budget --}}
-            <div class="rq-budget">
-                <span class="rq-budget-label">Presupuesto</span>
-                <span class="rq-budget-value">{{ $req['budget'] }} <small>MXN</small></span>
-            </div>
-
-            {{-- Status + action --}}
-            <div class="rq-card-actions">
-                <span class="rq-badge {{ $req['sclass'] }}">{{ $req['slabel'] }}</span>
-                <a href="/requests/{{ $req['id'] }}" class="rq-view-btn">
-                    Ver detalle <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
-                </a>
-            </div>
-
-        </div>
-        @endforeach
     </div>
 
     <style>
-        /* ── Header ─────────────────────────────── */
-        .rq-header {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            gap: 20px; margin-bottom: 24px; padding-bottom: 22px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .rq-eyebrow {
-            display: flex; align-items: center; gap: 6px;
+        /* ── Typography & Header ─────────────────── */
+        .req-header { margin-bottom: 28px; }
+        .req-eyebrow {
+            display: inline-flex; align-items: center; gap: 6px;
             font-size: 11px; font-weight: 700; letter-spacing: .08em;
-            color: #6c3fc5; text-transform: uppercase; margin-bottom: 6px;
+            color: #6c3fc5; text-transform: uppercase; margin-bottom: 8px;
         }
-        .rq-title { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0 0 4px; }
-        .rq-subtitle { font-size: 14px; color: #64748b; margin: 0; }
+        .req-title { font-size: 26px; font-weight: 800; color: #0f172a; margin: 0 0 6px; letter-spacing: -.02em; }
+        .req-subtitle { font-size: 14px; color: #64748b; margin: 0; }
 
-        /* ── Filter Bar ─────────────────────────── */
-        .rq-filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-        .rq-filter-chip {
-            padding: 7px 16px; border-radius: 999px; font-size: 13px; font-weight: 500;
-            border: 1.5px solid #e2e8f0; color: #64748b; background: #fff;
-            cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 6px;
+        /* ── Filters ─────────────────────────────── */
+        .req-filters {
+            display: flex; gap: 10px; margin-bottom: 24px;
+            overflow-x: auto; padding-bottom: 4px;
         }
-        .rq-filter-chip:hover { border-color: #6c3fc5; color: #6c3fc5; }
-        .rq-filter-chip.active { background: #6c3fc5; color: #fff; border-color: #6c3fc5; }
-        .rq-chip-count {
-            background: rgba(255,255,255,.25); border-radius: 999px;
-            padding: 1px 7px; font-size: 11px; font-weight: 700;
+        .req-filter-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 9px 18px; border-radius: 10px; border: 1.5px solid transparent;
+            background: #2f93f5; color: #fff; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all .2s; white-space: nowrap;
         }
-        .rq-filter-chip:not(.active) .rq-chip-count {
-            background: #f1f5f9; color: #64748b;
-        }
-
-        /* ── Cards ──────────────────────────────── */
-        .rq-list { display: flex; flex-direction: column; gap: 12px; }
-        .rq-card {
-            display: grid;
-            grid-template-columns: 200px 1fr 70px 130px 160px;
-            gap: 16px;
-            align-items: center;
-            background: #fff;
-            border: 1.5px solid #e8edf3;
-            border-radius: 14px;
-            padding: 18px 22px;
-            transition: box-shadow .2s, border-color .2s;
-        }
-        .rq-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.05); border-color: #d1d5db; }
-        .rq-card--accepted { border-color: #bbf7d0; background: linear-gradient(140deg, rgba(22,163,74,.03), #fff); }
-
-        /* Client */
-        .rq-card-client { display: flex; align-items: center; gap: 12px; min-width: 0; }
-        .rq-avatar {
-            width: 42px; height: 42px; border-radius: 12px;
+        .req-filter--active { background: #2563eb; }
+        .req-count {
             display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: 800; flex-shrink: 0;
+            min-width: 18px; height: 18px; padding: 0 4px; border-radius: 20px;
+            background: rgba(255,255,255,.2); font-size: 10.5px; font-weight: 800;
         }
-        .rq-client-name { display: block; font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 3px; }
-        .rq-client-meta { display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: #94a3b8; }
+        .req-count--yellow { background: #fde047; color: #854d0e; }
+        .req-count--green { background: #86efac; color: #166534; }
 
-        /* Event */
-        .rq-card-event { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-        .rq-event-type { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: #6c3fc5; }
-        .rq-event-desc { font-size: 13.5px; font-weight: 600; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .rq-event-location { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #94a3b8; }
+        /* ── List Layout ─────────────────────────── */
+        .req-list { display: flex; flex-direction: column; gap: 14px; }
 
-        /* Date */
-        .rq-date-box {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 52px; height: 54px; border-radius: 10px;
-            background: #f8fafc; border: 1.5px solid #f1f5f9;
+        /* ── Card ────────────────────────────────── */
+        .req-card {
+            display: grid; grid-template-columns: 200px 1fr 60px 140px 130px;
+            align-items: center; gap: 20px; padding: 18px 22px;
+            background: #fff; border: 1.5px solid #f1f5f9; border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(15,23,42,.02); transition: all .2s ease;
         }
-        .rq-date-m { font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; }
-        .rq-date-d { font-size: 22px; font-weight: 900; color: #0f172a; line-height: 1.1; }
+        .req-card:hover { border-color: #e2e8f0; box-shadow: 0 8px 24px rgba(15,23,42,.04); transform: translateY(-1px); }
+        .req-card--accepted { border-color: #bbf7d0; background: #f0fdf4; }
 
-        /* Budget */
-        .rq-budget { display: flex; flex-direction: column; }
-        .rq-budget-label { font-size: 11px; color: #94a3b8; font-weight: 500; margin-bottom: 2px; }
-        .rq-budget-value { font-size: 17px; font-weight: 800; color: #15803d; }
-        .rq-budget-value small { font-size: 11px; font-weight: 400; color: #94a3b8; }
-
-        /* Actions */
-        .rq-card-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-        .rq-badge {
-            font-size: 11px; font-weight: 600; padding: 4px 11px;
-            border-radius: 999px; white-space: nowrap;
+        /* ── Columns inside Card ─────────────────── */
+        
+        /* 1. Client */
+        .req-client { display: flex; align-items: center; gap: 12px; }
+        .req-avatar {
+            width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: 800; letter-spacing: .05em;
         }
-        .rq-badge--yellow { background: #fefce8; color: #ca8a04; border: 1px solid #fef08a; }
-        .rq-badge--green  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-        .rq-badge--blue   { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-        .rq-view-btn {
+        .req-client-name { display: block; font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .req-time { display: flex; align-items: center; gap: 4px; font-size: 11.5px; color: #94a3b8; font-weight: 500; }
+
+        /* 2. Event */
+        .req-event { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+        .req-event-type { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #6c3fc5; text-transform: uppercase; letter-spacing: .05em; }
+        .req-event-desc { font-size: 13.5px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .req-event-loc { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #64748b; }
+
+        /* 3. Date */
+        .req-date { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 10px; border-left: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; }
+        .req-month { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: .1em; margin-bottom: -2px; }
+        .req-day { font-size: 24px; font-weight: 900; color: #0f172a; letter-spacing: -.03em; }
+
+        /* 4. Budget */
+        .req-budget { display: flex; flex-direction: column; align-items: flex-end; }
+        .req-budget-label { font-size: 11px; color: #94a3b8; font-weight: 500; margin-bottom: 1px; }
+        .req-price { font-size: 17px; font-weight: 800; color: #15803d; }
+        .req-price small { font-size: 10px; font-weight: 600; color: #86efac; }
+
+        /* 5. Actions */
+        .req-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .req-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 10px; border-radius: 6px; font-size: 10.5px; font-weight: 700;
+        }
+        .req-badge--yellow { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+        .req-badge--green { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .req-badge--red { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .req-badge--gray { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        
+        .req-detail-btn {
             display: inline-flex; align-items: center; gap: 5px;
-            font-size: 12px; font-weight: 600; color: #6c3fc5; text-decoration: none;
-            padding: 6px 14px; border-radius: 7px; border: 1.5px solid #e2e8f0;
-            background: #f9fafb; transition: all .2s;
+            padding: 6px 12px; border-radius: 6px; background: #f8fafc; border: 1.5px solid #e2e8f0;
+            color: #475569; font-size: 11.5px; font-weight: 600; text-decoration: none;
+            transition: all .2s;
         }
-        .rq-view-btn:hover { border-color: #6c3fc5; background: #f5f3ff; }
+        .req-detail-btn:hover { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
 
-        @media (max-width: 1100px) {
-            .rq-card { grid-template-columns: 1fr 1fr; }
-            .rq-date-box, .rq-budget { display: none; }
+        /* ── Responsive ──────────────────────────── */
+        @media (max-width: 1024px) {
+            .req-card { grid-template-columns: 180px 1fr 120px; grid-template-areas: "client event actions" "date budget actions"; gap: 10px 15px; }
+            .req-client { grid-area: client; }
+            .req-event { grid-area: event; }
+            .req-actions { grid-area: actions; justify-content: center; }
+            .req-date { grid-area: date; border: none; align-items: flex-start; padding: 0; flex-direction: row; gap: 6px; }
+            .req-month { margin-bottom: 0; }
+            .req-budget { grid-area: budget; align-items: flex-start; }
         }
+        
         @media (max-width: 640px) {
-            .rq-card { grid-template-columns: 1fr; }
-            .rq-card-actions { flex-direction: row; justify-content: space-between; }
+            .req-card { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+            .req-date, .req-budget, .req-actions { align-items: flex-start; width: 100%; }
+            .req-actions { flex-direction: row; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 14px; }
+            .req-event-desc { white-space: normal; }
         }
     </style>
 
