@@ -170,25 +170,31 @@
                 </div>
             </div>
 
-            {{-- Reply form (Oculto si ya fue aceptada/rechazada) --}}
+           {{-- Reply form (Oculto si ya fue aceptada/rechazada/contraoferta) --}}
             @if($hiringRequest->status === 'pending')
             <div class="rqs-section-card">
                 <h3 class="rqs-card-title">
                     <i data-lucide="send" style="width:15px;height:15px;color:#6c3fc5;"></i>
-                    Tu Respuesta
+                    Tu Respuesta (Contraoferta)
                 </h3>
 
-                <form>
-                    <textarea class="rqs-textarea" rows="5"
-                        placeholder="Ej: Hola {{ $client->nombre ?? 'cliente' }}, ¡muchas gracias por contactarnos! Sí tenemos disponibilidad..."></textarea>
+                <form id="counterOfferForm">
+                    <textarea id="musicianMessage" class="rqs-textarea" rows="4"
+                        placeholder="Ej: Hola {{ $client->nombre ?? 'cliente' }}, sí tengo disponibilidad, pero por las horas extra mi tarifa sería de..."></textarea>
+                    
+                    <div style="margin-top: 15px; margin-bottom: 15px;">
+                        <label style="font-size: 13px; font-weight: bold; color: #6c3fc5;">💰 Nueva Tarifa Propuesta (MXN):</label>
+                        <input type="number" id="counterPrice" placeholder="Ej: 8000" style="width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; margin-top: 6px; font-family: inherit; font-size: 14px; color: #334155; box-sizing: border-box;">
+                    </div>
+
                     <div class="rqs-form-footer">
                         <p class="rqs-form-hint">
                             <i data-lucide="info" style="width:12px;height:12px;"></i>
-                            Al responder, el estado cambiará a <strong>Respondida</strong>.
+                            Al enviar, el estado cambiará a <strong>Contraoferta</strong>.
                         </p>
-                        <button type="button" class="rqs-send-btn" onclick="Swal.fire({icon:'info', title:'Próximamente', text:'Esta acción estará disponible plenamente en la siguiente versión.', confirmButtonColor:'#6c3fc5'})">
+                        <button type="button" class="rqs-send-btn" onclick="enviarContraoferta()">
                             <i data-lucide="send" style="width:14px;height:14px;"></i>
-                            Enviar respuesta
+                            Enviar propuesta
                         </button>
                     </div>
                 </form>
@@ -405,6 +411,76 @@
                 }
             });
         }
+        function enviarContraoferta() {
+            const mensaje = document.getElementById('musicianMessage').value;
+            const precio = document.getElementById('counterPrice').value;
+
+            // Validar que no envíen el formulario vacío
+            if(!mensaje || !precio) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Faltan datos',
+                    text: 'Debes escribir un mensaje y proponer un nuevo precio.',
+                    confirmButtonColor: '#6c3fc5'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Enviar Contraoferta?',
+                text: "El cliente será notificado con tu nuevo precio y mensaje. Tendrá que aceptar para confirmar el evento.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#6c3fc5',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sí, enviar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    
+                    Swal.fire({
+                        title: 'Enviando...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    fetch(`/requests/{{ $hiringRequest->id }}/status`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            _method: 'PATCH',
+                            status: 'counter_offer',
+                            musician_message: mensaje,
+                            counter_offer: precio
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            Swal.fire({
+                                title: '¡Enviada!',
+                                text: 'Tu propuesta ha sido enviada al cliente.',
+                                icon: 'success',
+                                confirmButtonColor: '#6c3fc5'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', 'No se pudo enviar la contraoferta.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Problema de conexión.', 'error');
+                    });
+                }
+            });
+        }
     </script>
+
+    
 
 @endsection
