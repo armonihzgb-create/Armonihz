@@ -61,23 +61,28 @@ class AvailabilityController extends Controller
         }
 
         // 2. Contrataciones Directas Aceptadas
-        $hiringRequests = $profile->hiringRequests()->where('status', 'accepted')->get();
+       $hiringRequests = $profile->hiringRequests()->where('status', 'accepted')->get();
         foreach ($hiringRequests as $hr) {
-            $start = $hr->event_date->copy();
-            // Si existe end_time en la base de datos lo usamos, si no, default 3 horas
-            $end = $hr->end_time ? $hr->end_time->copy() : $start->copy()->addHours(3);
+            
+            // 1. Nos aseguramos de manejar las fechas con Carbon
+            $start = \Carbon\Carbon::parse($hr->event_date);
+            $end = $hr->end_time ? \Carbon\Carbon::parse($hr->end_time) : $start->copy()->addHours(3);
+            
+            // 2. Armamos el texto bonito del horario (Ej: 20:00 a 01:00)
+            $horario = $start->format('H:i') . ' a ' . $end->format('H:i');
 
             $events[] = [
-                'id' => 'hiring_' . $hr->id,
-                'title' => '💍 Evento Privado',
-                'start' => $start->toIso8601String(),
-                'end' => $end->toIso8601String(),
+                'id'              => 'hiring_' . $hr->id,
+                // 3. Metemos el horario directamente en el título
+                'title'           => '💍 ' . $horario . ' - Evento Privado', 
+                'start'           => $start->toIso8601String(),
+                'end'             => $end->toIso8601String(),
                 'backgroundColor' => '#4f46e5',
-                'borderColor' => 'transparent',
-                'extendedProps' => ['source' => 'system', 'description' => 'Contratación directa.'],
-                'real_id' => $hr->id,
-                'event_source' => 'hiring',
-                'event_type' => 'busy',
+                'borderColor'     => 'transparent',
+                'extendedProps'   => ['source' => 'system', 'description' => 'Contratación directa.'],
+                'real_id'         => $hr->id,
+                'event_source'    => 'hiring',
+                'event_type'      => 'busy',
             ];
         }
 
