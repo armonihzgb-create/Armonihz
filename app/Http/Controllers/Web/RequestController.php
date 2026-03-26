@@ -39,7 +39,6 @@ class RequestController extends Controller
 
         return view('requests.show', compact('hiringRequest'));
     }
-    // Agrega esta función debajo de tu función show()
     public function updateStatus(Request $request, $id)
     {
         $user = $request->user();
@@ -50,13 +49,22 @@ class RequestController extends Controller
             return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
         }
 
-        // Validar que el estado sea correcto
+        // Validar que el estado sea correcto (agregamos counter_offer)
         $request->validate([
-            'status' => 'required|in:accepted,rejected'
+            'status' => 'required|in:accepted,rejected,counter_offer',
+            'musician_message' => 'nullable|string',
+            'counter_offer' => 'nullable|numeric|min:0'
         ]);
 
         // Actualizar la base de datos
         $hiringRequest->status = $request->status;
+        
+        // Si es contraoferta, guardamos el mensaje y el nuevo precio
+        if ($request->status === 'counter_offer') {
+            $hiringRequest->musician_message = $request->musician_message;
+            $hiringRequest->counter_offer = $request->counter_offer;
+        }
+
         $hiringRequest->save();
 
         return response()->json([
