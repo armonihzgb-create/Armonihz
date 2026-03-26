@@ -10,10 +10,14 @@
         <div class="mobile-brand">
             <img src="{{ asset('images/Armonihz_logo.png') }}" alt="Armonihz">
             <span>Armonihz</span>
+        <div style="display:flex; gap: 8px;">
+            <button class="mobile-menu-btn" onclick="toggleDarkMode()">
+                <i data-lucide="moon" class="theme-toggle-icon"></i>
+            </button>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i data-lucide="menu"></i>
+            </button>
         </div>
-        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-            <i data-lucide="menu"></i>
-        </button>
     </div>
 
     {{-- SIDEBAR --}}
@@ -107,6 +111,11 @@
             {{-- Logout al final --}}
             <div class="nav-group mt-auto">
                 <ul>
+                    <li>
+                        <a href="#" onclick="toggleDarkMode(); return false;">
+                            <i data-lucide="moon" class="theme-toggle-icon"></i> Tema
+                        </a>
+                    </li>
                     <li>
                         <form method="POST" action="{{ route('logout') }}" id="logout-form" style="display: none;">
                             @csrf

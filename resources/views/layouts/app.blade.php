@@ -8,6 +8,32 @@
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     @yield('head')
+    <!-- Script para Modo Oscuro y FOUC -->
+    <script>
+        (function() {
+            var storedTheme = localStorage.getItem('theme');
+            if (storedTheme) {
+                document.documentElement.setAttribute('data-theme', storedTheme);
+            } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+        
+        window.toggleDarkMode = function() {
+            var currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            var newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Actualizar iconos moon/sun dinámicamente
+            document.querySelectorAll('.theme-toggle-icon').forEach(function(icon) {
+                icon.setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
+            });
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        };
+    </script>
 </head>
 <body>
 
