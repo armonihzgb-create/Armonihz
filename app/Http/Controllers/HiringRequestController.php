@@ -41,28 +41,39 @@ class HiringRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   public function store(StoreHiringRequestRequest $request)
+ public function store(StoreHiringRequestRequest $request)
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        // 1. Guardar en la base de datos (Sin notificaciones)
-        $hiringRequest = HiringRequest::create(array_merge(
-            $request->validated(),
-        [
-            'client_id' => $user->id,
-            'status' => 'pending'
-        ]
-        ));
+            // 1. Guardar en la base de datos
+            $hiringRequest = HiringRequest::create(array_merge(
+                $request->validated(),
+            [
+                'client_id' => $user->id,
+                'status' => 'pending'
+            ]
+            ));
 
-        // 2. Cargar relaciones para devolver la respuesta estructurada
-        $hiringRequest->load(['client', 'musicianProfile', 'musicianProfile.user']);
+            // 2. Cargar relaciones
+            $hiringRequest->load(['client', 'musicianProfile']);
 
-        // 3. Devolver la respuesta exitosa a la app móvil
-        return $this->successResponse(
-            new HiringRequestResource($hiringRequest),
-            'Hiring request created successfully',
-            201
-        );
+            // 3. Devolver la respuesta exitosa
+            return $this->successResponse(
+                new HiringRequestResource($hiringRequest),
+                'Hiring request created successfully',
+                201
+            );
+            
+        } catch (\Exception $e) {
+            // 🔥 ESTO NOS DIRÁ EXACTAMENTE QUÉ ESTÁ FALLANDO 🔥
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ], 500);
+        }
     }
 
     /**
