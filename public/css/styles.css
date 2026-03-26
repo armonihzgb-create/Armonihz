@@ -23,20 +23,6 @@
     /* Redondeado moderado, BandLab usa ~12-20px */
 }
 
-[data-theme="dark"] {
-    --bg-light: #121212;
-    --bg-secondary: #1e1e1e;
-    --text-main: #f3f4f6;
-    --text-dim: #9ca3af;
-    --accent-blue: #3b82f6;
-    --accent-orange: #f97316;
-    --accent-purple: #a855f7;
-    --accent-green: #10b981;
-    --card-bg: #1e1e1e;
-    --border-light: #374151;
-    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
 /* Fondo general */
 body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -71,13 +57,13 @@ input,
 select,
 textarea {
     width: 100%;
-    background: var(--bg-light) !important;
-    border: 1px solid var(--border-light) !important;
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
     border-radius: 12px !important;
-    color: var(--text-main) !important;
+    color: #111827 !important;
     padding: 12px 16px !important;
     margin-top: 8px;
-    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    transition: border-color 0.2s;
 }
 
 input:focus,
@@ -110,21 +96,6 @@ button,
     align-items: center !important;
     justify-content: center !important;
     gap: 8px !important;
-}
-
-/* Excepción: botón de icono (como el toggle de tema o pwd) */
-button.icon-btn,
-button.mobile-menu-btn,
-button.mobile-close-btn,
-button.pwd-toggle,
-.theme-btn {
-    background: transparent !important;
-    background-color: transparent !important;
-    color: var(--text-dim) !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 8px !important;
-    border-radius: 8px !important;
 }
 
 button:hover,
@@ -187,7 +158,7 @@ body .pwd-toggle svg {
 }
 
 .received {
-    background: var(--bg-secondary);
+    background: #f1f5f9;
     color: var(--text-main);
     align-self: flex-start;
 }
@@ -216,14 +187,14 @@ body .pwd-toggle svg {
 
 /* Tablas */
 .requests-table td {
-    background: var(--card-bg);
-    border-bottom: 1px solid var(--border-light);
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 /* Footer */
 .app-footer {
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-light);
+    background: #f8f9fa;
+    border-top: 1px solid #e5e7eb;
 }
 
 /* =========================================
@@ -236,7 +207,7 @@ body .pwd-toggle svg {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--bg-light);
+    background-color: #ffffff;
     /* Fondo blanco para el split layout */
     padding: 0;
 }
@@ -303,7 +274,7 @@ body .pwd-toggle svg {
     align-items: center;
     justify-content: center;
     padding: 40px;
-    background: var(--card-bg);
+    background: #ffffff;
     max-width: 600px;
 }
 
@@ -424,14 +395,14 @@ textarea {
     box-sizing: border-box;
     /* <--- ESTO ES LA CLAVE */
     width: 100%;
-    background: var(--bg-light) !important;
-    border: 1px solid var(--border-light) !important;
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
     border-radius: 12px !important;
-    color: var(--text-main) !important;
+    color: #111827 !important;
     padding: 12px 16px !important;
     /* Padding base */
     margin-top: 8px;
-    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    transition: border-color 0.2s;
 }
 
 /* El ajuste específico para el icono se mantiene igual */
@@ -559,7 +530,7 @@ select {
 /* --- SIDEBAR --- */
 .sidebar {
     width: 260px;
-    background: var(--card-bg) !important;
+    background: #ffffff !important;
     border-right: 1px solid var(--border-light);
     display: flex;
     flex-direction: column;
@@ -578,7 +549,7 @@ select {
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    background: var(--card-bg);
+    background: #fff;
     border-bottom: 1px solid var(--border-light);
     position: sticky;
     top: 0;
@@ -826,7 +797,7 @@ select {
 }
 
 .dashboard-box {
-    background: var(--card-bg);
+    background: white;
     padding: 24px;
     border-radius: var(--radius);
     border: 1px solid var(--border-light);
@@ -1156,8 +1127,8 @@ select {
 
 /* Caja de Tips */
 .info-box {
-    background: rgba(0, 195, 125, 0.08);
-    /* Fondo translúcido */
+    background: #f0fdf4;
+    /* Verde muy claro */
     border: 1px dashed var(--accent-green);
     border-radius: 12px;
     padding: 16px;
@@ -1256,7 +1227,7 @@ select {
     position: relative;
     border-radius: 16px;
     overflow: hidden;
-    background: var(--card-bg);
+    background: #ffffff;
     border: 1px solid var(--border-light);
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -1312,7 +1283,7 @@ select {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--card-bg) !important;
+    background: white !important;
     /* Sobreescribe el azul global */
     color: var(--text-main) !important;
     display: flex;
@@ -1327,7 +1298,7 @@ select {
 
 .action-btn:hover {
     transform: scale(1.1);
-    background: var(--card-bg) !important;
+    background: white !important;
 }
 
 .action-btn.danger {
@@ -1453,7 +1424,7 @@ select {
 }
 
 .icon-wrapper {
-    background: var(--card-bg);
+    background: white;
     padding: 6px;
     border-radius: 50%;
     display: flex;
@@ -1535,7 +1506,7 @@ select {
     height: 36px;
     border-radius: 50%;
     border: 1px solid var(--border-light);
-    background: var(--card-bg);
+    background: white;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1582,7 +1553,7 @@ select {
     /* Cuadrados perfectos */
     border-radius: 12px;
     border: 1px solid transparent;
-    background: var(--card-bg);
+    background: white;
     font-size: 14px;
     font-weight: 500;
     color: var(--text-main);
@@ -1609,8 +1580,8 @@ select {
 
 /* Estado: Ocupado */
 .day.occupied {
-    background: rgba(239, 68, 68, 0.1);
-    /* Rojo translúcido */
+    background: #fef2f2;
+    /* Rojo muy claro */
     color: #ef4444;
     text-decoration: line-through;
     opacity: 0.8;
@@ -1756,7 +1727,7 @@ select {
 }
 
 .filter-tab.active {
-    background: var(--card-bg);
+    background: white;
     color: var(--accent-blue);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -1777,7 +1748,7 @@ select {
 }
 
 .request-card {
-    background: var(--card-bg);
+    background: white;
     border: 1px solid var(--border-light);
     border-radius: 16px;
     overflow: hidden;
@@ -2006,7 +1977,7 @@ select {
     display: flex;
     flex: 1;
     /* Ocupa el espacio restante debajo del header */
-    background: var(--card-bg);
+    background: white;
     border-radius: 16px 16px 0 0;
     /* Solo bordes superiores */
     border: 1px solid var(--border-light);
@@ -2021,7 +1992,7 @@ select {
     border-right: 1px solid var(--border-light);
     display: flex;
     flex-direction: column;
-    background: var(--bg-secondary);
+    background: #ffffff;
 }
 
 .chat-search {
@@ -2168,8 +2139,8 @@ select {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: var(--bg-light);
-    /* Fondo limpio */
+    background: #ffffff;
+    /* Fondo blanco limpio */
 }
 
 /* Header del chat */
@@ -2179,7 +2150,7 @@ select {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--card-bg);
+    background: white;
 }
 
 .user-details {
@@ -2240,7 +2211,7 @@ select {
 
 /* Burbuja Gris (Recibido) */
 .received .message-bubble {
-    background: var(--card-bg);
+    background: white;
     color: var(--text-main);
     border-top-left-radius: 2px;
 }
@@ -2262,7 +2233,7 @@ select {
 /* Input Area */
 .message-input-area {
     padding: 16px 24px;
-    background: var(--card-bg);
+    background: white;
     border-top: 1px solid var(--border-light);
     display: flex;
     align-items: center;
@@ -2441,7 +2412,7 @@ select {
 }
 
 .review-card {
-    background: var(--card-bg);
+    background: white;
     border: 1px solid var(--border-light);
     border-radius: 16px;
     padding: 24px;
@@ -2463,7 +2434,7 @@ select {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--bg-secondary);
+    background: #f3f4f6;
     color: var(--text-dim);
     display: flex;
     align-items: center;
@@ -2661,7 +2632,7 @@ select {
 }
 
 .admin-table tr:hover {
-    background-color: var(--bg-secondary);
+    background-color: #f9fafb;
 }
 
 /* Celda de Usuario (Avatar + Texto) */

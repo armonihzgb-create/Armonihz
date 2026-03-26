@@ -21,11 +21,7 @@
         </div>
 
         {{-- Lado Derecho (Formulario) --}}
-        <div class="auth-right" style="position: relative;">
-            <!-- Toggle Modo Oscuro -->
-            <button onclick="toggleDarkMode()" class="icon-btn" style="position: absolute; top: 24px; right: 24px; cursor: pointer; color: var(--text-dim); z-index: 10;">
-                <i data-lucide="moon" class="theme-toggle-icon"></i>
-            </button>
+        <div class="auth-right">
             <div class="auth-container">
 
                 <div class="auth-header">
