@@ -263,13 +263,7 @@
                             <i data-lucide="file-text" class="nbf-row-icon"></i>
                             <span class="nbf-detail-label">Biografía / Acerca de</span>
                         </div>
-                        <span class="nbf-detail-value" style="white-space:pre-wrap;font-weight:400;line-height:1.6;">
-                            @if(empty($profile->bio))
-                                <span class="nbf-empty">Escribe algo sobre tu trayectoria e instrumentos...</span>
-                            @else
-                                {!! nl2br(e(trim($profile->bio))) !!}
-                            @endif
-                        </span>
+                        <span class="nbf-detail-value" style="white-space:pre-wrap;font-weight:400;line-height:1.6;">@if(empty($profile->bio))<span class="nbf-empty">Escribe algo sobre tu trayectoria e instrumentos...</span>@else{!! nl2br(e(trim($profile->bio))) !!}@endif</span>
                     </div>
                     <div class="nbf-detail-row">
                         <div class="nbf-detail-label-wrap">
