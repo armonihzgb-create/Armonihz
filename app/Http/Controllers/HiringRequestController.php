@@ -43,23 +43,22 @@ class HiringRequestController extends Controller
      */
  public function store(StoreHiringRequestRequest $request)
     {
-        // 1. Recuperamos el UID de Firebase que tu middleware inyectó
+        // 1. Recuperamos el UID de Firebase que inyectó el middleware
         $firebaseUid = $request->attributes->get('firebase_uid');
 
-        // 2. Buscamos al cliente. 
-        // Nota: Si tus contrataciones (client_id) apuntan a la tabla "users" en lugar de "clients", 
-        // cambia "Client" por "User" en la siguiente línea.
+        // 2. Buscamos al cliente en el modelo correcto (Client, no User)
         $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
 
+        // Verificamos que el cliente realmente exista en la BD antes de continuar
         if (!$cliente) {
-            return response()->json(['success' => false, 'message' => 'Cliente no encontrado'], 404);
+            return response()->json(['success' => false, 'message' => 'Cliente no encontrado. UID: ' . $firebaseUid], 404);
         }
 
-        // 3. Guardar en la base de datos
+        // 3. Guardar en la base de datos usando el ID correcto
         $hiringRequest = HiringRequest::create(array_merge(
             $request->validated(),
         [
-            'client_id' => $cliente->id, // Usamos el ID del cliente de tu BD
+            'client_id' => $cliente->id, 
             'status' => 'pending'
         ]
         ));
