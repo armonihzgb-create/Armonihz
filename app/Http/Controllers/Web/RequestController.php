@@ -39,4 +39,29 @@ class RequestController extends Controller
 
         return view('requests.show', compact('hiringRequest'));
     }
+    // Agrega esta función debajo de tu función show()
+    public function updateStatus(Request $request, $id)
+    {
+        $user = $request->user();
+        $hiringRequest = HiringRequest::findOrFail($id);
+
+        // Seguridad: Asegurarnos de que este músico es el dueño de la solicitud
+        if ($user->role === 'musico' && $hiringRequest->musician_profile_id !== $user->musicianProfile->id) {
+            return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+        }
+
+        // Validar que el estado sea correcto
+        $request->validate([
+            'status' => 'required|in:accepted,rejected'
+        ]);
+
+        // Actualizar la base de datos
+        $hiringRequest->status = $request->status;
+        $hiringRequest->save();
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Estado actualizado correctamente'
+        ]);
+    }
 }

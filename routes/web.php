@@ -100,6 +100,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/requests', [RequestController::class , 'index'])->name('requests.index');
             Route::get('/requests/{id}', [RequestController::class , 'show'])->name('requests.show');
 
+            Route::patch('/requests/{id}/status', [RequestController::class , 'updateStatus'])->name('requests.update-status');
+
+            
+
     // Castings / Oportunidades (Músicos)
     Route::get('/castings', [CastingController::class, 'index'])->name('castings.index');
     Route::get('/castings/mis-postulaciones', [CastingController::class, 'myApplications'])->name('castings.my-applications');
