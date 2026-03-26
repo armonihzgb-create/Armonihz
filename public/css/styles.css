@@ -559,7 +559,7 @@ select {
 /* --- SIDEBAR --- */
 .sidebar {
     width: 260px;
-    background: var(--bg-secondary) !important;
+    background: var(--card-bg) !important;
     border-right: 1px solid var(--border-light);
     display: flex;
     flex-direction: column;
