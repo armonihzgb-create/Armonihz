@@ -24,6 +24,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/musicians', [MusicianProfileController::class , 'index'])->middleware('throttle:public-api');
         Route::get('/musicians/{id}', [MusicianProfileController::class , 'show'])->middleware('throttle:public-api');
+        Route::get('/musicians/{id}/availability', [App\Http\Controllers\MusicianProfileController::class, 'getAvailability']);
 
         Route::get('/promotions', [App\Http\Controllers\PromotionController::class , 'index'])->middleware('throttle:public-api');
         Route::get('/test-notification', [ClientController::class, 'testNotification']);
