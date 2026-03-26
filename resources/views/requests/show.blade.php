@@ -2,6 +2,31 @@
 
 @section('dashboard-content')
 
+    @php
+        // 1. Datos del cliente
+        $client = $hiringRequest->client;
+        $clientName = $client ? trim($client->nombre . ' ' . $client->apellido) : 'Cliente Anónimo';
+        $initials = $client ? strtoupper(substr($client->nombre, 0, 1) . substr($client->apellido, 0, 1)) : 'CA';
+        $memberSince = $client && $client->created_at ? $client->created_at->translatedFormat('F Y') : 'Reciente';
+
+        // 2. Duración del evento
+        $durationText = 'No especificada';
+        if($hiringRequest->end_time && $hiringRequest->event_date) {
+            $hours = $hiringRequest->event_date->diffInHours($hiringRequest->end_time);
+            if($hours > 0) {
+                $durationText = $hours . ' hora' . ($hours > 1 ? 's' : '');
+            }
+        }
+
+        // 3. Configuración visual de estados
+        $statusConfig = match($hiringRequest->status) {
+            'pending'  => ['color' => '#ca8a04', 'bg' => '#fefce8', 'border' => '#fef08a', 'text' => '⏳ En espera de respuesta'],
+            'accepted' => ['color' => '#16a34a', 'bg' => '#f0fdf4', 'border' => '#bbf7d0', 'text' => '✅ Solicitud Confirmada'],
+            'rejected' => ['color' => '#dc2626', 'bg' => '#fef2f2', 'border' => '#fecaca', 'text' => '❌ Solicitud Rechazada'],
+            default    => ['color' => '#64748b', 'bg' => '#f1f5f9', 'border' => '#e2e8f0', 'text' => '❔ Estado Desconocido']
+        };
+    @endphp
+
     {{-- BREADCRUMB --}}
     <div class="rqs-breadcrumb">
         <a href="{{ url('/requests') }}" class="rqs-back-link">
@@ -9,7 +34,7 @@
             Solicitudes
         </a>
         <span class="rqs-breadcrumb-sep">/</span>
-        <span>Solicitud #2045</span>
+        <span>Solicitud #{{ $hiringRequest->id }}</span>
     </div>
 
     {{-- TOP BAR --}}
@@ -17,11 +42,14 @@
         <div>
             <div class="rqs-eyebrow">
                 <i data-lucide="inbox" style="width:14px;height:14px;color:#6c3fc5;"></i>
-                SOLICITUD #2045
+                SOLICITUD #{{ $hiringRequest->id }}
             </div>
-            <h1 class="rqs-title">Boda Civil — Juan Pérez</h1>
-            <p class="rqs-subtitle">Recibida el 14 Oct, 2026 · 10:30 AM</p>
+            <h1 class="rqs-title">Evento — {{ $clientName }}</h1>
+            <p class="rqs-subtitle">Recibida el {{ $hiringRequest->created_at->translatedFormat('d M, Y \· h:i A') }}</p>
         </div>
+        
+        {{-- Solo mostramos los botones de acción si está pendiente --}}
+        @if($hiringRequest->status === 'pending')
         <div class="rqs-action-btns">
             <button class="rqs-reject-btn" onclick="Swal.fire({icon:'info', title:'Próximamente', text:'Esta acción estará disponible plenamente en la siguiente versión.', confirmButtonColor:'#6c3fc5'})">
                 <i data-lucide="x" style="width:15px;height:15px;"></i>
@@ -32,6 +60,7 @@
                 Aceptar solicitud
             </button>
         </div>
+        @endif
     </div>
 
     <div class="rqs-layout">
@@ -47,29 +76,29 @@
                 </h3>
 
                 <div class="rqs-client-profile">
-                    <div class="rqs-avatar">JP</div>
+                    <div class="rqs-avatar">{{ $initials }}</div>
                     <div>
-                        <span class="rqs-client-name">Juan Pérez</span>
+                        <span class="rqs-client-name">{{ $clientName }}</span>
                         <span class="rqs-client-verified">
                             <i data-lucide="badge-check" style="width:13px;height:13px;color:#2563eb;"></i>
                             Cliente Verificado
                         </span>
-                        <span class="rqs-stars">⭐⭐⭐⭐⭐ <small>(5.0)</small></span>
+                        <span class="rqs-stars">⭐⭐⭐⭐⭐ <small>(Nuevo)</small></span>
                     </div>
                 </div>
 
                 <div class="rqs-client-stats">
                     <div class="rqs-client-stat">
-                        <span class="rqs-stat-label">Eventos realizados</span>
-                        <span class="rqs-stat-value">3</span>
+                        <span class="rqs-stat-label">Eventos</span>
+                        <span class="rqs-stat-value">1</span>
                     </div>
                     <div class="rqs-client-stat">
-                        <span class="rqs-stat-label">Ubicación</span>
-                        <span class="rqs-stat-value">Guadalajara, Jal.</span>
+                        <span class="rqs-stat-label">Contacto</span>
+                        <span class="rqs-stat-value">App Móvil</span>
                     </div>
                     <div class="rqs-client-stat">
                         <span class="rqs-stat-label">Miembro desde</span>
-                        <span class="rqs-stat-value">Enero 2025</span>
+                        <span class="rqs-stat-value">{{ ucfirst($memberSince) }}</span>
                     </div>
                 </div>
             </div>
@@ -88,8 +117,8 @@
                         </div>
                         <div class="rqs-detail-info">
                             <span class="rqs-detail-label">Fecha y hora</span>
-                            <span class="rqs-detail-value">15 Octubre, 2026 — 19:00 hrs</span>
-                            <span class="rqs-detail-sub">Duración: 5 horas</span>
+                            <span class="rqs-detail-value">{{ $hiringRequest->event_date->translatedFormat('d F, Y — H:i \h\r\s') }}</span>
+                            <span class="rqs-detail-sub">Duración estimada: {{ $durationText }}</span>
                         </div>
                     </div>
                     <div class="rqs-detail-row">
@@ -98,17 +127,8 @@
                         </div>
                         <div class="rqs-detail-info">
                             <span class="rqs-detail-label">Ubicación</span>
-                            <span class="rqs-detail-value">Salón "Los Arcos", Guadalajara</span>
-                            <a href="#" class="rqs-map-link">Ver en Google Maps →</a>
-                        </div>
-                    </div>
-                    <div class="rqs-detail-row">
-                        <div class="rqs-detail-icon" style="background:#fdf4ff;">
-                            <i data-lucide="music" style="width:16px;height:16px;color:#a855f7;"></i>
-                        </div>
-                        <div class="rqs-detail-info">
-                            <span class="rqs-detail-label">Tipo de evento</span>
-                            <span class="rqs-detail-value">Boda Civil</span>
+                            <span class="rqs-detail-value">{{ $hiringRequest->event_location }}</span>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($hiringRequest->event_location) }}" target="_blank" class="rqs-map-link">Ver en Google Maps →</a>
                         </div>
                     </div>
                     <div class="rqs-detail-row rqs-budget-row">
@@ -117,7 +137,7 @@
                         </div>
                         <div class="rqs-detail-info">
                             <span class="rqs-detail-label">Presupuesto ofrecido</span>
-                            <span class="rqs-price">$18,000 <small>MXN</small></span>
+                            <span class="rqs-price">${{ number_format($hiringRequest->budget, 2) }} <small>MXN</small></span>
                         </div>
                     </div>
                 </div>
@@ -128,10 +148,14 @@
         {{-- ── RIGHT COLUMN ────────────────────────── --}}
         <div class="rqs-right">
 
-            {{-- Status badge --}}
-            <div class="rqs-status-banner">
-                <span class="rqs-badge-lg rqs-badge--pending">⏳ En espera de respuesta</span>
-                <span class="rqs-status-time">Hace 2 horas</span>
+            {{-- Status badge dinámico --}}
+            <div class="rqs-status-banner" style="background: {{ $statusConfig['bg'] }}; border-color: {{ $statusConfig['border'] }};">
+                <span class="rqs-badge-lg" style="color: {{ $statusConfig['color'] }};">
+                    {{ $statusConfig['text'] }}
+                </span>
+                <span class="rqs-status-time" style="color: {{ $statusConfig['color'] }}; opacity: 0.8;">
+                    Actualizado {{ $hiringRequest->updated_at->diffForHumans() }}
+                </span>
             </div>
 
             {{-- Client message --}}
@@ -141,12 +165,13 @@
                     Mensaje del Cliente
                 </h3>
                 <div class="rqs-msg-bubble">
-                    <p>Hola, me gustaría contratar sus servicios para mi boda civil. Sería en el Salón Los Arcos. Nos interesa mucho su repertorio de música clásica y también algo de mariachi para el final de la recepción.</p>
-                    <p>¿Tienen disponibilidad para esa fecha? ¿Qué incluye su paquete estándar? Quedo atento a su respuesta.</p>
+                    {{-- Usamos nl2br para respetar los saltos de línea enviados desde Android --}}
+                    {!! nl2br(e($hiringRequest->description)) !!}
                 </div>
             </div>
 
-            {{-- Reply form --}}
+            {{-- Reply form (Oculto si ya fue aceptada/rechazada) --}}
+            @if($hiringRequest->status === 'pending')
             <div class="rqs-section-card">
                 <h3 class="rqs-card-title">
                     <i data-lucide="send" style="width:15px;height:15px;color:#6c3fc5;"></i>
@@ -155,7 +180,7 @@
 
                 <form>
                     <textarea class="rqs-textarea" rows="5"
-                        placeholder="Ej: Hola Juan, ¡muchas gracias por contactarnos! Sí tenemos disponibilidad para esa fecha..."></textarea>
+                        placeholder="Ej: Hola {{ $client->nombre ?? 'cliente' }}, ¡muchas gracias por contactarnos! Sí tenemos disponibilidad..."></textarea>
                     <div class="rqs-form-footer">
                         <p class="rqs-form-hint">
                             <i data-lucide="info" style="width:12px;height:12px;"></i>
@@ -168,6 +193,7 @@
                     </div>
                 </form>
             </div>
+            @endif
 
         </div>
     </div>
@@ -245,7 +271,7 @@
             display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
             border-top: 1px solid #f8fafc; padding-top: 14px;
         }
-        .rqs-client-stat { display: flex; flex-direction: column; gap: 2px; }
+        .rqs-client-stat { display: flex; flex-direction: column; gap: 2px; text-align: center; }
         .rqs-stat-label { font-size: 11px; color: #94a3b8; font-weight: 500; }
         .rqs-stat-value { font-size: 13px; font-weight: 700; color: #0f172a; }
 
@@ -273,14 +299,11 @@
         /* ── Status banner ───────────────────────── */
         .rqs-status-banner {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 18px; background: #fefce8; border: 1.5px solid #fef08a;
+            padding: 12px 18px; border: 1.5px solid transparent;
             border-radius: 12px; margin-bottom: 16px;
         }
         .rqs-badge-lg { font-size: 13px; font-weight: 600; }
-        .rqs-badge--pending { color: #ca8a04; }
-        .rqs-badge--accepted { color: #16a34a; }
-        .rqs-badge--rejected { color: #dc2626; }
-        .rqs-status-time { font-size: 12px; color: #94a3b8; }
+        .rqs-status-time { font-size: 12px; font-weight: 500; }
 
         /* ── Message ─────────────────────────────── */
         .rqs-msg-bubble {
