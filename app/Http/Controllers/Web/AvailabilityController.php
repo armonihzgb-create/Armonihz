@@ -134,6 +134,10 @@ class AvailabilityController extends Controller
             $end   = Carbon::parse($request->end);
         }
 
+        if ($start->isPast() && !$start->isToday()) {
+            return response()->json(['success' => false, 'message' => 'No puedes crear bloques en fechas pasadas.'], 422);
+        }
+
         $ev = MusicianCalendarEvent::create([
             'musician_profile_id' => $profile->id,
             'title'               => $request->title,
@@ -169,6 +173,10 @@ class AvailabilityController extends Controller
         } else {
             $start = Carbon::parse($request->start);
             $end   = Carbon::parse($request->end ?: $request->start);
+        }
+
+        if ($start->isPast() && !$start->isToday()) {
+            return response()->json(['success' => false, 'message' => 'No puedes mover bloques a fechas pasadas.'], 422);
         }
 
         $ev->update(['start' => $start, 'end' => $end]);

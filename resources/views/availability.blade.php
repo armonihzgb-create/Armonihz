@@ -37,7 +37,9 @@
         .fc-day-today { background-color:rgba(108,63,197,.03) !important; }
         .fc-day-today .fc-daygrid-day-number { background:#6c3fc5; color:#fff; border-radius:50%; width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; margin:4px; padding:0 !important; }
         .fc-event { border-radius:6px; padding:3px 8px; font-size:11px; font-weight:600; cursor:pointer; border:none !important; margin-bottom:3px; }
-        .fc-daygrid-day:hover { background:rgba(108,63,197,.03) !important; cursor:pointer; }
+        .fc-daygrid-day:hover:not(.fc-day-past) { background:rgba(108,63,197,.03) !important; cursor:pointer; }
+        .fc-day-past { background-color: #f8fafc !important; opacity: 0.6; cursor: not-allowed !important; }
+        .fc-day-past .fc-daygrid-day-number { color: #94a3b8 !important; }
         #calendar { min-height:600px; }
 
         /* ── Custom Modal ── */
@@ -368,6 +370,11 @@
 
             // Click on empty day cell
             dateClick: function(info) {
+                const now = new Date();
+                now.setHours(0,0,0,0);
+                if (info.date < now) {
+                    return; // Ignorar fechas pasadas
+                }
                 openAddModal(info.dateStr);
             },
 
@@ -403,7 +410,13 @@
             // Drag / resize (manual events only)
             eventChange: function(info) {
                 const isManual = info.event.extendedProps.source === 'manual';
-                if (!isManual) { info.revert(); return; }
+                const now = new Date();
+                now.setHours(0,0,0,0);
+                
+                if (!isManual || info.event.start < now) { 
+                    info.revert(); 
+                    return; 
+                }
 
                 fetch(`{{ url('/availability') }}/${info.event.extendedProps.real_id}`, {
                     method: 'PUT',
