@@ -147,7 +147,7 @@
 </div>
 
 {{-- Scripts al final --}}
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>
     lucide.createIcons();
 
