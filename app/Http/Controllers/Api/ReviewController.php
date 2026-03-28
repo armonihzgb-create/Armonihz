@@ -85,11 +85,42 @@ class ReviewController extends Controller
 
     public function musicianReviews($id)
     {
-        $reviews = Review::with('client.client') // get the client details via user
+        // 1. Traemos las reseñas con la relación anidada (user -> client)
+        $reviews = Review::with('client.client') 
             ->where('musician_profile_id', $id)
             ->orderBy('created_at', 'desc')
             ->get();
         
-        return response()->json($reviews);
+        // 2. Formateamos los datos para ocultar emails/contraseñas y darle a Android la estructura plana que espera
+        $formattedReviews = $reviews->map(function ($review) {
+            $clientProfile = null;
+            
+            // Verificamos que la relación del cliente exista
+            if ($review->client && $review->client->client) {
+                $perfil = $review->client->client;
+                $clientProfile = [
+                    'id' => $perfil->id,
+                    'nombre' => $perfil->nombre,
+                    'apellido' => $perfil->apellido,
+                    // OJO: Ajusta 'photo_url' según cómo se llame la columna de la foto en tu tabla clients
+                    'profile_picture' => $perfil->photo_url ?? $perfil->photoUrl ?? null 
+                ];
+            }
+
+            return [
+                'id' => $review->id,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'response' => $review->response,
+                'created_at' => $review->created_at,
+                'client' => $clientProfile // Entregamos el objeto ya simplificado y seguro
+            ];
+        });
+
+        // 3. Devolvemos el envoltorio (wrapper) exacto que espera Kotlin (success y data)
+        return response()->json([
+            'success' => true,
+            'data' => $formattedReviews
+        ], 200);
     }
 }
