@@ -57,13 +57,8 @@
             </div>
 
             <div class="nav-group">
-                <span class="group-title">Accesos</span>
+                <span class="group-title">Accesos Interiores</span>
                 <ul>
-                    <li>
-                        <a href="/dashboard">
-                            <i data-lucide="music"></i> Vista Músico
-                        </a>
-                    </li>
                     <li>
                         <a href="/admin/settings" class="{{ Request::is('admin/settings*') ? 'active' : '' }}">
                             <i data-lucide="settings"></i> Configuración

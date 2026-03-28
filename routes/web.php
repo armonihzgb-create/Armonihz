@@ -117,10 +117,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // --- ADMIN ROUTES ---
         Route::middleware(['role:admin'])->prefix('admin')->group(function () {
-            Route::get('/', function () {
-                    return view('admin');
-                }
-                )->name('admin.dashboard');
+            Route::get('/', [\App\Http\Controllers\Web\AdminController::class, 'index'])->name('admin.dashboard');
 
                 Route::get('/castings', function () {
                     return view('admin.castings.index');

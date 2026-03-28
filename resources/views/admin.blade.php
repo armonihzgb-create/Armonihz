@@ -20,7 +20,7 @@
             </div>
             <div>
                 <h4>Músicos Registrados</h4>
-                <span class="stat-number">128</span>
+                <span class="stat-number">{{ $totalMusicians }}</span>
                 <p class="stat-meta">Total en plataforma</p>
             </div>
         </div>
@@ -31,7 +31,7 @@
             </div>
             <div>
                 <h4>Perfiles Pendientes</h4>
-                <span class="stat-number text-orange">7</span>
+                <span class="stat-number text-orange">{{ $pendingMusiciansCount }}</span>
                 <p class="stat-meta">Requieren validación</p>
             </div>
         </div>
@@ -42,8 +42,19 @@
             </div>
             <div>
                 <h4>Eventos Completados</h4>
-                <span class="stat-number">342</span>
-                <p class="stat-meta">Este mes</p>
+                <span class="stat-number">{{ $totalCompletedEvents }}</span>
+                <p class="stat-meta">Métricas globales</p>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon cyan">
+                <i data-lucide="user-check"></i>
+            </div>
+            <div>
+                <h4>Clientes Totales</h4>
+                <span class="stat-number">{{ $totalClients }}</span>
+                <p class="stat-meta">Registrados vía App</p>
             </div>
         </div>
     </div>
@@ -69,64 +80,46 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- Fila 1: Pendiente --}}
+                    @forelse($recentMusicians as $m)
                     <tr>
                         <td>
                             <div class="user-cell">
-                                <div class="avatar-circle">MS</div>
+                                @php
+                                    $initials = strtoupper(substr($m->stage_name, 0, 2));
+                                @endphp
+                                <div class="avatar-circle {{ $m->is_verified ? 'blue' : '' }}">{{ $initials }}</div>
                                 <div>
-                                    <strong>Mariachi Sol de México</strong>
-                                    <span class="sub-text">Reg: Hoy</span>
+                                    <strong>{{ $m->stage_name }}</strong>
+                                    <span class="sub-text">Reg: {{ $m->created_at->format('d M') }}</span>
                                 </div>
                             </div>
                         </td>
-                        <td>Tehuacán, Pue</td>
-                        <td>Mariachi</td>
-                        <td><span class="status-pill warning">Pendiente</span></td>
-                        <td class="text-right">
-                            <button class="primary-btn small-btn">Validar</button>
-                        </td>
-                    </tr>
-
-                    {{-- Fila 2: Activo --}}
-                    <tr>
+                        <td>{{ $m->location ?? 'No especificada' }}</td>
+                        <td>{{ $m->genres->first()->name ?? 'N/A' }}</td>
                         <td>
-                            <div class="user-cell">
-                                <div class="avatar-circle blue">BN</div>
-                                <div>
-                                    <strong>Banda Norteña Real</strong>
-                                    <span class="sub-text">Reg: Ayer</span>
-                                </div>
-                            </div>
+                            @if($m->is_verified)
+                                <span class="status-pill success">Activo</span>
+                            @else
+                                <span class="status-pill warning">Pendiente</span>
+                            @endif
                         </td>
-                        <td>Monterrey, NL</td>
-                        <td>Norteño</td>
-                        <td><span class="status-pill success">Activo</span></td>
                         <td class="text-right">
-                            <button class="secondary-btn small-btn icon-only">
-                                <i data-lucide="more-horizontal"></i>
-                            </button>
+                            @if(!$m->is_verified)
+                                <button class="primary-btn small-btn" disabled title="Funcionalidad próximamente">Validar</button>
+                            @else
+                                <button class="secondary-btn small-btn icon-only" disabled>
+                                    <i data-lucide="more-horizontal"></i>
+                                </button>
+                            @endif
                         </td>
                     </tr>
-
-                    {{-- Fila 3: Pendiente --}}
+                    @empty
                     <tr>
-                        <td>
-                            <div class="user-cell">
-                                <div class="avatar-circle">SV</div>
-                                <div>
-                                    <strong>Sonido Versátil</strong>
-                                    <span class="sub-text">Reg: 2 Feb</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>Guadalajara, Jal</td>
-                        <td>Versátil</td>
-                        <td><span class="status-pill warning">Pendiente</span></td>
-                        <td class="text-right">
-                            <button class="primary-btn small-btn">Validar</button>
+                        <td colspan="5" class="text-center" style="padding: 20px; color: #64748b;">
+                            No hay músicos registrados todavía.
                         </td>
                     </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
