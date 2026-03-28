@@ -27,6 +27,16 @@ class HiringRequest extends Model
         'end_time' => 'datetime',
     ];
 
+    // 👇 1. LE DECIMOS A LARAVEL QUE AGREGUE ESTE CAMPO AL JSON
+    protected $appends = ['has_reviewed'];
+
+    // 👇 2. CREAMOS LA LÓGICA DEL CAMPO (Se ejecuta automáticamente)
+    public function getHasReviewedAttribute()
+    {
+        // Devuelve true si existe una reseña asociada a esta solicitud
+        return $this->review()->exists();
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class , 'client_id');

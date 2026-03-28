@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Auth;
 use App\Models\Review;
 
@@ -13,23 +12,29 @@ class ReviewController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
         if ($user->role !== 'musico') {
             return redirect('/dashboard');
         }
 
         $musician = $user->musicianProfile;
+        
         if (!$musician) {
             return redirect('/profile')->with('error', 'Crea tu perfil de músico primero.');
         }
 
+        // Cargamos las reseñas con el cliente y el evento
         $reviews = $musician->reviews()->with([
-            'client.client', // To get client profile info (Name, Photo)
-            'hiringRequest',
-            'castingApplication.event'
+            'client', // 👈 Corregido: Solo llamamos al cliente asociado a la reseña
+            'hiringRequest'
+            // 'castingApplication.event' // 👈 Descomenta esto solo si también recibes reseñas por castings
         ])->latest()->get();
 
-        $averageRating = number_format($musician->averageRating(), 1);
         $totalReviews = $reviews->count();
+        
+        // 👈 Calculamos el promedio de forma segura (si hay 0 reseñas, devuelve 0.0)
+        $averageRating = $totalReviews > 0 ? number_format($reviews->avg('rating'), 1) : '0.0';
+        
         $stars5 = $reviews->where('rating', 5)->count();
         $replied = $reviews->whereNotNull('response')->count();
 

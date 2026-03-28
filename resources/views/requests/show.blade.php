@@ -358,16 +358,35 @@
         }
     </style>
 
-    {{-- SCRIPT PARA CAMBIAR EL ESTADO SIN RECARGAR LA PÁGINA --}}
+ {{-- SCRIPT PARA CAMBIAR EL ESTADO SIN RECARGAR LA PÁGINA --}}
     <script>
         function cambiarEstado(nuevoEstado) {
-            const accion = nuevoEstado === 'accepted' ? 'aceptar' : 'rechazar';
-            const confirmColor = nuevoEstado === 'accepted' ? '#16a34a' : '#dc2626';
+            // 1. Configuramos los textos y colores dinámicamente según el estado
+            let accion = '';
+            let confirmColor = '';
+            let textoAlerta = '';
+            let icono = 'warning';
 
+            if (nuevoEstado === 'accepted') {
+                accion = 'aceptar';
+                confirmColor = '#16a34a'; // Verde
+                textoAlerta = 'Este evento se bloqueará automáticamente en tu calendario de disponibilidad.';
+            } else if (nuevoEstado === 'rejected') {
+                accion = 'rechazar';
+                confirmColor = '#dc2626'; // Rojo
+                textoAlerta = 'El cliente será notificado y esta acción no se puede deshacer.';
+            } else if (nuevoEstado === 'completed') {
+                accion = 'finalizar';
+                confirmColor = '#6c3fc5'; // Morado
+                textoAlerta = 'El evento se marcará como completado y el cliente podrá dejarte una reseña desde la app móvil.';
+                icono = 'info'; // Cambiamos el icono para que sea más amigable
+            }
+
+            // 2. Lanzamos la alerta de confirmación
             Swal.fire({
-                title: `¿Estás seguro de ${accion} esta solicitud?`,
-                text: nuevoEstado === 'accepted' ? 'Este evento se bloqueará automáticamente en tu calendario de disponibilidad.' : 'El cliente será notificado y esta acción no se puede deshacer.',
-                icon: 'warning',
+                title: `¿Estás seguro de ${accion} este evento?`,
+                text: textoAlerta,
+                icon: icono,
                 showCancelButton: true,
                 confirmButtonColor: confirmColor,
                 cancelButtonColor: '#64748b',
@@ -405,11 +424,12 @@
                                 icon: 'success',
                                 confirmButtonColor: '#6c3fc5'
                             }).then(() => {
-                                // Recargar la página para ver los nuevos colores
+                                // Recargar la página para ver los nuevos colores y ocultar los botones
                                 window.location.reload();
                             });
                         } else {
-                            Swal.fire('Error', 'No se pudo actualizar.', 'error');
+                            // Mostrar el mensaje de error que viene del backend (ej. si intentan saltar estados)
+                            Swal.fire('Error', data.message || 'No se pudo actualizar.', 'error');
                         }
                     })
                     .catch(error => {
@@ -419,6 +439,7 @@
                 }
             });
         }
+
         function enviarContraoferta() {
             const mensaje = document.getElementById('musicianMessage').value;
             const precio = document.getElementById('counterPrice').value;
