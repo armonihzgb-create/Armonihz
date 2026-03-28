@@ -74,10 +74,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
 
     // Common reviews (accessible to all authenticated users)
-    Route::get('/reviews', function () {
-            return view('reviews');
-        }
-        )->name('reviews.index');
+    Route::get('/reviews', [\App\Http\Controllers\Web\ReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews/{id}/respond', [\App\Http\Controllers\Web\ReviewController::class, 'respond'])->name('reviews.respond');
 
         // --- MÚSICO specific routes ---
         Route::middleware(['role:musico'])->group(function () {

@@ -49,9 +49,19 @@ class RequestController extends Controller
             return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
         }
 
+        // Una solicitud aceptada solo puede pasar a "completed"
+        if ($hiringRequest->status === 'accepted' && $request->status !== 'completed') {
+             return response()->json(['success' => false, 'message' => 'Una solicitud aceptada solo puede marcarse como completada.'], 400);
+        }
+
+        // Si ya está completada o rechazada, no se puede mover más
+        if (in_array($hiringRequest->status, ['completed', 'rejected'])) {
+            return response()->json(['success' => false, 'message' => 'Esta solicitud ya tiene un estado final.'], 400);
+        }
+
         // Validar que el estado sea correcto (agregamos counter_offer)
         $request->validate([
-            'status' => 'required|in:accepted,rejected,counter_offer',
+            'status' => 'required|in:accepted,rejected,counter_offer,completed',
             'musician_message' => 'nullable|string',
             'counter_offer' => 'nullable|numeric|min:0'
         ]);

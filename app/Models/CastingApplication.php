@@ -26,4 +26,9 @@ class CastingApplication extends Model
     {
         return $this->belongsTo(MusicianProfile::class , 'musician_profile_id');
     }
+
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
 }

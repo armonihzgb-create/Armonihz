@@ -32,22 +32,29 @@
 
                 {{-- Big score --}}
                 <div class="rv-score-block">
-                    <span class="rv-big-score">4.5</span>
+                    <span class="rv-big-score">{{ $averageRating }}</span>
                     <div>
                         <div class="rv-stars-row">
-                            <i data-lucide="star" class="rv-star rv-star--filled"></i>
-                            <i data-lucide="star" class="rv-star rv-star--filled"></i>
-                            <i data-lucide="star" class="rv-star rv-star--filled"></i>
-                            <i data-lucide="star" class="rv-star rv-star--filled"></i>
-                            <i data-lucide="star-half" class="rv-star rv-star--filled"></i>
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= round($averageRating))
+                                    <i data-lucide="star" class="rv-star rv-star--filled"></i>
+                                @else
+                                    <i data-lucide="star" class="rv-star rv-star--empty"></i>
+                                @endif
+                            @endfor
                         </div>
-                        <span class="rv-score-sub">Basado en 32 reseñas</span>
+                        <span class="rv-score-sub">Basado en {{ $totalReviews }} reseñas</span>
                     </div>
                 </div>
 
                 {{-- Breakdown bars --}}
                 <div class="rv-breakdown">
-                    @foreach([['5', '80%', 24], ['4', '15%', 6], ['3', '5%', 2], ['2', '0%', 0], ['1', '0%', 0]] as [$stars, $pct, $count])
+                    @foreach($breakdown as $b)
+                        @php
+                            $stars = $b['stars'];
+                            $pct = $b['pct'];
+                            $count = $b['count'];
+                        @endphp
                     <div class="rv-bar-row">
                         <span class="rv-bar-label">{{ $stars }} ⭐</span>
                         <div class="rv-bar-bg">
@@ -73,15 +80,15 @@
             {{-- Mini stats --}}
             <div class="rv-mini-stats">
                 <div class="rv-mini-stat">
-                    <span class="rv-mini-value">32</span>
+                    <span class="rv-mini-value">{{ $totalReviews }}</span>
                     <span class="rv-mini-label">Reseñas totales</span>
                 </div>
                 <div class="rv-mini-stat">
-                    <span class="rv-mini-value" style="color:#16a34a;">28</span>
+                    <span class="rv-mini-value" style="color:#16a34a;">{{ $stars5 }}</span>
                     <span class="rv-mini-label">Con 5 estrellas</span>
                 </div>
                 <div class="rv-mini-stat">
-                    <span class="rv-mini-value" style="color:#2563eb;">18</span>
+                    <span class="rv-mini-value" style="color:#2563eb;">{{ $replied }}</span>
                     <span class="rv-mini-label">Respondidas</span>
                 </div>
             </div>
@@ -91,95 +98,79 @@
         {{-- ── RIGHT: Reviews list ──────────────────── --}}
         <div class="rv-list-col">
 
-            @php
-            $reviews = [
-                [
-                    'initials' => 'CP', 'bg' => '#ede9fe', 'color' => '#6c3fc5',
-                    'name'    => 'Carlos Pérez', 'date' => '10 Feb 2026',
-                    'stars'   => 5, 'event' => 'Cumpleaños privado',
-                    'comment' => '"Excelente servicio y puntualidad. El grupo llegó antes para prepararse y tocaron todas las canciones que pedimos. Muy profesionales, sin duda los volveré a contratar para el próximo evento."',
-                    'reply'   => null,
-                ],
-                [
-                    'initials' => 'AL', 'bg' => '#eff6ff', 'color' => '#2563eb',
-                    'name'    => 'Ana López', 'date' => '28 Ene 2026',
-                    'stars'   => 4, 'event' => 'Boda Civil',
-                    'comment' => '"Muy buena música y ambiente. Lo único que mejoraría es que tardaron un poco en responder al principio, pero el día del evento todo salió perfecto. Los recomendaría."',
-                    'reply'   => '¡Gracias Ana! Tomamos muy en cuenta tu comentario para mejorar nuestros tiempos de respuesta.',
-                ],
-                [
-                    'initials' => 'MR', 'bg' => '#f0fdf4', 'color' => '#16a34a',
-                    'name'    => 'María Rodríguez', 'date' => '15 Ene 2026',
-                    'stars'   => 5, 'event' => 'Quinceañera',
-                    'comment' => '"¡Increíble! Mis hija quedó feliz con la música. Supieron adaptarse al estilo que pedimos y el repertorio fue una mezcla perfecta de clásicos y música actual. 100% recomendados."',
-                    'reply'   => null,
-                ],
-                [
-                    'initials' => 'RM', 'bg' => '#fefce8', 'color' => '#ca8a04',
-                    'name'    => 'Roberto Méndez', 'date' => '3 Ene 2026',
-                    'stars'   => 5, 'event' => 'Evento corporativo',
-                    'comment' => '"Contratamos el grupo para el cierre de año de la empresa. El ambiente que generaron fue espectacular. Todos nuestros colaboradores quedaron muy satisfechos. ¡Ya los tenemos en mente para el siguiente año!"',
-                    'reply'   => 'Muchas gracias Roberto, fue un placer acompañarlos. ¡Esperamos verlos el próximo año!',
-                ],
-                [
-                    'initials' => 'SG', 'bg' => '#fdf4ff', 'color' => '#a855f7',
-                    'name'    => 'Sofía García', 'date' => '20 Dic 2025',
-                    'stars'   => 4, 'event' => 'Boda Religiosa',
-                    'comment' => '"La selección musical fue muy apropiada para la ceremonia religiosa. Sonido impecable y muy respetuosos durante toda la misa. Solo les diría que traigan un poco más de variedad para la recepción."',
-                    'reply'   => null,
-                ],
-            ];
-            @endphp
+            @if($reviews->isEmpty())
+                <div class="rv-card text-center" style="padding:40px;">
+                    <i data-lucide="star" style="width:40px;height:40px;color:#cbd5e1;margin-bottom:12px;margin-left:auto;margin-right:auto;display:block;"></i>
+                    <h3 style="margin:0;color:#64748b;font-size:16px;text-align:center;">Aún no tienes reseñas</h3>
+                    <p style="margin:8px 0 0;font-size:14px;color:#94a3b8;text-align:center;">Cuando completes eventos, tus clientes podrán dejar sus comentarios aquí.</p>
+                </div>
+            @endif
 
             @foreach($reviews as $rv)
+            @php
+                $clientName = $rv->client->name ?? 'Cliente Anónimo';
+                $initials = strtoupper(substr($clientName, 0, 1));
+                $bg = '#ede9fe'; $color = '#6c3fc5';
+                
+                $eventName = 'Contratación Directa';
+                if ($rv->castingApplication) {
+                    $eventName = 'Casting: ' . ($rv->castingApplication->event->titulo ?? 'Evento');
+                } elseif ($rv->hiringRequest) {
+                    $eventName = 'Contratación Directa';
+                }
+            @endphp
             <div class="rv-card">
                 {{-- Card top --}}
                 <div class="rv-card-top">
                     <div class="rv-reviewer">
-                        <div class="rv-avatar" style="background:{{ $rv['bg'] }};color:{{ $rv['color'] }};">
-                            {{ $rv['initials'] }}
+                        <div class="rv-avatar" style="background:{{ $bg }};color:{{ $color }};">
+                            {{ $initials }}
                         </div>
                         <div>
-                            <span class="rv-reviewer-name">{{ $rv['name'] }}</span>
+                            <span class="rv-reviewer-name">{{ $clientName }}</span>
                             <span class="rv-reviewer-date">
                                 <i data-lucide="calendar" style="width:11px;height:11px;"></i>
-                                {{ $rv['date'] }}
+                                {{ $rv->created_at->format('d M Y') }}
                             </span>
                         </div>
                     </div>
                     <div class="rv-card-right">
                         <div class="rv-card-stars">
                             @for($s = 1; $s <= 5; $s++)
-                                <i data-lucide="{{ $s <= $rv['stars'] ? 'star' : 'star' }}"
-                                   class="rv-star {{ $s <= $rv['stars'] ? 'rv-star--filled' : 'rv-star--empty' }}"
+                                <i data-lucide="star"
+                                   class="rv-star {{ $s <= $rv->rating ? 'rv-star--filled' : 'rv-star--empty' }}"
                                    style="width:15px;height:15px;"></i>
                             @endfor
                         </div>
                         <span class="rv-event-chip">
                             <i data-lucide="music" style="width:11px;height:11px;"></i>
-                            {{ $rv['event'] }}
+                            {{ $eventName }}
                         </span>
                     </div>
                 </div>
 
                 {{-- Comment --}}
-                <p class="rv-comment">{{ $rv['comment'] }}</p>
+                @if($rv->comment)
+                <p class="rv-comment">{{ $rv->comment }}</p>
+                @else
+                <p class="rv-comment" style="color:#94a3b8; font-style:normal; background:transparent; padding:0; margin-bottom:12px;">(Sin comentario escrito)</p>
+                @endif
 
                 {{-- Reply (if any) --}}
-                @if($rv['reply'])
+                @if($rv->response)
                 <div class="rv-reply-box">
                     <div class="rv-reply-label">
                         <i data-lucide="corner-down-right" style="width:13px;height:13px;"></i>
                         Tu respuesta
                     </div>
-                    <p class="rv-reply-text">{{ $rv['reply'] }}</p>
+                    <p class="rv-reply-text">{{ $rv->response }}</p>
                 </div>
                 @endif
 
                 {{-- Footer --}}
                 <div class="rv-card-footer">
-                    @if(!$rv['reply'])
-                    <button class="rv-reply-btn" onclick="Swal.fire({icon:'info', title:'Próximamente', text:'La funcionalidad para responder reseñas estará disponible muy pronto.', confirmButtonColor:'#6c3fc5'})">
+                    @if(!$rv->response)
+                    <button class="rv-reply-btn" onclick="responderResena({{ $rv->id }})">
                         <i data-lucide="corner-up-left" style="width:13px;height:13px;"></i>
                         Responder
                     </button>
@@ -334,5 +325,43 @@
             .rv-header { flex-direction: column; }
         }
     </style>
+
+    <script>
+        function responderResena(reviewId) {
+            Swal.fire({
+                title: 'Responder a la reseña',
+                input: 'textarea',
+                inputPlaceholder: 'Escribe tu respuesta aquí...',
+                inputAttributes: {
+                    'aria-label': 'Tu respuesta'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Enviar respuesta',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#6c3fc5'
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/reviews/${reviewId}/respond`;
+                    
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '{{ csrf_token() }}';
+                    
+                    const responseInput = document.createElement('input');
+                    responseInput.type = 'hidden';
+                    responseInput.name = 'response';
+                    responseInput.value = result.value;
+                    
+                    form.appendChild(csrf);
+                    form.appendChild(responseInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
 
 @endsection

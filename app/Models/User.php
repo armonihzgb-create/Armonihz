@@ -63,6 +63,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(HiringRequest::class , 'client_id');
     }
 
+    public function reviewsGiven()
+    {
+        return $this->hasMany(Review::class, 'client_id');
+    }
+
     /**
      * Canal de ruta para las notificaciones FCM.
      */

@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/musicians', [MusicianProfileController::class , 'index'])->middleware('throttle:public-api');
         Route::get('/musicians/{id}', [MusicianProfileController::class , 'show'])->middleware('throttle:public-api');
         Route::get('/musicians/{id}/availability', [App\Http\Controllers\MusicianProfileController::class, 'getAvailability']);
+        Route::get('/musicians/{id}/reviews', [\App\Http\Controllers\Api\ReviewController::class, 'musicianReviews']);
 
         Route::get('/promotions', [App\Http\Controllers\PromotionController::class , 'index'])->middleware('throttle:public-api');
         Route::get('/test-notification', [ClientController::class, 'testNotification']);
@@ -72,6 +73,9 @@ Route::prefix('v1')->group(function () {
 
             // 👇 AHORA SÍ, LAS RUTAS DE HIRING-REQUESTS ESTÁN PROTEGIDAS POR FIREBASE 👇
             Route::post('hiring-requests', [HiringRequestController::class , 'store']);
+            
+            // Reviews
+            Route::post('/reviews', [\App\Http\Controllers\Api\ReviewController::class, 'store']);
             Route::apiResource('hiring-requests', HiringRequestController::class)->only(['index', 'show']);
             Route::patch('hiring-requests/{id}/status', [HiringRequestController::class , 'updateStatus']);
             Route::post('hiring-requests/{id}/respond', [HiringRequestController::class, 'respondToCounterOffer']);

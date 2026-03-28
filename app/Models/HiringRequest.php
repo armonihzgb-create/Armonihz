@@ -36,4 +36,9 @@ class HiringRequest extends Model
     {
         return $this->belongsTo(MusicianProfile::class);
     }
+
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
 }

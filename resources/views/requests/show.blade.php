@@ -23,6 +23,7 @@
             'pending'  => ['color' => '#ca8a04', 'bg' => '#fefce8', 'border' => '#fef08a', 'text' => '⏳ En espera de respuesta'],
             'accepted' => ['color' => '#16a34a', 'bg' => '#f0fdf4', 'border' => '#bbf7d0', 'text' => '✅ Solicitud Confirmada'],
             'rejected' => ['color' => '#dc2626', 'bg' => '#fef2f2', 'border' => '#fecaca', 'text' => '❌ Solicitud Rechazada'],
+            'completed' => ['color' => '#6c3fc5', 'bg' => '#f5f3ff', 'border' => '#ddd6fe', 'text' => '⭐ Evento Finalizado'],
             default    => ['color' => '#64748b', 'bg' => '#f1f5f9', 'border' => '#e2e8f0', 'text' => '❔ Estado Desconocido']
         };
     @endphp
@@ -49,7 +50,7 @@
         </div>
         
         {{-- Solo mostramos los botones de acción si está pendiente --}}
-      @if($hiringRequest->status === 'pending')
+        @if($hiringRequest->status === 'pending')
         <div class="rqs-action-btns">
             <button class="rqs-reject-btn" onclick="cambiarEstado('rejected')">
                 <i data-lucide="x" style="width:15px;height:15px;"></i>
@@ -58,6 +59,13 @@
             <button class="rqs-accept-btn" onclick="cambiarEstado('accepted')">
                 <i data-lucide="check" style="width:15px;height:15px;"></i>
                 Aceptar solicitud
+            </button>
+        </div>
+        @elseif($hiringRequest->status === 'accepted')
+        <div class="rqs-action-btns">
+            <button class="rqs-accept-btn" onclick="cambiarEstado('completed')" style="background: linear-gradient(135deg, #6c3fc5, #a855f7); box-shadow: 0 4px 14px rgba(168,85,247,.25);">
+                <i data-lucide="check-circle" style="width:15px;height:15px;"></i>
+                Finalizar Evento
             </button>
         </div>
         @endif
