@@ -57,6 +57,10 @@ class VerificationController extends Controller
             // Guardamos en storage/app/musician_ids (fuera del public explicitando el disco local)
             $path = $file->storeAs('musician_ids', $filename, 'local');
 
+            if (!$path) {
+                return back()->with('error', 'Error del servidor: No se pudo escribir el archivo físicamente en el disco local.');
+            }
+
             // Actualizamos o creamos el perfil (en caso de que no tenga, aunque el registro lo crea)
             if ($profile) {
                 $profile->id_document_path = $path;

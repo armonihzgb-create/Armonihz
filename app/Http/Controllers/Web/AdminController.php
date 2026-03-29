@@ -87,7 +87,7 @@ class AdminController extends Controller
     {
         $admin = Auth::user();
         if ($admin->role !== 'admin') {
-            abort(403, 'Acesso denegado.');
+            abort(403, 'Acceso denegado.');
         }
 
         $musician = MusicianProfile::findOrFail($id);
@@ -98,25 +98,33 @@ class AdminController extends Controller
 
         $path = basename($musician->id_document_path);
 
-        $fullPath = storage_path('app/private/musician_ids/' . $path);
-
-        if (!file_exists($fullPath)) {
-            $fullPath = storage_path('app/musician_ids/' . $path);
+        // Primer intento: Laravel Storage local disk
+        if (Storage::disk('local')->exists('musician_ids/' . $path)) {
+            return Storage::disk('local')->response('musician_ids/' . $path);
         }
 
-        if (!file_exists($fullPath)) {
-            $fullPath = storage_path('app/public/musician_ids/' . $path);
+        // Segundo intento: Laravel Storage public disk (por si cayó ahí por error antes)
+        if (Storage::disk('public')->exists('musician_ids/' . $path)) {
+            return Storage::disk('public')->response('musician_ids/' . $path);
         }
 
-        if (!file_exists($fullPath)) {
-            abort(404, 'Documento no encontrado físicamente en el servidor.');
+        // Tercer intento manual por si Local Disk mapeó a otro lado o no reconoce la capeta private internamente
+        $manualPaths = [
+            storage_path('app/private/musician_ids/' . $path),
+            storage_path('app/musician_ids/' . $path),
+            storage_path('app/public/musician_ids/' . $path)
+        ];
+
+        foreach ($manualPaths as $fullPath) {
+            if (file_exists($fullPath)) {
+                return response()->file($fullPath, [
+                    'Content-Type' => mime_content_type($fullPath),
+                    'Cache-Control' => 'no-cache, private',
+                ]);
+            }
         }
 
-        $mimeType = mime_content_type($fullPath);
-
-        return response()->file($fullPath, [
-            'Content-Type' => $mimeType,
-            'Cache-Control' => 'no-cache, private',
-        ]);
+        // Si nada funciona, arrojar un error que contenga rutas de depuración en texto plano para que el usuario pueda verlo al abrir el enlace directo
+        return response("File not found.\n\nDB Path: " . $musician->id_document_path . "\n\nChecked:\n" . implode("\n", $manualPaths), 404, ['Content-Type' => 'text/plain']);
     }
 }
