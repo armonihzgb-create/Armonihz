@@ -36,7 +36,7 @@
 
         @if(!$profile || $profile->verification_status === 'unverified')
             {{-- Formulario de Subida --}}
-            <form action="{{ route('verification.upload') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('id_verification.upload') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e293b; font-size: 14px;">Identificación Oficial</label>
@@ -87,7 +87,7 @@
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
                 
                 <h4 style="font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 15px; text-align: left;">Sube un nuevo documento</h4>
-                <form action="{{ route('verification.upload') }}" method="POST" enctype="multipart/form-data" style="text-align: left;">
+                <form action="{{ route('id_verification.upload') }}" method="POST" enctype="multipart/form-data" style="text-align: left;">
                     @csrf
                     <div style="border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; background: #f8fafc; position: relative; margin-bottom: 15px;">
                         <input type="file" name="id_document" id="id_document" accept=".jpg,.jpeg,.png,.pdf" required style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">

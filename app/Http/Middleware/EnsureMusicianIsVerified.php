@@ -27,7 +27,7 @@ class EnsureMusicianIsVerified
             // Pero si sí tiene perfil, checamos el status
             if ($profile && $profile->verification_status !== 'approved') {
                 // Redirigir a la vista de información de verificación requerida
-                return redirect()->route('verification.notice');
+                return redirect()->route('id_verification.notice');
             }
         }
 

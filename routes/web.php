@@ -71,8 +71,8 @@ Route::get('/musico/{id}', [ProfileController::class , 'showPublic'])->name('pro
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Rutas de verificación de identidad (músicos)
-    Route::get('/verificar-identidad', [\App\Http\Controllers\Web\VerificationController::class, 'notice'])->name('verification.notice');
-    Route::post('/verificar-identidad', [\App\Http\Controllers\Web\VerificationController::class, 'upload'])->name('verification.upload');
+    Route::get('/verificar-identidad', [\App\Http\Controllers\Web\VerificationController::class, 'notice'])->name('id_verification.notice');
+    Route::post('/verificar-identidad', [\App\Http\Controllers\Web\VerificationController::class, 'upload'])->name('id_verification.upload');
 
     Route::middleware(['verified_musician'])->group(function () {
         // Common dashboard (accessible to all authenticated roles)
