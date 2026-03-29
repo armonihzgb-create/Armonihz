@@ -20,11 +20,11 @@ class ReviewController extends Controller
             return response()->json(['success' => false, 'message' => 'No autorizado'], 401);
         }
 
-        // 1. CORRECCIÓN: Buscar directamente en la tabla Client (como en toda tu App Móvil)
+        // Buscamos estrictamente en la tabla CLIENTS
         $client = Client::where('firebase_uid', $firebaseUid)->first();
         
         if (!$client) {
-            return response()->json(['success' => false, 'message' => 'Usuario no encontrado'], 404);
+            return response()->json(['success' => false, 'message' => 'Cliente no encontrado en la app móvil'], 404);
         }
 
         $request->validate([
@@ -36,41 +36,29 @@ class ReviewController extends Controller
         ]);
 
         if (!$request->hiring_request_id && !$request->casting_application_id) {
-            return response()->json(['success' => false, 'message' => 'Debe especificar el evento (hiring_request_id o casting_application_id).'], 400);
+            return response()->json(['success' => false, 'message' => 'Debe especificar el evento.'], 400);
         }
 
         if ($request->filled('hiring_request_id')) {
             $hiring = HiringRequest::find($request->hiring_request_id);
             if (!$hiring) {
-                return response()->json(['success' => false, 'message' => 'Solicitud de contratación no encontrada.'], 404);
+                return response()->json(['success' => false, 'message' => 'Solicitud no encontrada.'], 404);
             }
             if ($hiring->status !== 'completed') {
                 return response()->json(['success' => false, 'message' => 'Solo se pueden reseñar eventos completados.'], 400);
             }
-            // 2. CORRECCIÓN: Validar contra el ID del cliente
+            
+            // Validamos contra el ID de la tabla CLIENTS
             if ($hiring->client_id !== $client->id) {
-                return response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
+                return response()->json(['success' => false, 'message' => 'No tienes permiso para reseñar este evento.'], 403);
             }
+            
             if (Review::where('hiring_request_id', $hiring->id)->exists()) {
                 return response()->json(['success' => false, 'message' => 'Ya has dejado una reseña.'], 400);
             }
         }
 
-        if ($request->filled('casting_application_id')) {
-            $application = CastingApplication::with('event.client')->find($request->casting_application_id);
-            if ($application->status !== 'completed') {
-                return response()->json(['success' => false, 'message' => 'Solo se pueden reseñar eventos completados.'], 400);
-            }
-            // Asumiendo que el evento del casting tiene la relación con el cliente móvil
-            if ($application->event->client_id !== $client->id) {
-                return response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
-            }
-            if (Review::where('casting_application_id', $application->id)->exists()) {
-                return response()->json(['success' => false, 'message' => 'Ya has dejado una reseña.'], 400);
-            }
-        }
-
-        // 3. CORRECCIÓN: Guardar usando el ID de la tabla clients
+        // Guardamos la reseña con el ID de la tabla CLIENTS
         $review = Review::create([
             'client_id' => $client->id, 
             'musician_profile_id' => $request->musician_profile_id,
@@ -89,9 +77,7 @@ class ReviewController extends Controller
 
     public function musicianReviews($id)
     {
-        // 4. CORRECCIÓN: Como ahora las reseñas pertenecen a la tabla clients, 
-        // la relación en el modelo Review ya no debería ser con 'User', 
-        // pero usaremos with('client') asumiendo que tu modelo Review apunta al Client
+        // Relación directa al cliente móvil
         $reviews = Review::with('client') 
             ->where('musician_profile_id', $id)
             ->orderBy('created_at', 'desc')
@@ -100,13 +86,13 @@ class ReviewController extends Controller
         $formattedReviews = $reviews->map(function ($review) {
             $clientProfile = null;
             
-            // Leemos directamente del cliente asociado a la reseña
             if ($review->client) {
                 $perfil = $review->client;
                 $clientProfile = [
                     'id' => $perfil->id,
                     'nombre' => $perfil->nombre,
                     'apellido' => $perfil->apellido,
+                    // Asegúrate de que tu columna se llama photo_url o profile_picture
                     'profile_picture' => $perfil->photo_url ?? $perfil->photoUrl ?? null 
                 ];
             }
@@ -131,14 +117,14 @@ class ReviewController extends Controller
     {
         $firebaseUid = $request->attributes->get('firebase_uid');
         
-        // Buscamos al cliente móvil
+        // Buscamos estrictamente en la tabla CLIENTS
         $cliente = Client::where('firebase_uid', $firebaseUid)->first();
 
         if (!$cliente) {
             return response()->json(['success' => false, 'message' => 'Cliente no encontrado'], 404);
         }
 
-        // Buscamos las reseñas creadas usando el ID del CLIENTE
+        // Obtenemos el historial usando el ID del CLIENTE
         $reviews = Review::with('musicianProfile')
             ->where('client_id', $cliente->id)
             ->orderBy('created_at', 'desc')
