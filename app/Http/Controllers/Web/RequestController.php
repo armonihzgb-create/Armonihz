@@ -69,8 +69,6 @@ class RequestController extends Controller
             $notification->sendPush($client); 
         }
 
-        return redirect()->back()->with('success', 'Estado actualizado y notificación enviada.');
-
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
