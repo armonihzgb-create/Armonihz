@@ -123,4 +123,39 @@ class ReviewController extends Controller
             'data' => $formattedReviews
         ], 200);
     }
+    public function myReviews(Request $request)
+{
+    $firebaseUid = $request->attributes->get('firebase_uid');
+    $cliente = Client::where('firebase_uid', $firebaseUid)->first();
+
+    if (!$cliente) {
+        return response()->json(['success' => false, 'message' => 'Cliente no encontrado'], 404);
+    }
+
+    // Buscamos las reseñas creadas por este cliente y traemos la información del músico
+    $reviews = Review::with('musicianProfile')
+        ->where('client_id', $cliente->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    $formattedReviews = $reviews->map(function ($review) {
+        return [
+            'id' => $review->id,
+            'rating' => $review->rating,
+            'comment' => $review->comment,
+            'response' => $review->response,
+            'created_at' => $review->created_at,
+            'musician' => [
+                'id' => $review->musicianProfile->id,
+                'stage_name' => $review->musicianProfile->stage_name,
+                'profile_picture' => $review->musicianProfile->profile_picture,
+            ]
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'data' => $formattedReviews
+    ], 200);
+}
 }

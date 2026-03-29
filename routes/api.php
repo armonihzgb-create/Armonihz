@@ -70,6 +70,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/client/favorites/{id}', [App\Http\Controllers\FavoriteController::class, 'addFavorite']);
             Route::delete('/client/favorites/{id}', [App\Http\Controllers\FavoriteController::class, 'removeFavorite']);
             Route::get('/client/favorites', [App\Http\Controllers\FavoriteController::class, 'index']);
+            Route::get('/client/reviews', [\App\Http\Controllers\Api\ReviewController::class, 'myReviews']);
 
             // 👇 AHORA SÍ, LAS RUTAS DE HIRING-REQUESTS ESTÁN PROTEGIDAS POR FIREBASE 👇
             Route::post('hiring-requests', [HiringRequestController::class , 'store']);
@@ -79,6 +80,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('hiring-requests', HiringRequestController::class)->only(['index', 'show']);
             Route::patch('hiring-requests/{id}/status', [HiringRequestController::class , 'updateStatus']);
             Route::post('hiring-requests/{id}/respond', [HiringRequestController::class, 'respondToCounterOffer']);
+            
         }
         );
     });
