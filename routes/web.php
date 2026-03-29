@@ -70,12 +70,17 @@ Route::get('/musico/{id}', [ProfileController::class , 'showPublic'])->name('pro
 // --- AUTHENTICATED ROUTES ---
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Common dashboard (accessible to all authenticated roles)
-    Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
+    // Rutas de verificación de identidad (músicos)
+    Route::get('/verificar-identidad', [\App\Http\Controllers\Web\VerificationController::class, 'notice'])->name('verification.notice');
+    Route::post('/verificar-identidad', [\App\Http\Controllers\Web\VerificationController::class, 'upload'])->name('verification.upload');
 
-    // Common reviews (accessible to all authenticated users)
-    Route::get('/reviews', [\App\Http\Controllers\Web\ReviewController::class, 'index'])->name('reviews.index');
-    Route::post('/reviews/{id}/respond', [\App\Http\Controllers\Web\ReviewController::class, 'respond'])->name('reviews.respond');
+    Route::middleware(['verified_musician'])->group(function () {
+        // Common dashboard (accessible to all authenticated roles)
+        Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
+
+        // Common reviews (accessible to all authenticated users)
+        Route::get('/reviews', [\App\Http\Controllers\Web\ReviewController::class, 'index'])->name('reviews.index');
+        Route::post('/reviews/{id}/respond', [\App\Http\Controllers\Web\ReviewController::class, 'respond'])->name('reviews.respond');
 
         // --- MÚSICO specific routes ---
         Route::middleware(['role:musico'])->group(function () {
@@ -119,6 +124,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware(['role:admin'])->prefix('admin')->group(function () {
             Route::get('/', [\App\Http\Controllers\Web\AdminController::class, 'index'])->name('admin.dashboard');
 
+            // Verificación de Músicos
+            Route::get('/musicians/verification/{id}', [\App\Http\Controllers\Web\AdminController::class, 'verifyMusicianView'])->name('admin.musicians.verify');
+            Route::post('/musicians/verification/{id}', [\App\Http\Controllers\Web\AdminController::class, 'verifyMusicianAction'])->name('admin.musicians.verify.action');
+
                 Route::get('/castings', function () {
                     return view('admin.castings.index');
                 }
@@ -136,11 +145,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
                 Route::get('/settings', function () {
                     return view('admin.settings.index');
-                }
-                )->name('admin.settings.index');
-            }
-            );
+                })->name('admin.settings.index');
         });
+    }); // End verified_musician middleware
+}); // End auth middleware
 
 // --- TEMPORARY ROUTE FOR IONOS HOSTING ---
 // Visita /setup-storage en tu dominio para crear el enlace simbólico sin SSH
@@ -159,6 +167,27 @@ Route::get('/setup-storage', function () {
 // --- FIX PARA IMÁGENES Y VIDEOS EN ENTORNO LOCAL/PRODUCCIÓN ---
 // Usamos /file/ para evitar conflictos con la carpeta /public/storage/ existente
 // --- FIX PARA IMÁGENES Y VIDEOS (STREAMING MANUAL PARA ANDROID) ---
+Route::middleware(['auth'])->get('/admin/id-document/{path}', function ($path) {
+    if (auth()->user()->role !== 'admin') {
+        abort(403, 'Acesso denegado.');
+    }
+
+    $fullPath = storage_path('app/musician_ids/' . $path);
+    $base = realpath(storage_path('app/musician_ids'));
+    $fullPath = realpath($fullPath);
+
+    if (!$fullPath || !str_starts_with($fullPath, $base) || !file_exists($fullPath)) {
+        abort(404);
+    }
+
+    $mimeType = mime_content_type($fullPath);
+
+    return response()->file($fullPath, [
+        'Content-Type' => $mimeType,
+        'Cache-Control' => 'no-cache, private',
+    ]);
+})->where('path', '.*')->name('admin.id_document');
+
 Route::get('/file/{path}', function ($path) {
     if (str_starts_with($path, 'profiles/')) {
         $fullPath = storage_path('app/public/' . $path);

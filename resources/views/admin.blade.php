@@ -104,8 +104,10 @@
                             @endif
                         </td>
                         <td class="text-right">
-                            @if(!$m->is_verified)
-                                <button class="primary-btn small-btn" disabled title="Funcionalidad próximamente">Validar</button>
+                            @if($m->verification_status === 'pending')
+                                <a href="{{ route('admin.musicians.verify', $m->id) }}" class="primary-btn small-btn" style="text-decoration: none; display: inline-block;">Validar</a>
+                            @elseif($m->verification_status === 'unverified')
+                                <button class="primary-btn small-btn" disabled title="Falta que el músico suba su documento" style="opacity: 0.5;">Sin Docs</button>
                             @else
                                 <button class="secondary-btn small-btn icon-only" disabled>
                                     <i data-lucide="more-horizontal"></i>

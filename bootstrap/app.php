@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role'          => \App\Http\Middleware\EnsureUserHasRole::class,
             'active'        => \App\Http\Middleware\CheckUserIsActive::class,
             'firebase.auth' => \App\Http\Middleware\FirebaseAuthMiddleware::class,
+            'verified_musician' => \App\Http\Middleware\EnsureMusicianIsVerified::class,
         ]);
 
         $middleware->web(append: [

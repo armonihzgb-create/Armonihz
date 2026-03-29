@@ -8,6 +8,8 @@ use App\Models\Client;
 use App\Models\HiringRequest;
 use App\Models\CastingApplication;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -42,5 +44,42 @@ class AdminController extends Controller
             'totalCompletedEvents',
             'recentMusicians'
         ));
+    }
+
+    public function verifyMusicianView($id)
+    {
+        $musician = MusicianProfile::with(['user', 'genres'])->findOrFail($id);
+        
+        // Solo podemos verificar a los que están 'pending' (o también podríamos dejar ver a 'rejected'/'approved')
+        return view('admin.musicians.verify', compact('musician'));
+    }
+
+    public function verifyMusicianAction(Request $request, $id)
+    {
+        $musician = MusicianProfile::findOrFail($id);
+        $admin = Auth::user();
+
+        $request->validate([
+            'action' => 'required|in:approve,reject',
+            'rejection_reason' => 'required_if:action,reject|string|max:1000'
+        ]);
+
+        if ($request->action === 'approve') {
+            $musician->verification_status = 'approved';
+            $musician->is_verified = true; // Sincronizamos con el viejo campo para compatibilidad
+            $musician->verified_at = now();
+            $musician->verified_by = $admin->id;
+            $musician->rejection_reason = null;
+            $musician->save();
+
+            return redirect()->route('admin.dashboard')->with('success', 'Músico verificado y aprobado correctamente.');
+        } else {
+            $musician->verification_status = 'rejected';
+            $musician->is_verified = false;
+            $musician->rejection_reason = $request->rejection_reason;
+            $musician->save();
+
+            return redirect()->route('admin.dashboard')->with('success', 'Verificación rechazada. El músico ha sido notificado (en el dashboard).');
+        }
     }
 }

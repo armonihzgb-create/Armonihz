@@ -22,6 +22,11 @@ class MusicianProfile extends Model
         'facebook',
         'youtube',
         'coverage_notes',
+        'verification_status',
+        'id_document_path',
+        'rejection_reason',
+        'verified_at',
+        'verified_by',
     ];
 
     public function user()
@@ -81,5 +86,10 @@ class MusicianProfile extends Model
     public function averageRating()
     {
         return $this->reviews()->avg('rating') ?? 0;
+    }
+
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }
