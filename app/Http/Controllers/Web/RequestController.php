@@ -70,5 +70,16 @@ class RequestController extends Controller
         }
 
         return redirect()->back()->with('success', 'Estado actualizado y notificación enviada.');
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Estado actualizado y notificación enviada.'
+            ]);
+        }
+
+        // Si la petición viene de un formulario normal (fallback):
+        return redirect()->back()->with('success', 'Estado actualizado y notificación enviada.');
+    
     }
 }
