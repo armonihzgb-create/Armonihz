@@ -82,4 +82,41 @@ class AdminController extends Controller
             return redirect()->route('admin.dashboard')->with('success', 'Verificación rechazada. El músico ha sido notificado (en el dashboard).');
         }
     }
+
+    public function streamDocument($id)
+    {
+        $admin = Auth::user();
+        if ($admin->role !== 'admin') {
+            abort(403, 'Acesso denegado.');
+        }
+
+        $musician = MusicianProfile::findOrFail($id);
+
+        if (!$musician->id_document_path) {
+            abort(404, 'El músico no ha subido ningún documento.');
+        }
+
+        $path = basename($musician->id_document_path);
+
+        $fullPath = storage_path('app/private/musician_ids/' . $path);
+
+        if (!file_exists($fullPath)) {
+            $fullPath = storage_path('app/musician_ids/' . $path);
+        }
+
+        if (!file_exists($fullPath)) {
+            $fullPath = storage_path('app/public/musician_ids/' . $path);
+        }
+
+        if (!file_exists($fullPath)) {
+            abort(404, 'Documento no encontrado físicamente en el servidor.');
+        }
+
+        $mimeType = mime_content_type($fullPath);
+
+        return response()->file($fullPath, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'no-cache, private',
+        ]);
+    }
 }

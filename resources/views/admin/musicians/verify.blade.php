@@ -19,7 +19,7 @@
             @if($musician->id_document_path)
                 @php
                     $extension = pathinfo($musician->id_document_path, PATHINFO_EXTENSION);
-                    $docUrl = route('admin.id_document', basename($musician->id_document_path));
+                    $docUrl = route('admin.musicians.document', $musician->id);
                 @endphp
                 
                 @if(strtolower($extension) === 'pdf')

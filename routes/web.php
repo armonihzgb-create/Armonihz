@@ -127,6 +127,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // Verificación de Músicos
             Route::get('/musicians/verification/{id}', [\App\Http\Controllers\Web\AdminController::class, 'verifyMusicianView'])->name('admin.musicians.verify');
             Route::post('/musicians/verification/{id}', [\App\Http\Controllers\Web\AdminController::class, 'verifyMusicianAction'])->name('admin.musicians.verify.action');
+            Route::get('/musicians/verification/{id}/document', [\App\Http\Controllers\Web\AdminController::class, 'streamDocument'])->name('admin.musicians.document');
 
                 Route::get('/castings', function () {
                     return view('admin.castings.index');
@@ -167,41 +168,6 @@ Route::get('/setup-storage', function () {
 // --- FIX PARA IMÁGENES Y VIDEOS EN ENTORNO LOCAL/PRODUCCIÓN ---
 // Usamos /file/ para evitar conflictos con la carpeta /public/storage/ existente
 // --- FIX PARA IMÁGENES Y VIDEOS (STREAMING MANUAL PARA ANDROID) ---
-Route::middleware(['auth'])->get('/admin/id-document/{path}', function ($path) {
-    if (auth()->user()->role !== 'admin') {
-        abort(403, 'Acesso denegado.');
-    }
-
-    // Protección básica contra navegación de directorios
-    if (str_contains($path, '..')) {
-        abort(403, 'Ruta inválida.');
-    }
-
-    // El disco 'local' en este proyecto está en app/private/
-    $fullPath = storage_path('app/private/musician_ids/' . $path);
-
-    // Fallback 1: Si por alguna razón está en la raíz de app/
-    if (!file_exists($fullPath)) {
-        $fullPath = storage_path('app/musician_ids/' . $path);
-    }
-
-    // Fallback 2: Si por error se guardó en el disco `public`
-    if (!file_exists($fullPath)) {
-        $fullPath = storage_path('app/public/musician_ids/' . $path);
-    }
-
-    if (!file_exists($fullPath)) {
-        abort(404, 'Documento no encontrado.');
-    }
-
-    $mimeType = mime_content_type($fullPath);
-
-    return response()->file($fullPath, [
-        'Content-Type' => $mimeType,
-        'Cache-Control' => 'no-cache, private',
-    ]);
-})->where('path', '.*')->name('admin.id_document');
-
 Route::get('/file/{path}', function ($path) {
     if (str_starts_with($path, 'profiles/')) {
         $fullPath = storage_path('app/public/' . $path);
