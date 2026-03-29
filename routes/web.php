@@ -172,12 +172,15 @@ Route::middleware(['auth'])->get('/admin/id-document/{path}', function ($path) {
         abort(403, 'Acesso denegado.');
     }
 
-    $fullPath = storage_path('app/musician_ids/' . $path);
-    $base = realpath(storage_path('app/musician_ids'));
-    $fullPath = realpath($fullPath);
+    // Protección básica contra navegación de directorios
+    if (str_contains($path, '..')) {
+        abort(403, 'Ruta inválida.');
+    }
 
-    if (!$fullPath || !str_starts_with($fullPath, $base) || !file_exists($fullPath)) {
-        abort(404);
+    $fullPath = storage_path('app/musician_ids/' . $path);
+
+    if (!file_exists($fullPath)) {
+        abort(404, 'Documento no encontrado.');
     }
 
     $mimeType = mime_content_type($fullPath);

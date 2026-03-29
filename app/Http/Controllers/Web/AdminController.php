@@ -61,7 +61,7 @@ class AdminController extends Controller
 
         $request->validate([
             'action' => 'required|in:approve,reject',
-            'rejection_reason' => 'required_if:action,reject|string|max:1000'
+            'rejection_reason' => 'nullable|string|max:1000|required_if:action,reject'
         ]);
 
         if ($request->action === 'approve') {
