@@ -98,12 +98,18 @@ class AdminController extends Controller
 
         $path = basename($musician->id_document_path);
 
-        // Primer intento: Laravel Storage local disk
+        // Primer intento: Laravel Storage default disk (Puede ser S3 o configuraciones de Easypanel)
+        if (Storage::exists('musician_ids/' . $path)) {
+            // Si el driver actual permite devolver directamente una respuesta de stream:
+            return Storage::response('musician_ids/' . $path);
+        }
+
+        // Segundo intento: explícitamente Local disk (si forzamos en la subida)
         if (Storage::disk('local')->exists('musician_ids/' . $path)) {
             return Storage::disk('local')->response('musician_ids/' . $path);
         }
 
-        // Segundo intento: Laravel Storage public disk (por si cayó ahí por error antes)
+        // Tercer intento: explícitamente Public disk
         if (Storage::disk('public')->exists('musician_ids/' . $path)) {
             return Storage::disk('public')->response('musician_ids/' . $path);
         }
