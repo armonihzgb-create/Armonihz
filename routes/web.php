@@ -177,9 +177,15 @@ Route::middleware(['auth'])->get('/admin/id-document/{path}', function ($path) {
         abort(403, 'Ruta inválida.');
     }
 
-    $fullPath = storage_path('app/musician_ids/' . $path);
+    // El disco 'local' en este proyecto está en app/private/
+    $fullPath = storage_path('app/private/musician_ids/' . $path);
 
-    // Fallback: Si el archivo se guardó en el disco `public` por error en la versión previa, buscarlo ahí.
+    // Fallback 1: Si por alguna razón está en la raíz de app/
+    if (!file_exists($fullPath)) {
+        $fullPath = storage_path('app/musician_ids/' . $path);
+    }
+
+    // Fallback 2: Si por error se guardó en el disco `public`
     if (!file_exists($fullPath)) {
         $fullPath = storage_path('app/public/musician_ids/' . $path);
     }
