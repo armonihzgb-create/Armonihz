@@ -179,6 +179,11 @@ Route::middleware(['auth'])->get('/admin/id-document/{path}', function ($path) {
 
     $fullPath = storage_path('app/musician_ids/' . $path);
 
+    // Fallback: Si el archivo se guardó en el disco `public` por error en la versión previa, buscarlo ahí.
+    if (!file_exists($fullPath)) {
+        $fullPath = storage_path('app/public/musician_ids/' . $path);
+    }
+
     if (!file_exists($fullPath)) {
         abort(404, 'Documento no encontrado.');
     }

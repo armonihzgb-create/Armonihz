@@ -54,8 +54,8 @@ class VerificationController extends Controller
             $file = $request->file('id_document');
             $filename = 'id_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
             
-            // Guardamos en storage/app/musician_ids (fuera del public)
-            $path = $file->storeAs('musician_ids', $filename);
+            // Guardamos en storage/app/musician_ids (fuera del public explicitando el disco local)
+            $path = $file->storeAs('musician_ids', $filename, 'local');
 
             // Actualizamos o creamos el perfil (en caso de que no tenga, aunque el registro lo crea)
             if ($profile) {
