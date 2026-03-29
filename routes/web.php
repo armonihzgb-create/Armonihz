@@ -139,10 +139,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 }
                 )->name('admin.promotions.index');
 
-                Route::get('/musicians', function () {
-                    return view('admin.musicians.index');
-                }
-                )->name('admin.musicians.index');
+                Route::get('/musicians', [\App\Http\Controllers\Web\AdminController::class, 'musiciansIndex'])->name('admin.musicians.index');
 
                 Route::get('/settings', function () {
                     return view('admin.settings.index');
