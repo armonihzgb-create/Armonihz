@@ -75,19 +75,29 @@
                 <h3>Decisión</h3>
             </div>
             
+            @if ($errors->any())
+                <div style="background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                    <ul style="margin: 0; padding-left: 20px; font-size: 13px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('admin.musicians.verify.action', $musician->id) }}" method="POST">
                 @csrf
                 <div style="margin-bottom: 20px;">
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e293b; font-size: 14px;">Acción a tomar</label>
                     <div style="display: flex; gap: 10px;">
                         <label style="flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; cursor: pointer; text-align: center; transition: all 0.2s; position: relative;" onclick="toggleRejectReason(false)">
-                            <input type="radio" name="action" value="approve" required style="position: absolute; opacity: 0;">
+                            <input type="radio" name="action" value="approve" style="position: absolute; opacity: 0; width: 0; height: 0;">
                             <i data-lucide="check-circle" style="color: #16a34a; margin-bottom: 5px;"></i>
                             <div style="font-weight: 600; font-size: 14px; color: #1e293b;">Aprobar</div>
                         </label>
 
                         <label style="flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; cursor: pointer; text-align: center; transition: all 0.2s; position: relative;" onclick="toggleRejectReason(true)">
-                            <input type="radio" name="action" value="reject" required style="position: absolute; opacity: 0;">
+                            <input type="radio" name="action" value="reject" style="position: absolute; opacity: 0; width: 0; height: 0;">
                             <i data-lucide="x-circle" style="color: #dc2626; margin-bottom: 5px;"></i>
                             <div style="font-weight: 600; font-size: 14px; color: #1e293b;">Rechazar</div>
                         </label>
@@ -98,6 +108,10 @@
                     <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1e293b; font-size: 14px;">Motivo de rechazo <span style="color: #ef4444;">*</span></label>
                     <textarea name="rejection_reason" id="rejection_reason" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; resize: none;" placeholder="Ej: La imagen está borrosa, Por favor sube tu documento original..."></textarea>
                     <p style="font-size: 12px; color: #64748b; margin-top: 5px;">Este mensaje será visible para el músico.</p>
+                </div>
+
+                <div style="font-size: 11px; color: #94a3b8; margin-bottom: 15px; word-break: break-all;">
+                    Depuración path: {{ $musician->id_document_path }}
                 </div>
 
                 <button type="submit" style="width: 100%; background: linear-gradient(135deg, #0f172a, #334155); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -128,10 +142,8 @@
 
         if (show) {
             container.style.display = 'block';
-            textarea.setAttribute('required', 'required');
         } else {
             container.style.display = 'none';
-            textarea.removeAttribute('required');
             textarea.value = '';
         }
     }
