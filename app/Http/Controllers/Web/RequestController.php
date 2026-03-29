@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\HiringRequest;
+use App\Notifications\HiringRequestStatusNotification; // 1. FALTA ESTA IMPORTACIÓN
 
 class RequestController extends Controller
 {
@@ -39,47 +40,35 @@ class RequestController extends Controller
 
         return view('requests.show', compact('hiringRequest'));
     }
-    public function updateStatus(Request $request, $id)
+
+   public function updateStatus(Request $request, $id)
     {
-        $user = $request->user();
-        $hiringRequest = HiringRequest::findOrFail($id);
-
-        // Seguridad: Asegurarnos de que este músico es el dueño de la solicitud
-        if ($user->role === 'musico' && $hiringRequest->musician_profile_id !== $user->musicianProfile->id) {
-            return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
-        }
-
-        // Una solicitud aceptada solo puede pasar a "completed"
-        if ($hiringRequest->status === 'accepted' && $request->status !== 'completed') {
-             return response()->json(['success' => false, 'message' => 'Una solicitud aceptada solo puede marcarse como completada.'], 400);
-        }
-
-        // Si ya está completada o rechazada, no se puede mover más
-        if (in_array($hiringRequest->status, ['completed', 'rejected'])) {
-            return response()->json(['success' => false, 'message' => 'Esta solicitud ya tiene un estado final.'], 400);
-        }
-
-        // Validar que el estado sea correcto (agregamos counter_offer)
         $request->validate([
-            'status' => 'required|in:accepted,rejected,counter_offer,completed',
-            'musician_message' => 'nullable|string',
-            'counter_offer' => 'nullable|numeric|min:0'
+            'status' => 'required|in:accepted,rejected,counter_offer',
+            // 'counter_price' => 'nullable|numeric'
         ]);
 
-        // Actualizar la base de datos
-        $hiringRequest->status = $request->status;
-        
-        // Si es contraoferta, guardamos el mensaje y el nuevo precio
-        if ($request->status === 'counter_offer') {
-            $hiringRequest->musician_message = $request->musician_message;
-            $hiringRequest->counter_offer = $request->counter_offer;
+        // 2. CORREGIR EL NOMBRE DE LA RELACIÓN ('musician' a 'musicianProfile')
+        $hiringRequest = HiringRequest::with(['client', 'musicianProfile'])->findOrFail($id);
+
+        // 3. AGREGAR SEGURIDAD (Igual que en tu método show)
+        $user = $request->user();
+        if ($user->role === 'musico' && $hiringRequest->musician_profile_id !== $user->musicianProfile->id) {
+            abort(403, 'No tienes permiso para modificar esta solicitud.');
         }
 
+        $hiringRequest->status = $request->status;
         $hiringRequest->save();
 
-        return response()->json([
-            'success' => true, 
-            'message' => 'Estado actualizado correctamente'
-        ]);
+        $client = $hiringRequest->client;
+
+        if ($client) {
+            $notification = new HiringRequestStatusNotification($hiringRequest, $request->status);
+            
+            $client->notify($notification); 
+            $notification->sendPush($client); 
+        }
+
+        return redirect()->back()->with('success', 'Estado actualizado y notificación enviada.');
     }
 }
