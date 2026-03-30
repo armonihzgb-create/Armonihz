@@ -142,45 +142,45 @@ class MusicianProfileController extends Controller
         foreach ($hiringRequests as $hr) {
             $busyDates[] = [
                 'start' => $hr->event_date->format('Y-m-d H:i:s'),
-                // Asumimos 3 horas de evento por defecto si no hay campo de duración
                 'end' => $hr->end_time ? \Carbon\Carbon::parse($hr->end_time)->format('Y-m-d H:i:s') : $hr->event_date->copy()->addHours(3)->format('Y-m-d H:i:s'), 
             ];
         }
 
-        // 🔥 NUEVO: 3. Castings Aceptados 🔥
+        // 🔥 NUEVO: 3. Castings Aceptados (A PRUEBA DE BALAS) 🔥
         $castingApps = $profile->castingApplications()->where('status', 'accepted')->with('event')->get();
+        
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
                 try {
-                    $fechaString = trim($app->event->fecha);
-                    try {
-                        $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString);
-                    } catch (\Exception $e) {
-                        $start = \Carbon\Carbon::parse($fechaString);
-                    }
-                    $end = clone $start;
-
-                    $duracionString = trim($app->event->duracion);
+                    $fechaString = trim($app->event->fecha); // Ej: "15/04/2026"
+                    $duracionString = trim($app->event->duracion); // Ej: "20:30 a 22:30"
+                    
                     if (str_contains($duracionString, ' a ')) {
                         $parts = explode(' a ', $duracionString);
-                        $start->setTimeFromTimeString(trim($parts[0]));
-                        $end->setTimeFromTimeString(trim($parts[1]));
+                        $startTimeString = trim($parts[0]); // "20:30"
+                        $endTimeString = trim($parts[1]);   // "22:30"
+                        
+                        // Juntamos la fecha y la hora directamente en un solo string para que Carbon no se confunda
+                        $start = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $fechaString . ' ' . $startTimeString);
+                        $end = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $fechaString . ' ' . $endTimeString);
+                        
                         if ($end->lessThan($start)) {
                             $end->addDay();
                         }
                     } else {
-                        $start->startOfDay();
+                        // Por si acaso hay eventos con formato viejo
+                        $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString)->startOfDay();
                         $duration = (int) $duracionString ?: 3;
-                        $end->startOfDay()->addHours($duration);
+                        $end = $start->copy()->addHours($duration);
                     }
 
-                    // Lo agregamos a la lista de ocupados para la app móvil
+                    // Lo agregamos a la lista
                     $busyDates[] = [
                         'start' => $start->format('Y-m-d H:i:s'),
                         'end' => $end->format('Y-m-d H:i:s'),
                     ];
                 } catch (\Exception $e) {
-                    \Log::error("Error en getAvailability parseando casting: " . $e->getMessage());
+                    \Log::error("Error en getAvailability: " . $e->getMessage());
                 }
             }
         }
