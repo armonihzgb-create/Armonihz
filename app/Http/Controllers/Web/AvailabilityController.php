@@ -129,8 +129,10 @@ class AvailabilityController extends Controller
                         'id' => 'casting_' . $app->id,
                         'title' => '🎤 Casting: ' . $app->event->titulo,
                         // toIso8601String() ya lleva la zona horaria del servidor, así que FullCalendar no lo moverá
-                        'start' => $start->toIso8601String(),
-                        'end' => $end->toIso8601String(),
+                      //  'start' => $start->toIso8601String(),
+                      //  'end' => $end->toIso8601String(),
+                        'start' => $start->format('Y-m-d\TH:i:s'),
+                        'end' => $end->format('Y-m-d\TH:i:s'),
                         'backgroundColor' => '#9333ea',
                         'borderColor' => 'transparent',
                         'extendedProps' => ['source' => 'system', 'description' => 'Casting aceptado.'],
