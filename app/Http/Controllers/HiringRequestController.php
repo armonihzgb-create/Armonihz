@@ -16,23 +16,23 @@ class HiringRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-  public function index(Request $request)
+ public function index(Request $request)
     {
-        // 1. Obtenemos el cliente usando el UID de Firebase (igual que en el método store)
         $firebaseUid = $request->attributes->get('firebase_uid');
         $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
 
         if (!$cliente) {
-            return response()->json(['data' => []], 200); // Si no hay cliente, devolvemos lista vacía
+            return response()->json(['data' => []], 200); 
         }
 
         // 2. Buscamos todas sus solicitudes y traemos también los datos del músico
+        // 🔥 AQUÍ AGREGAMOS ->withExists('review as has_review')
         $requests = HiringRequest::with('musicianProfile')
+            ->withExists('review as has_review') // 👈 ¡Esta es la línea mágica!
             ->where('client_id', $cliente->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // 3. Devolvemos la respuesta en formato JSON
         return response()->json(['data' => $requests], 200);
     }
 
