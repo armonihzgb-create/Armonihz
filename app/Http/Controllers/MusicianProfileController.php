@@ -123,7 +123,7 @@ class MusicianProfileController extends Controller
         );
     }
 
-    public function getAvailability($id)
+   public function getAvailability($id)
     {
         $profile = \App\Models\MusicianProfile::findOrFail($id);
         $busyDates = [];
@@ -143,8 +143,46 @@ class MusicianProfileController extends Controller
             $busyDates[] = [
                 'start' => $hr->event_date->format('Y-m-d H:i:s'),
                 // Asumimos 3 horas de evento por defecto si no hay campo de duración
-                'end' => $hr->event_date->addHours(3)->format('Y-m-d H:i:s'), 
+                'end' => $hr->end_time ? \Carbon\Carbon::parse($hr->end_time)->format('Y-m-d H:i:s') : $hr->event_date->copy()->addHours(3)->format('Y-m-d H:i:s'), 
             ];
+        }
+
+        // 🔥 NUEVO: 3. Castings Aceptados 🔥
+        $castingApps = $profile->castingApplications()->where('status', 'accepted')->with('event')->get();
+        foreach ($castingApps as $app) {
+            if ($app->event && $app->event->fecha) {
+                try {
+                    $fechaString = trim($app->event->fecha);
+                    try {
+                        $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString);
+                    } catch (\Exception $e) {
+                        $start = \Carbon\Carbon::parse($fechaString);
+                    }
+                    $end = clone $start;
+
+                    $duracionString = trim($app->event->duracion);
+                    if (str_contains($duracionString, ' a ')) {
+                        $parts = explode(' a ', $duracionString);
+                        $start->setTimeFromTimeString(trim($parts[0]));
+                        $end->setTimeFromTimeString(trim($parts[1]));
+                        if ($end->lessThan($start)) {
+                            $end->addDay();
+                        }
+                    } else {
+                        $start->startOfDay();
+                        $duration = (int) $duracionString ?: 3;
+                        $end->startOfDay()->addHours($duration);
+                    }
+
+                    // Lo agregamos a la lista de ocupados para la app móvil
+                    $busyDates[] = [
+                        'start' => $start->format('Y-m-d H:i:s'),
+                        'end' => $end->format('Y-m-d H:i:s'),
+                    ];
+                } catch (\Exception $e) {
+                    \Log::error("Error en getAvailability parseando casting: " . $e->getMessage());
+                }
+            }
         }
 
         return response()->json([
