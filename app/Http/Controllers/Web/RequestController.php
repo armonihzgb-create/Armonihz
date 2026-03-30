@@ -44,7 +44,7 @@ class RequestController extends Controller
    public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:accepted,rejected,counter_offer',
+           'status' => 'required|in:accepted,rejected,counter_offer,completed',
             // 'counter_price' => 'nullable|numeric'
         ]);
 

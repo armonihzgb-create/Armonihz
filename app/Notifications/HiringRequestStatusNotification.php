@@ -48,6 +48,11 @@ class HiringRequestStatusNotification extends Notification
                     'title' => 'Nueva Contraoferta 💬',
                     'message' => "{$nombreMusico} te ha enviado una contraoferta. Revisa los detalles."
                 ];
+            case 'completed':
+                return [
+                    'title' => 'Evento Finalizado 🌟',
+                    'message' => "{$nombreMusico} ha marcado el evento como completado. ¡Entra a la app y déjale una reseña!"
+                ];
             default:
                 return [
                     'title' => 'Actualización de solicitud',
