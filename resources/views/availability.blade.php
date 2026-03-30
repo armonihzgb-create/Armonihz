@@ -410,20 +410,31 @@
             },
 
             // Click on an event
+          // Click on an event
             eventClick: function(info) {
                 const isManual = info.event.extendedProps.source === 'manual';
                 if (!isManual) {
                     // System event: show info only
                     const desc = info.event.extendedProps.description || 'Generado automáticamente por el sistema.';
-                    const start = info.event.start
+                    
+                    const startDay = info.event.start
                         ? info.event.start.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
                         : '';
+                    
+                    // 🔥 NUEVO: Detectamos y mostramos la hora exacta
+                    const hasTimes = !info.event.allDay && info.event.start;
+                    const timeInfo = hasTimes
+                        ? `<div><strong>Hora:</strong> ${info.event.start.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})} a ${info.event.end ? info.event.end.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}) : ''}</div>`
+                        : '';
+
                     // Simple styled alert using our delete modal repurposed as info
                     document.getElementById('deleteInfo').innerHTML = `
                         <div><strong>Evento:</strong> ${info.event.title}</div>
-                        ${start ? `<div><strong>Fecha:</strong> <span style="text-transform:capitalize">${start}</span></div>` : ''}
+                        ${startDay ? `<div><strong>Fecha:</strong> <span style="text-transform:capitalize">${startDay}</span></div>` : ''}
+                        ${timeInfo}
                         <div style="margin-top:6px;color:#6c3fc5;">${desc}</div>
                     `;
+                    
                     document.querySelector('.av-delete-title').textContent = 'Información del evento';
                     document.querySelector('.av-delete-warn').style.display = 'none';
                     document.getElementById('btnDelete').style.display = 'none';
