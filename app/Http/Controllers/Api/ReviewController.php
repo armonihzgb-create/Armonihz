@@ -99,7 +99,7 @@ class ReviewController extends Controller
                     } else {
                         // Si no, asumimos que es un archivo local y armamos la ruta completa
                         // (Ajusta la ruta 'file/perfiles/' si es diferente en tu servidor)
-                        $photoUrl = url('file/perfiles/' . $perfil->fotoPerfil);
+                        $photoUrl = url('file/' . $perfil->fotoPerfil);
                     }
                 }
 
