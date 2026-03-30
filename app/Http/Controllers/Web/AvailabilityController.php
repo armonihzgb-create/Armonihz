@@ -86,18 +86,46 @@ class AvailabilityController extends Controller
             ];
         }
 
-        // 3. Castings Aceptados
+       // 3. Castings Aceptados
         $castingApps = $profile->castingApplications()->where('status', 'accepted')->with('event')->get();
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
                 try {
-                    $start = Carbon::createFromFormat('d/m/Y', $app->event->fecha)->startOfDay();
-                    
-                    // Si el evento tiene un horario guardado en el título o descripción, 
-                    // o si ClientEvent tuviera hora_inicio, se asignaría aquí.
-                    // Por ahora usamos la duración guardada en el evento.
-                    $duration = (int) $app->event->duracion ?: 3;
-                    $end = $start->copy()->addHours($duration);
+                    // La fecha viene de Android normalmente en un formato mixto o como "DD/MM/YYYY" o "YYYY-MM-DD"
+                    // Si tienes el string "15/04/2026 20:30 a 22:30", necesitamos extraer las partes.
+                    $fechaString = trim($app->event->fecha);
+
+                    // Buscamos si la fecha contiene una " a " (que separa las horas, ej: "20:30 a 22:30")
+                    if (str_contains($fechaString, ' a ')) {
+                        // Separar la cadena: ["15/04/2026 20:30", "22:30"]
+                        $parts = explode(' a ', $fechaString);
+                        
+                        // Parsear el inicio (asumimos que viene como DD/MM/YYYY HH:mm)
+                        // Si viene como YYYY-MM-DD, cambia el formato aquí
+                        $start = \Carbon\Carbon::createFromFormat('d/m/Y H:i', trim($parts[0]));
+                        
+                        // Parsear el fin
+                        $endTimeString = trim($parts[1]);
+                        $end = clone $start;
+                        $end->setTimeFromTimeString($endTimeString);
+                        
+                        // Validar si cruzó la medianoche
+                        if ($end->lessThan($start)) {
+                            $end->addDay();
+                        }
+                    } else {
+                        // Si no viene con la letra " a " separando horas, asumimos que es solo fecha
+                        // e intentamos parsearla de forma normal
+                        try {
+                            $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString)->startOfDay();
+                        } catch (\Exception $e) {
+                            // Fallback por si Android lo mandó como YYYY-MM-DD
+                            $start = \Carbon\Carbon::parse($fechaString)->startOfDay();
+                        }
+                        
+                        $duration = (int) $app->event->duracion ?: 3;
+                        $end = $start->copy()->addHours($duration);
+                    }
 
                     $events[] = [
                         'id' => 'casting_' . $app->id,
@@ -112,7 +140,8 @@ class AvailabilityController extends Controller
                         'event_type' => 'busy',
                     ];
                 }
-                catch (\Exception $e) { /* ignore */
+                catch (\Exception $e) {
+                    \Log::error("Error parseando fecha de casting ID {$app->id}: " . $e->getMessage());
                 }
             }
         }
