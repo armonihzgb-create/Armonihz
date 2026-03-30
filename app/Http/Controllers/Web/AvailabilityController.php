@@ -91,45 +91,44 @@ class AvailabilityController extends Controller
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
                 try {
-                    // La fecha viene de Android normalmente en un formato mixto o como "DD/MM/YYYY" o "YYYY-MM-DD"
-                    // Si tienes el string "15/04/2026 20:30 a 22:30", necesitamos extraer las partes.
+                    // 1. Parseamos el día (Ej: "15/04/2026")
                     $fechaString = trim($app->event->fecha);
+                    
+                    try {
+                        $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString);
+                    } catch (\Exception $e) {
+                        $start = \Carbon\Carbon::parse($fechaString);
+                    }
 
-                    // Buscamos si la fecha contiene una " a " (que separa las horas, ej: "20:30 a 22:30")
-                    if (str_contains($fechaString, ' a ')) {
-                        // Separar la cadena: ["15/04/2026 20:30", "22:30"]
-                        $parts = explode(' a ', $fechaString);
-                        
-                        // Parsear el inicio (asumimos que viene como DD/MM/YYYY HH:mm)
-                        // Si viene como YYYY-MM-DD, cambia el formato aquí
-                        $start = \Carbon\Carbon::createFromFormat('d/m/Y H:i', trim($parts[0]));
-                        
-                        // Parsear el fin
-                        $endTimeString = trim($parts[1]);
-                        $end = clone $start;
+                    $end = clone $start;
+
+                    // 2. Parseamos la hora desde DURACION (Ej: "20:30 a 22:30")
+                    $duracionString = trim($app->event->duracion);
+
+                    if (str_contains($duracionString, ' a ')) {
+                        $parts = explode(' a ', $duracionString);
+                        $startTimeString = trim($parts[0]); // "20:30"
+                        $endTimeString = trim($parts[1]);   // "22:30"
+
+                        // Le aplicamos las horas exactas al día que ya teníamos
+                        $start->setTimeFromTimeString($startTimeString);
                         $end->setTimeFromTimeString($endTimeString);
-                        
-                        // Validar si cruzó la medianoche
+
+                        // Lógica por si el evento cruza la medianoche (Ej: "23:00 a 02:00")
                         if ($end->lessThan($start)) {
                             $end->addDay();
                         }
                     } else {
-                        // Si no viene con la letra " a " separando horas, asumimos que es solo fecha
-                        // e intentamos parsearla de forma normal
-                        try {
-                            $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString)->startOfDay();
-                        } catch (\Exception $e) {
-                            // Fallback por si Android lo mandó como YYYY-MM-DD
-                            $start = \Carbon\Carbon::parse($fechaString)->startOfDay();
-                        }
-                        
-                        $duration = (int) $app->event->duracion ?: 3;
-                        $end = $start->copy()->addHours($duration);
+                        // Plan B por si un evento viejo solo dice "3" en duración
+                        $start->startOfDay();
+                        $duration = (int) $duracionString ?: 3;
+                        $end->startOfDay()->addHours($duration);
                     }
 
                     $events[] = [
                         'id' => 'casting_' . $app->id,
                         'title' => '🎤 Casting: ' . $app->event->titulo,
+                        // toIso8601String() ya lleva la zona horaria del servidor, así que FullCalendar no lo moverá
                         'start' => $start->toIso8601String(),
                         'end' => $end->toIso8601String(),
                         'backgroundColor' => '#9333ea',
