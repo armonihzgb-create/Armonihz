@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\MusicianProfile;
 use App\Models\Client;
+use App\Models\ClientEvent;
 use App\Models\HiringRequest;
 use App\Models\CastingApplication;
 use Illuminate\Http\Request;
@@ -155,5 +156,43 @@ class AdminController extends Controller
 
         // Si nada funciona, arrojar un error que contenga rutas de depuración en texto plano para que el usuario pueda verlo al abrir el enlace directo
         return response("File not found.\n\nDB Path: " . $musician->id_document_path . "\n\nChecked:\n" . implode("\n", $manualPaths), 404, ['Content-Type' => 'text/plain']);
+    }
+
+    public function castingsIndex(Request $request)
+    {
+        $query = ClientEvent::with(['client', 'applications'])->orderBy('created_at', 'desc');
+        
+        $status = $request->get('status');
+        if (in_array($status, ['open', 'completed', 'canceled', 'inactive'])) {
+            $query->where('status', $status);
+        }
+
+        $events = $query->paginate(15);
+
+        return view('admin.castings.index', compact('events', 'status'));
+    }
+
+    public function updateCastingStatus(Request $request, $id)
+    {
+        $event = ClientEvent::findOrFail($id);
+        
+        $request->validate([
+            'status' => 'required|in:open,canceled,inactive'
+        ]);
+
+        $event->status = $request->status;
+        $event->save();
+
+        return redirect()->route('admin.castings.index')->with('success', 'El estado del evento ha sido actualizado correctamente a ' . strtoupper($request->status) . '.');
+    }
+
+    public function destroyCasting($id)
+    {
+        $event = ClientEvent::findOrFail($id);
+        
+        // Esto usa SoftDeletes gracias a que lo añadimos al modelo
+        $event->delete();
+
+        return redirect()->route('admin.castings.index')->with('success', 'El evento ha sido eliminado correctamente (Soft Delete).');
     }
 }

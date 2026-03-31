@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ClientEvent extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     // Los campos que se pueden llenar de forma masiva
     protected $fillable = [

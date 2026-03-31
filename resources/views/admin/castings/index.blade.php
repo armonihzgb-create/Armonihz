@@ -2,41 +2,19 @@
 
 @section('admin-content')
 
-@php
-    $adminCastings = [
-         [
-            'id' => 101,
-            'title' => 'Boda en Jardín Las Fuentes',
-            'organizer' => 'Carlos H.',
-            'date_posted' => 'Hoy, 10:30 AM',
-            'status' => 'Pendiente',
-            'report_count' => 0
-        ],
-        [
-            'id' => 102,
-            'title' => 'Fiesta de Fin de Año - Empresa X',
-            'organizer' => 'Ana M.',
-            'date_posted' => 'Ayer',
-            'status' => 'Aprobado',
-            'report_count' => 0
-        ],
-        [
-            'id' => 103,
-            'title' => 'Busco banda barato',
-            'organizer' => 'Usuario Desconocido',
-            'date_posted' => 'Hace 2 días',
-            'status' => 'Reportado',
-            'report_count' => 5
-        ]
-    ];
-@endphp
-
-<header class="dashboard-header">
+<header class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
     <div>
         <h2>Gestión de Eventos 🛡️</h2>
         <p class="dashboard-subtitle">Moderación de castings publicados por clientes</p>
     </div>
 </header>
+
+@if(session('success'))
+    <div style="background: #ecfdf5; border: 1px solid #10b981; color: #047857; padding: 12px 16px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+        <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
+        <span style="font-size: 14px; font-weight: 500;">{{ session('success') }}</span>
+    </div>
+@endif
 
 <div class="dashboard-box">
     <div class="table-responsive">
@@ -44,47 +22,87 @@
             <thead>
                 <tr style="border-bottom: 1px solid var(--border-light); color: var(--text-dim); font-size: 13px; text-transform: uppercase;">
                     <th style="padding: 12px;">Evento</th>
-                    <th style="padding: 12px;">Publicado por</th>
-                    <th style="padding: 12px;">Fecha</th>
+                    <th style="padding: 12px;">Cliente</th>
+                    <th style="padding: 12px;">Fecha del Evento</th>
                     <th style="padding: 12px;">Estado</th>
                     <th style="padding: 12px; text-align: right;">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($adminCastings as $casting)
+                @forelse($events as $event)
                 <tr style="border-bottom: 1px solid var(--border-light);">
                     <td style="padding: 16px;">
-                        <strong>{{ $casting['title'] }}</strong>
-                        @if($casting['report_count'] > 0)
-                            <span style="background: var(--accent-orange); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px;">{{ $casting['report_count'] }} reportes</span>
-                        @endif
+                        <strong>{{ $event->titulo }}</strong>
+                        <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">
+                            {{ $event->applications->count() }} postulaciones
+                        </div>
                     </td>
                     <td style="padding: 16px;">
-                        {{ $casting['organizer'] }}
+                        {{ $event->client ? $event->client->nombre : 'Usuario Anónimo' }}
                     </td>
                     <td style="padding: 16px; font-size: 14px; color: var(--text-dim);">
-                        {{ $casting['date_posted'] }}
+                        {{ \Carbon\Carbon::parse($event->fecha)->format('d M, Y') }}
                     </td>
                     <td style="padding: 16px;">
-                        @if($casting['status'] === 'Pendiente')
-                            <span class="status-badge" style="background: rgba(254, 105, 13, 0.1); color: var(--accent-orange);">Pendiente</span>
-                        @elseif($casting['status'] === 'Aprobado')
-                            <span class="status-badge success" style="background: rgba(0, 195, 125, 0.1); color: var(--accent-green);">Aprobado</span>
+                        @if($event->status === 'open')
+                            <span class="status-pill" style="background: #e0f2fe; color: #0284c7;">Abierto</span>
+                        @elseif($event->status === 'completed')
+                            <span class="status-pill" style="background: #dcfce7; color: #16a34a;">Completado</span>
+                        @elseif($event->status === 'canceled')
+                            <span class="status-pill" style="background: #fee2e2; color: #ef4444;">Cancelado</span>
+                        @elseif($event->status === 'inactive')
+                            <span class="status-pill" style="background: #f1f5f9; color: #64748b;">Inactivo</span>
                         @else
-                            <span class="status-badge error" style="background: #fee2e2; color: #ef4444;">Reportado</span>
+                            <span class="status-pill" style="background: #fef9c3; color: #ca8a04;">{{ ucfirst($event->status) }}</span>
                         @endif
                     </td>
-                    <td style="padding: 16px; text-align: right;">
-                        <button class="secondary-btn" style="padding: 6px 12px; font-size: 12px;">Ver</button>
-                        @if($casting['status'] === 'Pendiente')
-                             <button class="primary-btn" style="padding: 6px 12px; font-size: 12px; background: var(--accent-green) !important;">Aprobar</button>
+                    <td style="padding: 16px; text-align: right; display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+                        
+                        <a href="{{ route('castings.show', $event->id) }}" target="_blank" class="secondary-btn small-btn icon-only" title="Ver detalles públicos" style="text-decoration: none;">
+                            <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                        </a>
+
+                        @if($event->status === 'open')
+                            <form action="{{ route('admin.castings.status', $event->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas cancelar este evento? Los músicos ya no podrán postularse.');">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="canceled">
+                                <button type="submit" class="secondary-btn small-btn" style="color: #ef4444; border-color: #fecaca; background: #fef2f2;">Cancelar</button>
+                            </form>
+                        @elseif($event->status === 'canceled' || $event->status === 'inactive')
+                            <form action="{{ route('admin.castings.status', $event->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="open">
+                                <button type="submit" class="primary-btn small-btn" style="background: #10b981;">Reactivar</button>
+                            </form>
                         @endif
-                        <button class="secondary-btn" style="padding: 6px 12px; font-size: 12px; color: #ef4444; border-color: #ef4444;">Borrar</button>
+                        
+                        <form action="{{ route('admin.castings.destroy', $event->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás SEGURO de eliminar este evento? Aplicará Soft Delete.');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="secondary-btn small-btn icon-only" style="color: #ef4444; border-color: transparent;" title="Eliminar">
+                                <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                            </button>
+                        </form>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 48px; color: var(--text-dim);">
+                        <i data-lucide="calendar-x" style="width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.3;"></i>
+                        <p>No hay eventos registrados en el sistema.</p>
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
+
+        @if($events->hasPages())
+            <div style="padding: 16px; border-top: 1px solid var(--border-light);">
+                {{ $events->links('pagination::bootstrap-4') }}
+            </div>
+        @endif
     </div>
 </div>
 

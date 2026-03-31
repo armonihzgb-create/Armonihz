@@ -131,10 +131,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/musicians/verification/{id}', [\App\Http\Controllers\Web\AdminController::class, 'verifyMusicianAction'])->name('admin.musicians.verify.action');
             Route::get('/musicians/verification/{id}/document', [\App\Http\Controllers\Web\AdminController::class, 'streamDocument'])->name('admin.musicians.document');
 
-                Route::get('/castings', function () {
-                    return view('admin.castings.index');
-                }
-                )->name('admin.castings.index');
+                Route::get('/castings', [\App\Http\Controllers\Web\AdminController::class, 'castingsIndex'])->name('admin.castings.index');
+                Route::patch('/castings/{id}/status', [\App\Http\Controllers\Web\AdminController::class, 'updateCastingStatus'])->name('admin.castings.status');
+                Route::delete('/castings/{id}', [\App\Http\Controllers\Web\AdminController::class, 'destroyCasting'])->name('admin.castings.destroy');
 
                 Route::get('/promotions', function () {
                     return view('admin.promotions.index');
