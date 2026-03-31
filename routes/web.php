@@ -114,6 +114,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/castings/{id}/apply', [CastingController::class, 'apply'])->name('castings.apply');
     Route::put('/castings/applications/{id}', [CastingController::class, 'update'])->name('castings.update');
     Route::delete('/castings/applications/{id}', [CastingController::class, 'destroy'])->name('castings.destroy');
+    Route::put('/castings/applications/{id}/complete', [CastingController::class, 'complete'])->name('castings.complete');
+
 
             Route::get('/promote', [PromotionController::class , 'create'])->name('promotions.create');
             Route::get('/my-promotions', [PromotionController::class , 'index'])->name('promotions.index');

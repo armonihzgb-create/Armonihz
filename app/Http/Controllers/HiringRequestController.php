@@ -16,7 +16,7 @@ class HiringRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
- public function index(Request $request)
+public function index(Request $request)
     {
         $firebaseUid = $request->attributes->get('firebase_uid');
         $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
@@ -25,17 +25,88 @@ class HiringRequestController extends Controller
             return response()->json(['data' => []], 200); 
         }
 
-        // 2. Buscamos todas sus solicitudes y traemos también los datos del músico
-        // 🔥 AQUÍ AGREGAMOS ->withExists('review as has_review')
-        $requests = HiringRequest::with('musicianProfile')
-            ->withExists('review as has_review') // 👈 ¡Esta es la línea mágica!
+        // 1. SOLICITUDES DIRECTAS (Hiring Requests)
+        $hiringRequests = \App\Models\HiringRequest::with('musicianProfile')
+            ->withExists('review as has_review')
             ->where('client_id', $cliente->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($req) {
+                return [
+                    'id' => $req->id,
+                    'type' => 'hiring', // 👈 Identificador
+                    'event_date' => $req->event_date,
+                    'end_time' => $req->end_time,
+                    'event_location' => $req->event_location,
+                    'description' => $req->description,
+                    'budget' => $req->budget,
+                    'status' => $req->status,
+                    'musician_message' => $req->musician_message,
+                    'counter_offer' => $req->counter_offer,
+                    'musician_profile' => $req->musicianProfile,
+                    'has_review' => $req->has_review,
+                    'created_at' => $req->created_at,
+                ];
+            });
 
-        return response()->json(['data' => $requests], 200);
+        // 2. CASTINGS ACEPTADOS / FINALIZADOS
+        $castingApps = \App\Models\CastingApplication::whereHas('event', function($q) use ($firebaseUid) {
+                $q->where('firebase_uid', $firebaseUid);
+            })
+            ->whereIn('status', ['accepted', 'completed']) // Solo los aprobados o ya terminados
+            ->with(['musician', 'event'])
+            ->withExists('review as has_review')
+            ->get()
+            ->map(function ($app) {
+                // Formateamos las fechas para que Android no falle
+                $start = null;
+                $end = null;
+                if ($app->event && $app->event->fecha) {
+                    $fechaString = trim($app->event->fecha);
+                    try {
+                        $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString);
+                    } catch (\Exception $e) {
+                        $start = \Carbon\Carbon::parse($fechaString);
+                    }
+                    $end = clone $start;
+
+                    $duracionString = trim($app->event->duracion);
+                    if (str_contains($duracionString, ' a ')) {
+                        $parts = explode(' a ', $duracionString);
+                        $start->setTimeFromTimeString(trim($parts[0]));
+                        $end->setTimeFromTimeString(trim($parts[1]));
+                        if ($end->lessThan($start)) {
+                            $end->addDay();
+                        }
+                    } else {
+                        $start->startOfDay();
+                        $duration = (int) $duracionString ?: 3;
+                        $end->startOfDay()->addHours($duration);
+                    }
+                }
+
+                return [
+                    'id' => $app->id,
+                    'type' => 'casting', // 👈 Identificador
+                    'event_date' => $start ? $start->format('Y-m-d H:i:s') : null,
+                    'end_time' => $end ? $end->format('Y-m-d H:i:s') : null,
+                    'event_location' => $app->event->ubicacion ?? 'No especificada',
+                    // Le ponemos un emoji de micrófono para distinguirlo
+                    'description' => "🎤 Casting: " . ($app->event->titulo ?? '') . "\n" . ($app->event->descripcion ?? ''),
+                    'budget' => $app->proposed_price ?? ($app->event->presupuesto ?? 0),
+                    'status' => $app->status,
+                    'musician_message' => $app->message,
+                    'counter_offer' => null,
+                    'musician_profile' => $app->musician,
+                    'has_review' => $app->has_review,
+                    'created_at' => $app->created_at,
+                ];
+            });
+
+        // 3. UNIR AMBAS LISTAS Y ORDENAR
+        $merged = $hiringRequests->concat($castingApps)->sortByDesc('created_at')->values();
+
+        return response()->json(['data' => $merged], 200);
     }
-
     /**
      * Store a newly created resource in storage.
      */

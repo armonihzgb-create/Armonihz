@@ -269,4 +269,31 @@ class CastingController extends Controller
 
         return redirect()->route('castings.index')->with('success', 'Has cancelado tu postulación a este casting.');
     }
+
+    /**
+     * Marca un casting aceptado como finalizado (completed).
+     */
+    public function complete($id)
+    {
+        $app = CastingApplication::findOrFail($id);
+        $user = Auth::user();
+
+        // Verificar que el músico que lo quiere cerrar sea el dueño de la postulación
+        if ($app->musician_profile_id !== $user->musicianProfile->id) {
+            abort(403);
+        }
+
+        // Solo se pueden finalizar castings que ya estaban aceptados
+        if ($app->status !== 'accepted') {
+            return back()->withErrors(['error' => 'Solo puedes finalizar eventos que ya han sido aceptados.']);
+        }
+
+        // Cambiamos el estado a completed
+        $app->update([
+            'status' => 'completed'
+        ]);
+
+        return redirect()->route('castings.show', $app->client_event_id)
+            ->with('success', '¡Has finalizado el evento! El cliente ahora podrá dejarte una reseña.');
+    }
 }

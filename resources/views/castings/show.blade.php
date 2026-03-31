@@ -99,6 +99,23 @@
                         {{ $myApplication->status === 'accepted' ? '✓ Aceptado' : ($myApplication->status === 'rejected' ? '✗ No seleccionado' : ($myApplication->status === 'cancelled' ? '✗ Contratación cancelada' : '⏳ En revisión')) }}
                     </span>
 
+                    {{-- Acciones para propuestas ACEPTADAS --}}
+                    @if($myApplication->status === 'accepted')
+                        <div class="cs-applied-actions" style="grid-template-columns: 1fr; margin-top: 20px;">
+                            <form action="{{ route('castings.complete', $myApplication->id) }}" method="POST" style="margin:0;">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="cs-submit-btn" style="background: linear-gradient(135deg, #16a34a, #22c55e); box-shadow: 0 4px 16px rgba(22, 163, 74, 0.3);">
+                                    <i data-lucide="check-circle" style="width:16px;height:16px;margin-right:8px;"></i>
+                                    Finalizar Evento
+                                </button>
+                            </form>
+                            <p style="font-size:12px; color:#94a3b8; text-align:center; margin-top:10px;">
+                                Haz clic aquí cuando el evento haya terminado. Esto permitirá al cliente dejarte una reseña.
+                            </p>
+                        </div>
+                    @endif
+
                     {{-- Actions for pending proposals --}}
                     @if($myApplication->status === 'pending')
                         <div class="cs-applied-actions">
