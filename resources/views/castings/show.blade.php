@@ -94,9 +94,10 @@
                         <p class="cs-applied-message">{{ $myApplication->message }}</p>
                     </div>
 
-                    <span class="cs-status-badge
-                        {{ $myApplication->status === 'accepted' ? 'cs-status-badge--green' : ($myApplication->status === 'rejected' ? 'cs-status-badge--red' : ($myApplication->status === 'cancelled' ? 'cs-status-badge--grey' : 'cs-status-badge--yellow')) }}">
-                        {{ $myApplication->status === 'accepted' ? '✓ Aceptado' : ($myApplication->status === 'rejected' ? '✗ No seleccionado' : ($myApplication->status === 'cancelled' ? '✗ Contratación cancelada' : '⏳ En revisión')) }}
+                   <span class="cs-status-badge
+                        {{ $myApplication->status === 'completed' ? 'cs-status-badge--blue' : ($myApplication->status === 'accepted' ? 'cs-status-badge--green' : ($myApplication->status === 'rejected' ? 'cs-status-badge--red' : ($myApplication->status === 'cancelled' ? 'cs-status-badge--grey' : 'cs-status-badge--yellow'))) }}"
+                        style="{{ $myApplication->status === 'completed' ? 'background-color: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe;' : '' }}">
+                        {{ $myApplication->status === 'completed' ? '🏁 Evento Finalizado' : ($myApplication->status === 'accepted' ? '✓ Aceptado' : ($myApplication->status === 'rejected' ? '✗ No seleccionado' : ($myApplication->status === 'cancelled' ? '✗ Contratación cancelada' : '⏳ En revisión'))) }}
                     </span>
 
                     {{-- Acciones para propuestas ACEPTADAS --}}
