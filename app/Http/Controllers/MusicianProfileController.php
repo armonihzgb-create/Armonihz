@@ -132,8 +132,8 @@ class MusicianProfileController extends Controller
         $manualEvents = $profile->calendarEvents()->get();
         foreach ($manualEvents as $ev) {
             $busyDates[] = [
-                'start' => $ev->start->format('Y-m-d H:i:s'),
-                'end' => $ev->end->format('Y-m-d H:i:s'),
+                'start' => $ev->start->format('Y-m-d\TH:i:s'), // <-- Agregada la \T
+                'end' => $ev->end->format('Y-m-d\TH:i:s'),   // <-- Agregada la \T
             ];
         }
 
@@ -141,26 +141,25 @@ class MusicianProfileController extends Controller
         $hiringRequests = $profile->hiringRequests()->where('status', 'accepted')->get();
         foreach ($hiringRequests as $hr) {
             $busyDates[] = [
-                'start' => $hr->event_date->format('Y-m-d H:i:s'),
-                'end' => $hr->end_time ? \Carbon\Carbon::parse($hr->end_time)->format('Y-m-d H:i:s') : $hr->event_date->copy()->addHours(3)->format('Y-m-d H:i:s'), 
+                'start' => $hr->event_date->format('Y-m-d\TH:i:s'), // <-- Agregada la \T
+                'end' => $hr->end_time ? \Carbon\Carbon::parse($hr->end_time)->format('Y-m-d\TH:i:s') : $hr->event_date->copy()->addHours(3)->format('Y-m-d\TH:i:s'), 
             ];
         }
 
-        // 🔥 NUEVO: 3. Castings Aceptados (A PRUEBA DE BALAS) 🔥
+        // 3. Castings Aceptados
         $castingApps = $profile->castingApplications()->where('status', 'accepted')->with('event')->get();
         
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
                 try {
-                    $fechaString = trim($app->event->fecha); // Ej: "15/04/2026"
-                    $duracionString = trim($app->event->duracion); // Ej: "20:30 a 22:30"
+                    $fechaString = trim($app->event->fecha);
+                    $duracionString = trim($app->event->duracion);
                     
                     if (str_contains($duracionString, ' a ')) {
                         $parts = explode(' a ', $duracionString);
-                        $startTimeString = trim($parts[0]); // "20:30"
-                        $endTimeString = trim($parts[1]);   // "22:30"
+                        $startTimeString = trim($parts[0]);
+                        $endTimeString = trim($parts[1]); 
                         
-                        // Juntamos la fecha y la hora directamente en un solo string para que Carbon no se confunda
                         $start = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $fechaString . ' ' . $startTimeString);
                         $end = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $fechaString . ' ' . $endTimeString);
                         
@@ -168,16 +167,14 @@ class MusicianProfileController extends Controller
                             $end->addDay();
                         }
                     } else {
-                        // Por si acaso hay eventos con formato viejo
                         $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString)->startOfDay();
                         $duration = (int) $duracionString ?: 3;
                         $end = $start->copy()->addHours($duration);
                     }
 
-                    // Lo agregamos a la lista
                     $busyDates[] = [
-                        'start' => $start->format('Y-m-d H:i:s'),
-                        'end' => $end->format('Y-m-d H:i:s'),
+                        'start' => $start->format('Y-m-d\TH:i:s'), // <-- Agregada la \T
+                        'end' => $end->format('Y-m-d\TH:i:s'),   // <-- Agregada la \T
                     ];
                 } catch (\Exception $e) {
                     \Log::error("Error en getAvailability: " . $e->getMessage());
