@@ -24,7 +24,6 @@ class ClientEvent extends Model
     ];
 
     protected $casts = [
-        'fecha' => 'date',
         'presupuesto' => 'float',
     ];
 
