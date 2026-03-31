@@ -95,9 +95,13 @@
                                 </span>
                             </td>
                             <td class="text-right">
-                                @if($m->verification_status === 'pending' || $m->verification_status === 'rejected' || $m->verification_status === 'approved')
+                                @if($m->verification_status === 'pending')
                                     <a href="{{ route('admin.musicians.verify', $m->id) }}" class="primary-btn small-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                                        <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Revisar
+                                        <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Validar
+                                    </a>
+                                @elseif($m->verification_status === 'approved' || $m->verification_status === 'rejected')
+                                    <a href="{{ route('admin.musicians.verify', $m->id) }}" class="secondary-btn small-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;">
+                                        <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> Detalles
                                     </a>
                                 @else
                                     <button class="secondary-btn small-btn icon-only" disabled title="No hay documentos para revisar">
