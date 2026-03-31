@@ -63,16 +63,8 @@
         {{-- ── RIGHT PANEL ──────────────────────────── --}}
         <div class="cs-right">
 
-            @if($event->status !== 'open')
-                {{-- Closed --}}
-                <div class="cs-section-card cs-status-card cs-status-closed">
-                    <i data-lucide="lock" style="width:28px;height:28px;color:#94a3b8;margin-bottom:12px;"></i>
-                    <h4>Evento cerrado</h4>
-                    <p>Este evento ya no acepta postulaciones.</p>
-                </div>
-
-            @elseif($myApplication)
-                {{-- Already applied --}}
+            {{-- 1. PRIMERO REVISAMOS SI YA ESTÁ POSTULADO --}}
+            @if($myApplication)
                 <div class="cs-section-card cs-status-card cs-status-applied">
                     <div class="cs-status-applied-header">
                         <div class="cs-status-icon-wrap cs-status-icon-blue">
@@ -94,7 +86,7 @@
                         <p class="cs-applied-message">{{ $myApplication->message }}</p>
                     </div>
 
-                   <span class="cs-status-badge
+                    <span class="cs-status-badge
                         {{ $myApplication->status === 'completed' ? 'cs-status-badge--blue' : ($myApplication->status === 'accepted' ? 'cs-status-badge--green' : ($myApplication->status === 'rejected' ? 'cs-status-badge--red' : ($myApplication->status === 'cancelled' ? 'cs-status-badge--grey' : 'cs-status-badge--yellow'))) }}"
                         style="{{ $myApplication->status === 'completed' ? 'background-color: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe;' : '' }}">
                         {{ $myApplication->status === 'completed' ? '🏁 Evento Finalizado' : ($myApplication->status === 'accepted' ? '✓ Aceptado' : ($myApplication->status === 'rejected' ? '✗ No seleccionado' : ($myApplication->status === 'cancelled' ? '✗ Contratación cancelada' : '⏳ En revisión'))) }}
@@ -145,7 +137,7 @@
                             <form action="{{ route('castings.update', $myApplication->id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
-        
+
                                 <div class="cs-field">
                                     <label class="cs-label">Tu precio (MXN) *</label>
                                     <div class="cs-price-input-wrap">
@@ -158,7 +150,7 @@
                                                style="padding-left: 36px !important;">
                                     </div>
                                 </div>
-        
+
                                 <div class="cs-field">
                                     <label class="cs-label">Mensaje para el cliente *</label>
                                     <textarea name="message" rows="5" maxlength="800"
@@ -168,7 +160,7 @@
                                         <span id="char-count-edit">{{ strlen($myApplication->message) }}</span> / 800
                                     </div>
                                 </div>
-        
+
                                 <div style="display: flex; gap: 10px;">
                                     <button type="submit" class="cs-submit-btn" style="flex:1;">Guardar Cambios</button>
                                     <button type="button" class="cs-secondary-btn" onclick="document.getElementById('edit-proposal-form').style.display='none'; document.querySelector('.cs-applied-actions').style.display='flex';" style="flex:1;">Cancelar</button>
@@ -178,8 +170,16 @@
                     @endif
                 </div>
 
+            {{-- 2. SI NO ESTÁ POSTULADO, Y EL EVENTO ESTÁ CERRADO --}}
+            @elseif($event->status !== 'open')
+                <div class="cs-section-card cs-status-card cs-status-closed">
+                    <i data-lucide="lock" style="width:28px;height:28px;color:#94a3b8;margin-bottom:12px;"></i>
+                    <h4>Evento cerrado</h4>
+                    <p>Este evento ya no acepta postulaciones.</p>
+                </div>
+
+            {{-- 3. SI ESTÁ ABIERTO Y NO SE HA POSTULADO --}}
             @else
-                {{-- Application form --}}
                 <div class="cs-section-card">
                     <div class="cs-form-header">
                         <div class="cs-status-icon-wrap cs-status-icon-purple">
@@ -386,6 +386,7 @@
         .cs-status-badge--green  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
         .cs-status-badge--red    { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
         .cs-status-badge--grey   { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+        .cs-status-badge--blue   { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
 
         /* Application form */
         .cs-form-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
