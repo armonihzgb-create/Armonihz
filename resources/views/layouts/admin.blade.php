@@ -40,7 +40,9 @@
                     <li>
                         <a href="/admin/musicians" class="{{ Request::is('admin/musicians*') ? 'active' : '' }}">
                             <i data-lucide="users"></i> Validar Músicos
-                            <span class="badge warning">7</span>
+                            @if(isset($pendingMusiciansCountSidebar) && $pendingMusiciansCountSidebar > 0)
+                                <span class="badge warning">{{ $pendingMusiciansCountSidebar }}</span>
+                            @endif
                         </a>
                     </li>
                     <li>

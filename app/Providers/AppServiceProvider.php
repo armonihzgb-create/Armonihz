@@ -42,5 +42,11 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for ('promotions', function (Request $request) {
             return Limit::perMinute(5)->by($request->user()->id);
         });
+
+        // Compartir el conteo de músicos pendientes con el layout de admin
+        \Illuminate\Support\Facades\View::composer('layouts.admin', function ($view) {
+            $pendingCount = \App\Models\MusicianProfile::where('verification_status', 'pending')->count();
+            $view->with('pendingMusiciansCountSidebar', $pendingCount);
+        });
     }
 }
