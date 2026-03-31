@@ -23,6 +23,11 @@ class ClientEvent extends Model
         'status',
     ];
 
+    protected $casts = [
+        'fecha' => 'date',
+        'presupuesto' => 'float',
+    ];
+
     public function applications()
     {
         return $this->hasMany(CastingApplication::class , 'client_event_id');

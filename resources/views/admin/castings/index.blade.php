@@ -41,7 +41,20 @@
                         {{ $event->client ? $event->client->nombre : 'Usuario Anónimo' }}
                     </td>
                     <td style="padding: 16px; font-size: 14px; color: var(--text-dim);">
-                        {{ \Carbon\Carbon::parse($event->fecha)->format('d M, Y') }}
+                        @php
+                            $displayDate = $event->fecha;
+                            if (is_string($displayDate) && !empty($displayDate)) {
+                                try {
+                                    // Cambiamos / por - para que Carbon::parse no se confunda con MM/DD/YYYY
+                                    $displayDate = \Carbon\Carbon::parse(str_replace('/', '-', $displayDate))->format('d M, Y');
+                                } catch (\Exception $e) {
+                                    // Si falla, dejamos la cadena original
+                                }
+                            } elseif ($displayDate instanceof \Carbon\Carbon) {
+                                $displayDate = $displayDate->format('d M, Y');
+                            }
+                        @endphp
+                        {{ $displayDate ?? 'N/A' }}
                     </td>
                     <td style="padding: 16px;">
                         @if($event->status === 'open')
