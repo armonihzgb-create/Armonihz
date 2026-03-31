@@ -273,9 +273,13 @@ class CastingController extends Controller
     /**
      * Marca un casting aceptado como finalizado (completed).
      */
+   /**
+     * Marca un casting aceptado como finalizado (completed) y notifica al cliente.
+     */
     public function complete($id)
     {
-        $app = CastingApplication::findOrFail($id);
+        // 🔵 Cargamos la relación del evento y del cliente para poder sacar el token
+        $app = CastingApplication::with('event.client')->findOrFail($id);
         $user = Auth::user();
 
         // Verificar que el músico que lo quiere cerrar sea el dueño de la postulación
@@ -293,7 +297,35 @@ class CastingController extends Controller
             'status' => 'completed'
         ]);
 
+        // 🔥 NUEVO: Lógica de Notificación PUSH al Cliente 🔥
+        $client = $app->event->client ?? null;
+
+        if ($client && $client->fcm_token) {
+            try {
+                $fcm = app(\App\Services\FirebaseNotificationService::class);
+                
+                // Nombre del músico (para que el cliente sepa quién terminó)
+                $musicianName = $user->musicianProfile->stage_name ?? $user->name;
+
+                $fcm->send(
+                    $client->fcm_token,
+                    "Evento Finalizado 🏁",
+                    "{$musicianName} ha finalizado el evento. ¡Abre la app y déjale una reseña!"
+                );
+
+                \Log::info("Notificación de finalización de casting enviada al cliente", [
+                    'client_id' => $client->id,
+                    'app_id' => $app->id
+                ]);
+
+            } catch (\Throwable $e) {
+                \Log::error("Error enviando notificación de finalización de casting", [
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
         return redirect()->route('castings.show', $app->client_event_id)
-            ->with('success', '¡Has finalizado el evento! El cliente ahora podrá dejarte una reseña.');
+            ->with('success', '¡Has finalizado el evento! El cliente ha sido notificado en su celular para dejarte una reseña.');
     }
 }
