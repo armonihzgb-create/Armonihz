@@ -7,8 +7,9 @@
             <h2>Panel Administrativo</h2>
             <p class="dashboard-subtitle">Gestión y validación de músicos en Armonihz</p>
         </div>
-        <span class="date-badge">
-            <i data-lucide="calendar"></i> {{ date('d M, Y') }}
+        <span class="date-badge" style="background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 8px 16px; border-radius: 12px; font-weight: 700; color: #475569; letter-spacing: -0.2px;">
+            <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 6px; color: #6366f1;"></i>
+            {{ date('D, d M Y') }}
         </span>
     </div>
 
@@ -66,10 +67,16 @@
             <div class="box-actions" style="display: flex; gap: 12px; align-items: center;">
                 <a href="{{ route('admin.musicians.index') }}" style="font-size: 13px; font-weight: 500; color: #6366f1; text-decoration: none;">Ver todos &rarr;</a>
                 <div style="display: flex; gap: 6px;">
+                    @if(!empty($search))
+                        <a href="{{ route('admin.dashboard') }}" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; color: #94a3b8; background: #fff; text-decoration: none; font-size: 14px; display: flex; align-items: center;" title="Limpiar búsqueda">
+                            &times;
+                        </a>
+                    @endif
                     <input
                         type="text"
                         id="dashboard-search"
-                        placeholder="Buscar en toda la BD..."
+                        value="{{ $search ?? '' }}"
+                        placeholder="Buscar músico en esta lista..."
                         class="search-small"
                         style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 14px; min-width: 220px;"
                     >
@@ -158,9 +165,11 @@
     <script>
         function goToSearch() {
             var term = document.getElementById('dashboard-search').value.trim();
+            // Navegar en la misma página para búsqueda local
             if (term.length > 0) {
-                // Navegar sin query strings — path: /admin/musicians/unverified/{term}
-                window.location.href = window.location.origin + '/admin/musicians/unverified/' + encodeURIComponent(term);
+                window.location.href = window.location.origin + '/admin?search=' + encodeURIComponent(term);
+            } else {
+                window.location.href = window.location.origin + '/admin';
             }
         }
 

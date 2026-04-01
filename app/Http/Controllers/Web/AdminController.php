@@ -17,7 +17,7 @@ class AdminController extends Controller
     /**
      * Display the admin dashboard with real metrics.
      */
-    public function index()
+    public function index(Request $request)
     {
         // 1. Métricas de Músicos
         $totalMusicians = MusicianProfile::count();
@@ -34,11 +34,24 @@ class AdminController extends Controller
         $completedCastings = CastingApplication::where('status', 'completed')->count();
         $totalCompletedEvents = $completedHiring + $completedCastings;
 
-        // 4. Lista de músicos recientes (priorizando pendientes de validación)
+        // 4. Lista de músicos (Búsqueda local o Recientes)
+        $search = $request->input('search');
+
         $recentMusicians = MusicianProfile::with(['user', 'genres'])
-            ->orderByRaw("FIELD(verification_status, 'pending', 'unverified', 'rejected', 'approved')")
-            ->orderBy('created_at', 'desc')
-            ->take(10)
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('stage_name', 'like', '%' . $search . '%')
+                      ->orWhereHas('user', function ($uq) use ($search) {
+                          $uq->where('name', 'like', '%' . $search . '%')
+                             ->orWhere('email', 'like', '%' . $search . '%');
+                      });
+                });
+            }, function ($query) {
+                // Si no hay búsqueda, mantenemos la prioridad de validación
+                $query->orderByRaw("FIELD(verification_status, 'pending', 'unverified', 'rejected', 'approved')")
+                      ->orderBy('created_at', 'desc')
+                      ->take(10);
+            })
             ->get();
 
         return view('admin', compact(
@@ -46,7 +59,8 @@ class AdminController extends Controller
             'pendingMusiciansCount',
             'totalClients',
             'totalCompletedEvents',
-            'recentMusicians'
+            'recentMusicians',
+            'search'
         ));
     }
 
