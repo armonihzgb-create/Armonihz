@@ -11,6 +11,9 @@ use App\Models\CastingApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use App\Notifications\MusicianVerifiedNotification;
+use App\Notifications\MusicianRejectedVerificationNotification;
 
 class AdminController extends Controller
 {
@@ -120,7 +123,17 @@ class AdminController extends Controller
                 'rejection_reason'    => null,
             ]);
 
-            $successMsg = 'Músico aprobado correctamente.';
+            // Enviar email de aprobación al músico
+            try {
+                $musician->user->notify(new MusicianVerifiedNotification($musician));
+            } catch (\Exception $e) {
+                Log::error('Error al enviar email de verificación aprobada: ' . $e->getMessage(), [
+                    'musician_id' => $musician->id,
+                    'user_email'  => $musician->user->email ?? 'N/A',
+                ]);
+            }
+
+            $successMsg = 'Músico aprobado correctamente. Se ha enviado un correo de confirmación.';
             $returnStatus = MusicianProfile::STATUS_PENDING; // Volvemos a pendientes
         } else {
             $musician->update([
@@ -128,7 +141,17 @@ class AdminController extends Controller
                 'rejection_reason'    => $request->rejection_reason,
             ]);
 
-            $successMsg = 'Verificación rechazada correctamente.';
+            // Enviar email de rechazo con el motivo
+            try {
+                $musician->user->notify(new MusicianRejectedVerificationNotification($musician, $request->rejection_reason));
+            } catch (\Exception $e) {
+                Log::error('Error al enviar email de verificación rechazada: ' . $e->getMessage(), [
+                    'musician_id' => $musician->id,
+                    'user_email'  => $musician->user->email ?? 'N/A',
+                ]);
+            }
+
+            $successMsg = 'Verificación rechazada. Se ha notificado al músico por correo.';
             $returnStatus = MusicianProfile::STATUS_REJECTED; // Volvemos a rechazados
         }
 
