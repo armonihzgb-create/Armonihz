@@ -203,16 +203,25 @@ class AdminController extends Controller
 
     public function castingsIndex(Request $request)
     {
+        $status = $request->get('status');
+        
         $query = ClientEvent::with(['client', 'applications'])->orderBy('created_at', 'desc');
         
-        $status = $request->get('status');
         if (in_array($status, ['open', 'completed', 'canceled', 'inactive'])) {
             $query->where('status', $status);
         }
 
         $events = $query->paginate(15);
 
-        return view('admin.castings.index', compact('events', 'status'));
+        // Contadores para los Tabs
+        $counts = [
+            'all'       => ClientEvent::count(),
+            'open'      => ClientEvent::where('status', 'open')->count(),
+            'completed' => ClientEvent::where('status', 'completed')->count(),
+            'other'     => ClientEvent::whereIn('status', ['canceled', 'inactive'])->count(),
+        ];
+
+        return view('admin.castings.index', compact('events', 'status', 'counts'));
     }
 
     public function updateCastingStatus(Request $request, $id)
