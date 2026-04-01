@@ -60,32 +60,34 @@
             flex-wrap: wrap;
             margin-bottom: 24px;
         }
-        .casting-filter-chip {
-            padding: 7px 16px;
-            border-radius: 999px;
-            font-size: 13px;
+        .casting-filter-select {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1.5px solid #cbd5e1;
+            background-color: #fff;
+            color: #0f172a;
+            font-size: 14px;
             font-weight: 500;
-            border: 1.5px solid #e2e8f0;
-            color: #64748b;
-            text-decoration: none;
-            background: #fff;
-            transition: all .2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color .2s, box-shadow .2s;
+            min-width: 200px;
+            max-width: 100%;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 40px;
         }
-        .casting-filter-chip:hover { border-color: #6c3fc5; color: #6c3fc5; }
-        .casting-filter-chip.active { background: #6c3fc5; color: #fff; border-color: #6c3fc5; }
-        .casting-filter-count {
-            background: rgba(255,255,255,.25);
-            border-radius: 999px;
-            padding: 1px 7px;
-            font-size: 11px;
-            font-weight: 700;
+        .casting-filter-select:hover {
+            border-color: #94a3b8;
         }
-        .casting-filter-chip:not(.active) .casting-filter-count {
-            background: #f1f5f9;
-            color: #64748b;
+        .casting-filter-select:focus {
+            border-color: #6c3fc5;
+            box-shadow: 0 0 0 3px rgba(108,63,197,.15);
         }
 
         /* ── Grid ────────────────────────────────────── */
@@ -241,15 +243,16 @@
     </div>
 
     {{-- FILTER BAR --}}
-    <div class="casting-filter-bar">
-        <a href="{{ route('castings.index') }}" class="casting-filter-chip {{ $filterType === 'all' ? 'active' : '' }}">
-            Todos <span class="casting-filter-count">{{ $events->count() }}</span>
-        </a>
-        @foreach($types as $type)
-            <a href="{{ route('castings.index', ['type' => $type]) }}" class="casting-filter-chip {{ $filterType === $type ? 'active' : '' }}">
-                {{ $type }}
-            </a>
-        @endforeach
+    <div class="casting-filter-bar" style="align-items: center;">
+        <span style="font-size: 14px; font-weight: 600; color: #475569;"><i data-lucide="filter" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> Filtrar por género:</span>
+        <select class="casting-filter-select" onchange="window.location.href=this.value">
+            <option value="{{ route('castings.index') }}" {{ $filterType === 'all' ? 'selected' : '' }}>Todos los castings disponibles</option>
+            @foreach($types as $type)
+                <option value="{{ route('castings.index', ['type' => $type]) }}" {{ $filterType === $type ? 'selected' : '' }}>
+                    {{ $type }}
+                </option>
+            @endforeach
+        </select>
     </div>
 
     {{-- EVENTS GRID --}}
