@@ -37,8 +37,14 @@ return [
 
     'guards' => [
         'web' => [
-            'driver' => 'session',
+            'driver'   => 'session',
             'provider' => 'users',
+        ],
+
+        // Firebase guard for the mobile API (client-facing routes)
+        'firebase' => [
+            'driver'   => 'firebase',   // registered in AppServiceProvider
+            'provider' => 'clients',
         ],
     ],
 
@@ -62,13 +68,13 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model'  => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'clients' => [
+            'driver' => 'eloquent',
+            'model'  => App\Models\Client::class,
+        ],
     ],
 
     /*

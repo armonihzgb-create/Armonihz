@@ -19,30 +19,38 @@ class MusicianProfileController extends Controller
     public function index(Request $request)
     {
         $query = MusicianProfile::with(['user:id,name', 'genres'])
-           // ->where('is_verified', true)
-            ->withExists(['promotions as has_active_promotion' => function ($query) {
-            $query->where('is_active', true)->where('valid_until', '>', now());
-        }])
+            // ->where('is_verified', true)
+            ->withExists([
+                'promotions as has_active_promotion' => function ($query) {
+                    $query->where('is_active', true)->where('valid_until', '>', now());
+                }
+            ])
+            ->withAvg('reviews', 'rating')
             ->orderByDesc('has_active_promotion');
 
         $query->when($request->filled('search'), function (Builder $q) use ($request) {
             $search = $request->input('search');
-            $q->where(function ($query) use ($search) {
+            $q->where(
+                function ($query) use ($search) {
                     $query->where('stage_name', 'like', '%' . $search . '%')
-                        ->orWhereHas('user', function ($uq) use ($search) {
-                    $uq->where('name', 'like', '%' . $search . '%');
+                        ->orWhereHas(
+                            'user',
+                            function ($uq) use ($search) {
+                                $uq->where('name', 'like', '%' . $search . '%');
+                            }
+                        );
                 }
-                );
-            }
             );
         });
 
         $query->when($request->filled('genre'), function (Builder $q) use ($request) {
-            $q->whereHas('genres', function ($gq) use ($request) {
+            $q->whereHas(
+                'genres',
+                function ($gq) use ($request) {
                     $gq->where('genres.id', $request->input('genre'));
                 }
-                );
-            });
+            );
+        });
 
         $query->when($request->filled('location'), function (Builder $q) use ($request) {
             $q->where('location', 'like', '%' . $request->input('location') . '%');
@@ -59,17 +67,22 @@ class MusicianProfileController extends Controller
     /**
      * Display the specified resource.
      */
-   public function show(Request $request, string $id)
+    public function show(Request $request, string $id)
     {
-        $profile = MusicianProfile::with(['user:id,name', 'genres', 'media', 'promotions' => function ($query) {
-            $query->where('is_active', true);
-        }])->findOrFail($id);
+        $profile = MusicianProfile::with([
+            'user:id,name',
+            'genres',
+            'media',
+            'promotions' => function ($query) {
+                $query->where('is_active', true);
+            }
+        ])->findOrFail($id);
 
         $isFavorite = false;
 
         // Extraemos el token manualmente por si esta ruta es pública y no usa el middleware
         $authHeader = $request->header('Authorization');
-        
+
         if ($authHeader && str_starts_with($authHeader, 'Bearer ')) {
             try {
                 $idToken = substr($authHeader, 7);
@@ -80,12 +93,12 @@ class MusicianProfileController extends Controller
 
                 // Buscamos al cliente
                 $client = \App\Models\Client::where('firebase_uid', $uid)->first();
-                
+
                 // Si existe, verificamos si este músico es su favorito
                 if ($client) {
                     $isFavorite = $client->favoriteMusicians()
-                                         ->where('musician_profile_id', $id)
-                                         ->exists();
+                        ->where('musician_profile_id', $id)
+                        ->exists();
                 }
             } catch (\Throwable $e) {
                 // Si el token es inválido o no hay sesión, simplemente se queda en false
@@ -123,7 +136,7 @@ class MusicianProfileController extends Controller
         );
     }
 
-   public function getAvailability($id)
+    public function getAvailability($id)
     {
         $profile = \App\Models\MusicianProfile::findOrFail($id);
         $busyDates = [];
@@ -142,27 +155,27 @@ class MusicianProfileController extends Controller
         foreach ($hiringRequests as $hr) {
             $busyDates[] = [
                 'start' => $hr->event_date->format('Y-m-d\TH:i:s'), // <-- Agregada la \T
-                'end' => $hr->end_time ? \Carbon\Carbon::parse($hr->end_time)->format('Y-m-d\TH:i:s') : $hr->event_date->copy()->addHours(3)->format('Y-m-d\TH:i:s'), 
+                'end' => $hr->end_time ? \Carbon\Carbon::parse($hr->end_time)->format('Y-m-d\TH:i:s') : $hr->event_date->copy()->addHours(3)->format('Y-m-d\TH:i:s'),
             ];
         }
 
         // 3. Castings Aceptados
         $castingApps = $profile->castingApplications()->where('status', 'accepted')->with('event')->get();
-        
+
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
                 try {
                     $fechaString = trim($app->event->fecha);
                     $duracionString = trim($app->event->duracion);
-                    
+
                     if (str_contains($duracionString, ' a ')) {
                         $parts = explode(' a ', $duracionString);
                         $startTimeString = trim($parts[0]);
-                        $endTimeString = trim($parts[1]); 
-                        
+                        $endTimeString = trim($parts[1]);
+
                         $start = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $fechaString . ' ' . $startTimeString);
                         $end = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $fechaString . ' ' . $endTimeString);
-                        
+
                         if ($end->lessThan($start)) {
                             $end->addDay();
                         }

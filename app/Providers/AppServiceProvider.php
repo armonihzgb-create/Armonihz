@@ -4,8 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+use App\Auth\FirebaseGuard;
+use App\Services\FirebaseService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 
@@ -24,10 +27,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ── Firebase Auth Guard registration ─────────────────────────────────
+        // Makes Auth::guard('firebase') and $request->user() resolve to the
+        // Client model on all routes protected by the 'firebase' guard.
+        Auth::extend('firebase', function ($app, $name, array $config) {
+            return new FirebaseGuard(
+                $app['request'],
+                $app->make(FirebaseService::class)
+            );
+        });
+
         if (config('app.env') === 'production') {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+            URL::forceScheme('https');
         }
-        RateLimiter::for ('login', function (Request $request) {
+
+        RateLimiter::for('login', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip() . '|' . $request->input('email'));
         });
 

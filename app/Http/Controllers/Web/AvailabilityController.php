@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\ClientEvent;
 use App\Models\MusicianCalendarEvent;
 use Carbon\Carbon;
 
@@ -91,57 +93,24 @@ class AvailabilityController extends Controller
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
                 try {
-                    // 1. Parseamos el día (Ej: "15/04/2026")
-                    $fechaString = trim($app->event->fecha);
-                    
-                    try {
-                        $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString);
-                    } catch (\Exception $e) {
-                        $start = \Carbon\Carbon::parse($fechaString);
-                    }
-
-                    $end = clone $start;
-
-                    // 2. Parseamos la hora desde DURACION (Ej: "20:30 a 22:30")
-                    $duracionString = trim($app->event->duracion);
-
-                    if (str_contains($duracionString, ' a ')) {
-                        $parts = explode(' a ', $duracionString);
-                        $startTimeString = trim($parts[0]); // "20:30"
-                        $endTimeString = trim($parts[1]);   // "22:30"
-
-                        // Le aplicamos las horas exactas al día que ya teníamos
-                        $start->setTimeFromTimeString($startTimeString);
-                        $end->setTimeFromTimeString($endTimeString);
-
-                        // Lógica por si el evento cruza la medianoche (Ej: "23:00 a 02:00")
-                        if ($end->lessThan($start)) {
-                            $end->addDay();
-                        }
-                    } else {
-                        // Plan B por si un evento viejo solo dice "3" en duración
-                        $start->startOfDay();
-                        $duration = (int) $duracionString ?: 3;
-                        $end->startOfDay()->addHours($duration);
-                    }
+                    [$start, $end] = ClientEvent::parseDateTimeRange(
+                        $app->event->fecha,
+                        $app->event->duracion
+                    );
 
                     $events[] = [
-                        'id' => 'casting_' . $app->id,
-                        'title' => '🎤 Casting: ' . $app->event->titulo,
-                        // toIso8601String() ya lleva la zona horaria del servidor, así que FullCalendar no lo moverá
-                      //  'start' => $start->toIso8601String(),
-                      //  'end' => $end->toIso8601String(),
-                        'start' => $start->format('Y-m-d\TH:i:s'),
-                        'end' => $end->format('Y-m-d\TH:i:s'),
+                        'id'              => 'casting_' . $app->id,
+                        'title'           => '🎤 Casting: ' . $app->event->titulo,
+                        'start'           => $start->format('Y-m-d\TH:i:s'),
+                        'end'             => $end->format('Y-m-d\TH:i:s'),
                         'backgroundColor' => '#9333ea',
-                        'borderColor' => 'transparent',
-                        'extendedProps' => ['source' => 'system', 'description' => 'Casting aceptado.'],
-                        'real_id' => $app->event->id,
-                        'event_source' => 'casting',
-                        'event_type' => 'busy',
+                        'borderColor'     => 'transparent',
+                        'extendedProps'   => ['source' => 'system', 'description' => 'Casting aceptado.'],
+                        'real_id'         => $app->event->id,
+                        'event_source'    => 'casting',
+                        'event_type'      => 'busy',
                     ];
-                }
-                catch (\Exception $e) {
+                } catch (\Exception $e) {
                     \Log::error("Error parseando fecha de casting ID {$app->id}: " . $e->getMessage());
                 }
             }
@@ -196,36 +165,42 @@ class AvailabilityController extends Controller
             return response()->json(['success' => false, 'message' => 'No puedes crear bloques en fechas pasadas.'], 422);
         }
 
-        // Check for existing overlapping manual blocks
-        $overlap = MusicianCalendarEvent::where('musician_profile_id', $profile->id)
-            ->where(function ($q) use ($start, $end) {
-            // If it's allDay (00:00 to 23:59), an exact start match is enough for broad "already blocked" check
-            $q->where(function ($q2) use ($start, $end) {
-                    $q2->where('start', '<', $end)
-                        ->where('end', '>', $start);
-                }
-                );
-            })->exists();
+        // ── Atomic check-then-insert inside a transaction ─────────────────────────
+        // lockForUpdate() acquires a row-level lock so no concurrent request can
+        // insert an overlapping block between our SELECT and INSERT.
+        return DB::transaction(function () use ($profile, $request, $start, $end) {
 
-        if ($overlap) {
-            return response()->json(['success' => false, 'message' => 'Ya existe un bloqueo que se cruza con este horario.'], 422);
-        }
+            $overlap = MusicianCalendarEvent::where('musician_profile_id', $profile->id)
+                ->where(function ($q) use ($start, $end) {
+                    $q->where('start', '<', $end)
+                      ->where('end',   '>',  $start);
+                })
+                ->lockForUpdate() // ← blocks concurrent overlapping inserts
+                ->exists();
 
-        $ev = MusicianCalendarEvent::create([
-            'musician_profile_id' => $profile->id,
-            'title' => $request->title,
-            'start' => $start,
-            'end' => $end,
-            'type' => $request->type,
-            'color' => '#dc2626',
-        ]);
+            if ($overlap) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ya existe un bloqueo que se cruza con este horario.',
+                ], 422);
+            }
 
-        return response()->json([
-            'success' => true,
-            'event' => $ev,
-            'event_source' => 'manual',
-            'event_type' => $ev->type,
-        ]);
+            $ev = MusicianCalendarEvent::create([
+                'musician_profile_id' => $profile->id,
+                'title'               => $request->title,
+                'start'               => $start,
+                'end'                 => $end,
+                'type'                => $request->type,
+                'color'               => '#dc2626',
+            ]);
+
+            return response()->json([
+                'success'      => true,
+                'event'        => $ev,
+                'event_source' => 'manual',
+                'event_type'   => $ev->type,
+            ]);
+        });
     }
 
     /**
@@ -258,21 +233,29 @@ class AvailabilityController extends Controller
             return response()->json(['success' => false, 'message' => 'No puedes mover bloques a fechas pasadas.'], 422);
         }
 
-        // Check for existing overlapping manual blocks (excluding self)
-        $overlap = MusicianCalendarEvent::where('musician_profile_id', $profile->id)
-            ->where('id', '!=', $id)
-            ->where(function ($q) use ($start, $end) {
-            $q->where('start', '<', $end)
-                ->where('end', '>', $start);
-        })->exists();
+        // ── Atomic check-then-update ─────────────────────────────────────
+        return DB::transaction(function () use ($ev, $id, $start, $end, $profile) {
 
-        if ($overlap) {
-            return response()->json(['success' => false, 'message' => 'Ya existe un bloqueo en este horario.'], 422);
-        }
+            $overlap = MusicianCalendarEvent::where('musician_profile_id', $profile->id)
+                ->where('id', '!=', $id)
+                ->where(function ($q) use ($start, $end) {
+                    $q->where('start', '<', $end)
+                      ->where('end',   '>',  $start);
+                })
+                ->lockForUpdate()
+                ->exists();
 
-        $ev->update(['start' => $start, 'end' => $end]);
+            if ($overlap) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ya existe un bloqueo en este horario.',
+                ], 422);
+            }
 
-        return response()->json(['success' => true]);
+            $ev->update(['start' => $start, 'end' => $end]);
+
+            return response()->json(['success' => true]);
+        });
     }
 
     /**

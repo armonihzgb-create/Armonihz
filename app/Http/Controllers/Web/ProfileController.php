@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangePasswordRequest;
+use App\Http\Requests\UpdateMusicianProfileRequest;
 use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
@@ -50,43 +53,15 @@ class ProfileController extends Controller
     /**
      * Save profile changes (text fields + photo + genres).
      */
-    public function update(Request $request)
+    public function update(UpdateMusicianProfileRequest $request)
     {
-        $user = $request->user();
+        $user    = $request->user();
         $profile = $user->musicianProfile;
 
-        $request->validate([
-            'stage_name' => 'required|string|max:255',
-            'bio' => 'nullable|string|max:2000',
-            'location' => 'nullable|string|max:255',
-            'hourly_rate' => 'nullable|numeric|min:0',
-            'phone' => [
-                'nullable',
-                'string',
-                'regex:/^\+?[0-9\s\-]*$/',
-                function ($attribute, $value, $fail) {
-                    $digitsCount = preg_match_all('/[0-9]/', $value);
-                    if ($digitsCount > 10) {
-                        $fail('El número de teléfono no debe tener más de 10 números.');
-                    }
-                },
-            ],
-            'instagram' => 'nullable|string|max:255',
-            'facebook' => 'nullable|string|max:255',
-            'youtube' => 'nullable|string|max:255',
-            'coverage_notes' => 'nullable|string|max:500',
-            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
-            'genres' => 'nullable|array',
-            'genres.*' => 'integer|exists:genres,id',
-        ], [
-            'phone.regex' => 'El teléfono solo puede contener números, espacios, guiones y un símbolo + opcional al inicio.',
-        ]);
-
-        // ── Photo upload ──────────────────────────────────────────────────────
+        // ── Photo upload ──────────────────────────────────────────────────
         $picturePath = $profile->profile_picture;
 
         if ($request->hasFile('profile_picture')) {
-            // Delete old picture if exists
             if ($picturePath && Storage::disk('public')->exists($picturePath)) {
                 Storage::disk('public')->delete($picturePath);
             }
@@ -94,21 +69,21 @@ class ProfileController extends Controller
                 ->store('profiles', 'public');
         }
 
-        // ── Text fields ───────────────────────────────────────────────────────
+        // ── Text fields ─────────────────────────────────────────────────
         $profile->update([
-            'stage_name' => $request->stage_name,
-            'bio' => $request->bio,
-            'location' => $request->location,
-            'hourly_rate' => $request->hourly_rate,
-            'phone' => $request->phone,
-            'instagram' => $request->instagram,
-            'facebook' => $request->facebook,
-            'youtube' => $request->youtube,
+            'stage_name'     => $request->stage_name,
+            'bio'            => $request->bio,
+            'location'       => $request->location,
+            'hourly_rate'    => $request->hourly_rate,
+            'phone'          => $request->phone,
+            'instagram'      => $request->instagram,
+            'facebook'       => $request->facebook,
+            'youtube'        => $request->youtube,
             'coverage_notes' => $request->coverage_notes,
-            'profile_picture' => $picturePath,
+            'profile_picture'=> $picturePath,
         ]);
 
-        // ── Genres (pivot sync) ───────────────────────────────────────────────
+        // ── Genres (pivot sync) ───────────────────────────────────────────
         $profile->genres()->sync($request->input('genres', []));
 
         return redirect()->route('profile')
@@ -161,42 +136,14 @@ class ProfileController extends Controller
 
     /**
      * Change user's password.
+     *
+     * Authorization (Google-only accounts) and all validation
+     * are handled by ChangePasswordRequest.
      */
-    public function changePassword(Request $request)
+    public function changePassword(ChangePasswordRequest $request)
     {
-        $user = clone $request->user();
-
-        // If the user is exclusively a Google user (no local password), shouldn't reach here normally, 
-        // but we protect against it.
-        if ($user->google_id && !$user->password) {
-            return back()->withErrors(['password' => 'Tu cuenta está vinculada a Google.'])->withFragment('password-section');
-        }
-
-        $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'regex:/[a-z]/',
-                'regex:/[A-Z]/',
-                'regex:/[0-9]/',
-                'regex:/[@$!%*#?&]/',
-                'confirmed',
-                'different:current_password'
-            ],
-        ], [
-            'current_password.required' => 'Debes ingresar tu contraseña actual.',
-            'current_password.current_password' => 'La contraseña actual es incorrecta.',
-            'password.required' => 'La nueva contraseña es obligatoria.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.regex' => 'La contraseña debe contener al menos una mayúscula, un número y un carácter especial.',
-            'password.confirmed' => 'Las contraseñas no coinciden.',
-            'password.different' => 'La nueva contraseña no puede ser igual a la actual.',
-        ]);
-
         $request->user()->update([
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'password' => Hash::make($request->password),
         ]);
 
         return back()->with('success', 'Contraseña actualizada correctamente.');

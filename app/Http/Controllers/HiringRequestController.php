@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreHiringRequestRequest;
 use App\Http\Requests\UpdateHiringRequestStatusRequest;
 use App\Http\Resources\HiringRequestResource;
+use App\Models\ClientEvent;
 use App\Models\HiringRequest;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponseTrait;
@@ -52,53 +53,39 @@ public function index(Request $request)
         $castingApps = \App\Models\CastingApplication::whereHas('event', function($q) use ($firebaseUid) {
                 $q->where('firebase_uid', $firebaseUid);
             })
-            ->whereIn('status', ['accepted', 'completed']) // Solo los aprobados o ya terminados
+            ->whereIn('status', ['accepted', 'completed'])
             ->with(['musician', 'event'])
             ->withExists('review as has_review')
             ->get()
             ->map(function ($app) {
-                // Formateamos las fechas para que Android no falle
                 $start = null;
-                $end = null;
-                if ($app->event && $app->event->fecha) {
-                    $fechaString = trim($app->event->fecha);
-                    try {
-                        $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString);
-                    } catch (\Exception $e) {
-                        $start = \Carbon\Carbon::parse($fechaString);
-                    }
-                    $end = clone $start;
+                $end   = null;
 
-                    $duracionString = trim($app->event->duracion);
-                    if (str_contains($duracionString, ' a ')) {
-                        $parts = explode(' a ', $duracionString);
-                        $start->setTimeFromTimeString(trim($parts[0]));
-                        $end->setTimeFromTimeString(trim($parts[1]));
-                        if ($end->lessThan($start)) {
-                            $end->addDay();
-                        }
-                    } else {
-                        $start->startOfDay();
-                        $duration = (int) $duracionString ?: 3;
-                        $end->startOfDay()->addHours($duration);
+                if ($app->event && $app->event->fecha) {
+                    try {
+                        [$start, $end] = ClientEvent::parseDateTimeRange(
+                            $app->event->fecha,
+                            $app->event->duracion
+                        );
+                    } catch (\Exception $e) {
+                        \Log::warning("Could not parse casting date for app {$app->id}: " . $e->getMessage());
                     }
                 }
 
                 return [
-                    'id' => $app->id,
-                    'type' => 'casting', // 👈 Identificador
-                    'event_date' => $start ? $start->format('Y-m-d H:i:s') : null,
-                    'end_time' => $end ? $end->format('Y-m-d H:i:s') : null,
-                    'event_location' => $app->event->ubicacion ?? 'No especificada',
-                    // Le ponemos un emoji de micrófono para distinguirlo
-                    'description' => "🎤 Casting: " . ($app->event->titulo ?? '') . "\n" . ($app->event->descripcion ?? ''),
-                    'budget' => $app->proposed_price ?? ($app->event->presupuesto ?? 0),
-                    'status' => $app->status,
+                    'id'               => $app->id,
+                    'type'             => 'casting',
+                    'event_date'       => $start ? $start->format('Y-m-d H:i:s') : null,
+                    'end_time'         => $end   ? $end->format('Y-m-d H:i:s')   : null,
+                    'event_location'   => $app->event->ubicacion ?? 'No especificada',
+                    'description'      => "🎤 Casting: " . ($app->event->titulo ?? '') . "\n" . ($app->event->descripcion ?? ''),
+                    'budget'           => $app->proposed_price ?? ($app->event->presupuesto ?? 0),
+                    'status'           => $app->status,
                     'musician_message' => $app->message,
-                    'counter_offer' => null,
+                    'counter_offer'    => null,
                     'musician_profile' => $app->musician,
-                    'has_review' => $app->has_review,
-                    'created_at' => $app->created_at,
+                    'has_review'       => $app->has_review,
+                    'created_at'       => $app->created_at,
                 ];
             });
 
@@ -144,16 +131,18 @@ public function index(Request $request)
 
     /**
      * Display the specified resource.
+     *
+     * The route is protected by firebase.auth, so $request->user() returns
+     * the Client model resolved by FirebaseGuard.
      */
     public function show(Request $request, string $id)
     {
         $hiringRequest = HiringRequest::with(['client', 'musicianProfile'])->findOrFail($id);
-        $user = $request->user();
 
-        $isClient = $user->role === 'cliente' && $hiringRequest->client_id === $user->id;
-        $isMusician = $user->role === 'musico' && $hiringRequest->musicianProfile->user_id === $user->id;
+        // The authenticated identity on firebase.auth routes is always a Client
+        $client = $request->user(); // Client model via FirebaseGuard
 
-        if (!$isClient && !$isMusician) {
+        if (!$client || $hiringRequest->client_id !== $client->id) {
             return $this->errorResponse('Forbidden: You are not authorized to view this request.', null, 403);
         }
 
@@ -161,15 +150,17 @@ public function index(Request $request)
     }
 
     /**
-     * Update the hiring request status.
+     * Update the hiring request status (musician side, Sanctum-protected).
+     *
+     * NOTE: This action is called by musicians via the web portal (Sanctum auth),
+     * NOT by Firebase clients. The musician's User model is resolved by $request->user().
      */
     public function updateStatus(UpdateHiringRequestStatusRequest $request, string $id)
     {
         $hiringRequest = HiringRequest::with(['client', 'musicianProfile'])->findOrFail($id);
-        $user = $request->user();
+        $musicianUser  = $request->user(); // User model (Sanctum / web session)
 
-        // Ensure only the assigned musician can update this request
-        if ($hiringRequest->musicianProfile->user_id !== $user->id) {
+        if (!$musicianUser || $hiringRequest->musicianProfile->user_id !== $musicianUser->id) {
             return $this->errorResponse('Forbidden: You do not own this request destination.', null, 403);
         }
 
@@ -186,12 +177,16 @@ public function index(Request $request)
 
     public function respondToCounterOffer(Request $request, $id)
     {
-        $firebaseUid = $request->attributes->get('firebase_uid');
-        $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
+        // Resolved by FirebaseGuard via firebase.auth middleware
+        $client = $request->user();
 
-        // Buscamos la solicitud y nos aseguramos de que sea de este cliente
+        if (!$client) {
+            return response()->json(['success' => false, 'message' => 'No autenticado.'], 401);
+        }
+
+        // Scope the lookup to this client's requests only
         $hiringRequest = HiringRequest::where('id', $id)
-            ->where('client_id', $cliente->id)
+            ->where('client_id', $client->id)
             ->firstOrFail();
 
         $request->validate([
@@ -199,8 +194,8 @@ public function index(Request $request)
         ]);
 
         $hiringRequest->status = $request->status;
-        
-        // Si acepta, el nuevo precio se convierte en el oficial
+
+        // If the client accepts, the counter offer becomes the official budget
         if ($request->status === 'accepted' && $hiringRequest->counter_offer) {
             $hiringRequest->budget = $hiringRequest->counter_offer;
         }
@@ -208,7 +203,7 @@ public function index(Request $request)
         $hiringRequest->save();
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Respuesta guardada correctamente'
         ]);
     }

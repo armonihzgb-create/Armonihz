@@ -28,6 +28,8 @@ class MusicianProfileResource extends JsonResource
             'youtube' => $this->youtube,
             'coverage_notes' => $this->coverage_notes,
 
+            'rating_average' => round($this->reviews_avg_rating ?? 0, 1),
+
             'user' => $this->whenLoaded('user', function () {
                 return [
                     'id' => $this->user->id,
