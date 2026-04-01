@@ -50,7 +50,7 @@ class AdminController extends Controller
         ));
     }
 
-    public function musiciansIndex(Request $request)
+    public function musiciansIndex(Request $request, string $status = 'pending')
     {
         // 1. Conteos usando los scopes — siempre precisos
         $counts = [
@@ -60,11 +60,9 @@ class AdminController extends Controller
             'unverified' => MusicianProfile::unverified()->count(),
         ];
 
-        // 2. Estado activo: Recuperar de la URL y validar contra los 4 estados posibles
-        $status = $request->input('status');
-        if (!in_array($status, ['pending', 'approved', 'rejected', 'unverified'])) {
-            $status = 'pending';
-        }
+        // 2. Estado activo: Recibido como parámetro en la ruta
+        // Ya no verificamos if (!in_array) aquí porque la ruta (`->where(...)`)
+        // garantiza que sólo entren los 4 valores válidos, o toma el default 'pending'.
 
         // 3. Consulta usando el scopeByStatus
         $musicians = MusicianProfile::with(['user', 'genres'])

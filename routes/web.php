@@ -140,7 +140,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 }
                 )->name('admin.promotions.index');
 
-                Route::get('/musicians', [\App\Http\Controllers\Web\AdminController::class, 'musiciansIndex'])->name('admin.musicians.index');
+                Route::get('/musicians/{status?}', [\App\Http\Controllers\Web\AdminController::class, 'musiciansIndex'])
+                    ->where('status', 'pending|approved|rejected|unverified')
+                    ->name('admin.musicians.index');
 
                 Route::get('/settings', function () {
                     return view('admin.settings.index');
