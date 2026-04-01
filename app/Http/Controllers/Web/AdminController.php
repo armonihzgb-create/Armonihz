@@ -61,7 +61,7 @@ class AdminController extends Controller
         ];
 
         // 2. Estado activo: Recuperar de la URL y validar contra los 4 estados posibles
-        $status = $request->query('status');
+        $status = $request->input('status');
         if (!in_array($status, ['pending', 'approved', 'rejected', 'unverified'])) {
             $status = 'pending';
         }
