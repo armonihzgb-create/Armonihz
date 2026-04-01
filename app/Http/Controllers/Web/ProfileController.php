@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\UpdateMusicianProfileRequest;
 use App\Models\Genre;
+use App\Models\GroupType;
+use App\Models\EventType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +21,7 @@ class ProfileController extends Controller
     public function showPublic($id)
     {
         $user = User::findOrFail($id);
-        $profile = $user->musicianProfile()->with('genres')->firstOrFail();
+        $profile = $user->musicianProfile()->with(['genres', 'groupTypes', 'eventTypes'])->firstOrFail();
         $media = $profile->media()->orderBy('is_featured', 'desc')->orderBy('created_at', 'desc')->get();
 
         return view('profile-public', compact('user', 'profile', 'media'));
@@ -31,8 +33,10 @@ class ProfileController extends Controller
     public function edit(Request $request)
     {
         $user = $request->user();
-        $profile = $user->musicianProfile()->with('genres')->first();
+        $profile = $user->musicianProfile()->with(['genres', 'groupTypes', 'eventTypes'])->first();
         $genres = Genre::orderBy('name')->get();
+        $groupTypes = GroupType::orderBy('id')->get();
+        $eventTypes = EventType::orderBy('id')->get();
         $completion = $this->calcCompletion($profile);
 
         // --- Stats ---
@@ -47,7 +51,7 @@ class ProfileController extends Controller
             $media = $profile->media()->orderBy('created_at', 'desc')->get();
         }
 
-        return view('profile', compact('user', 'profile', 'genres', 'completion', 'acceptedRequests', 'media'));
+        return view('profile', compact('user', 'profile', 'genres', 'groupTypes', 'eventTypes', 'completion', 'acceptedRequests', 'media'));
     }
 
     /**
@@ -83,8 +87,10 @@ class ProfileController extends Controller
             'profile_picture'=> $picturePath,
         ]);
 
-        // ── Genres (pivot sync) ───────────────────────────────────────────
+        // ── Genres, Groups & Events (pivot sync) ──────────────────────────
         $profile->genres()->sync($request->input('genres', []));
+        $profile->groupTypes()->sync($request->input('group_types', []));
+        $profile->eventTypes()->sync($request->input('event_types', []));
 
         return redirect()->route('profile')
             ->with('success', '¡Perfil actualizado correctamente!');

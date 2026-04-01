@@ -286,27 +286,56 @@
 
             <hr class="nbf-divider">
 
-            {{-- Genres --}}
+            {{-- Services & Genres --}}
             <div class="nbf-section">
                 <div class="nbf-section-header">
                     <div class="nbf-section-icon" style="background:rgba(245,158,11,.1);">
                         <i data-lucide="music-2" style="width:16px;height:16px;color:#d97706;"></i>
                     </div>
-                    <h2 class="nbf-section-title">Servicios y Géneros</h2>
+                    <h2 class="nbf-section-title">Servicios Destacados</h2>
                 </div>
-                <div style="display:flex;flex-wrap:wrap;gap:10px;">
-                    @forelse($profile->genres ?? [] as $genre)
-                        <div class="nbf-genre-chip">
-                            <i data-lucide="music" style="width:12px;height:12px;color:#6c3fc5;"></i>
-                            {{ $genre->name }}
-                        </div>
-                    @empty
-                        <div class="nbf-empty-genres">
-                            <i data-lucide="music-2" style="width:18px;height:18px;color:#cbd5e1;"></i>
-                            <span>Agrega tus géneros para ser encontrado más fácilmente</span>
-                            <button onclick="openEditModal()" class="nbf-add-genres-btn">+ Agregar géneros</button>
-                        </div>
-                    @endforelse
+                
+                <div style="margin-bottom:20px;">
+                    <h4 class="nbf-subsection-title" style="margin-bottom:10px;"><i data-lucide="users" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:6px;"></i> Agrupación</h4>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                        @forelse($profile->groupTypes ?? [] as $group)
+                            <div class="nbf-genre-chip" style="background:linear-gradient(135deg,rgba(217,119,6,.1),rgba(245,158,11,.1)); border-color:rgba(217,119,6,.18); color:#b45309;">
+                                {{ $group->name }}
+                            </div>
+                        @empty
+                            <span class="nbf-empty" style="font-size:13px;">No especificado</span>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <h4 class="nbf-subsection-title" style="margin-bottom:10px;"><i data-lucide="calendar-heart" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:6px;"></i> Tipos de Evento</h4>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                        @forelse($profile->eventTypes ?? [] as $event)
+                            <div class="nbf-genre-chip" style="background:linear-gradient(135deg,rgba(22,163,74,.1),rgba(34,197,94,.1)); border-color:rgba(22,163,74,.18); color:#15803d;">
+                                {{ $event->name }}
+                            </div>
+                        @empty
+                            <span class="nbf-empty" style="font-size:13px;">No especificado</span>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="nbf-subsection-title" style="margin-bottom:10px;"><i data-lucide="music" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:6px;"></i> Géneros Musicales</h4>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                        @forelse($profile->genres ?? [] as $genre)
+                            <div class="nbf-genre-chip">
+                                {{ $genre->name }}
+                            </div>
+                        @empty
+                            <div class="nbf-empty-genres">
+                                <i data-lucide="music-2" style="width:18px;height:18px;color:#cbd5e1;"></i>
+                                <span>Agrega tus géneros para ser encontrado más fácilmente</span>
+                                <button onclick="openEditModal()" class="nbf-add-genres-btn">+ Agregar géneros</button>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
 
@@ -850,16 +879,53 @@
                 </div>
 
                 {{-- ── Géneros musicales ───────────────────────────────── --}}
-                @if($genres->isNotEmpty())
-                <div class="form-group">
-                    <label>Géneros Musicales</label>
+                @if(isset($genres) && $genres->isNotEmpty())
+                    <h4 style="margin: 32px 0 16px; font-size: 16px; color: var(--text-main); font-weight: 700; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9;">Preferencias Musicales</h4>
+                    @foreach($genres->groupBy('category') as $category => $categoryGenres)
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label style="color:var(--accent-blue);font-weight:700;"><i data-lucide="music" style="width:14px;height:14px;margin-right:4px;"></i> {{ $category ?: 'Otros Géneros' }}</label>
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;">
+                                @foreach($categoryGenres as $genre)
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#f8f9fa;padding:8px 10px;border-radius:8px;border:1.5px solid {{ clone $profile && clone $profile->genres && clone $profile->genres->contains($genre->id) ? 'var(--accent-blue)' : '#e5e7eb' }};transition:border .2s;">
+                                        <input type="checkbox" name="genres[]" value="{{ $genre->id }}"
+                                               {{ $profile && clone $profile->genres && clone $profile->genres->contains($genre->id) ? 'checked' : '' }}
+                                               style="width:15px;height:15px;accent-color:var(--accent-blue);">
+                                        {{ $genre->name }}
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+                
+                {{-- ── Tipos de Agrupación ───────────────────────────────── --}}
+                @if(isset($groupTypes) && $groupTypes->isNotEmpty())
+                <div class="form-group" style="margin-top: 32px; padding-top: 16px; border-top: 1px dashed #f1f5f9;">
+                    <label style="color:#d97706;font-weight:700;font-size:15px;margin-bottom:12px;"><i data-lucide="users" style="width:16px;height:16px;margin-right:6px;"></i> Formato / Tipo de Agrupación</label>
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;">
-                        @foreach($genres as $genre)
-                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#f8f9fa;padding:8px 10px;border-radius:8px;border:1.5px solid {{ $profile && $profile->genres->contains($genre->id) ? 'var(--accent-blue)' : '#e5e7eb' }};transition:border .2s;">
-                                <input type="checkbox" name="genres[]" value="{{ $genre->id }}"
-                                       {{ $profile && $profile->genres->contains($genre->id) ? 'checked' : '' }}
-                                       style="width:15px;height:15px;accent-color:var(--accent-blue);">
-                                {{ $genre->name }}
+                        @foreach($groupTypes as $group)
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#fffbeb;padding:8px 10px;border-radius:8px;border:1.5px solid {{ clone $profile && clone $profile->groupTypes && clone $profile->groupTypes->contains($group->id) ? '#d97706' : '#fde68a' }};transition:border .2s;">
+                                <input type="checkbox" name="group_types[]" value="{{ $group->id }}"
+                                       {{ $profile && clone $profile->groupTypes && clone $profile->groupTypes->contains($group->id) ? 'checked' : '' }}
+                                       style="width:15px;height:15px;accent-color:#d97706;">
+                                {{ $group->name }}
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+                
+                {{-- ── Tipos de Eventos ───────────────────────────────── --}}
+                @if(isset($eventTypes) && $eventTypes->isNotEmpty())
+                <div class="form-group" style="margin-top: 32px; padding-top: 16px; border-top: 1px dashed #f1f5f9;">
+                    <label style="color:#16a34a;font-weight:700;font-size:15px;margin-bottom:12px;"><i data-lucide="calendar-heart" style="width:16px;height:16px;margin-right:6px;"></i> Eventos en los que toca</label>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;">
+                        @foreach($eventTypes as $event)
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#f0fdf4;padding:8px 10px;border-radius:8px;border:1.5px solid {{ clone $profile && clone $profile->eventTypes && clone $profile->eventTypes->contains($event->id) ? '#16a34a' : '#bbf7d0' }};transition:border .2s;">
+                                <input type="checkbox" name="event_types[]" value="{{ $event->id }}"
+                                       {{ $profile && clone $profile->eventTypes && clone $profile->eventTypes->contains($event->id) ? 'checked' : '' }}
+                                       style="width:15px;height:15px;accent-color:#16a34a;">
+                                {{ $event->name }}
                             </label>
                         @endforeach
                     </div>

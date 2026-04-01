@@ -119,4 +119,14 @@ class MusicianProfile extends Model
     {
         return $this->belongsTo(User::class, 'verified_by');
     }
+
+    public function groupTypes()
+    {
+        return $this->belongsToMany(GroupType::class);
+    }
+
+    public function eventTypes()
+    {
+        return $this->belongsToMany(EventType::class);
+    }
 }

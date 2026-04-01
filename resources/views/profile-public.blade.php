@@ -376,27 +376,72 @@
             </div>
 
             {{-- Géneros / Servicios --}}
-            @if($profile->genres->count())
             <div class="card">
                 <div class="card-header">
                     <i data-lucide="music-2"></i>
-                    <h3>Géneros & Servicios</h3>
+                    <h3>Servicios Destacados</h3>
                 </div>
-                <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap;">
-                    @foreach($profile->genres as $genre)
-                        <span style="
-                            background:linear-gradient(135deg,rgba(108,63,197,.1),rgba(47,147,245,.1));
-                            border:1px solid rgba(108,63,197,.25);
-                            color:var(--purple);
-                            padding:6px 16px;
-                            border-radius:999px;
-                            font-size:13px;
-                            font-weight:600;
-                        ">{{ $genre->name }}</span>
-                    @endforeach
+                <div class="card-body">
+                    
+                    @if(isset($profile->groupTypes) && $profile->groupTypes->count())
+                    <div style="margin-bottom:16px;">
+                        <h4 style="font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:8px;"><i data-lucide="users" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> Agrupación</h4>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            @foreach($profile->groupTypes as $group)
+                                <span style="
+                                    background:linear-gradient(135deg,rgba(217,119,6,.1),rgba(245,158,11,.1));
+                                    border:1px solid rgba(217,119,6,.18);
+                                    color:#b45309;
+                                    padding:4px 12px;
+                                    border-radius:999px;
+                                    font-size:12px;
+                                    font-weight:600;
+                                ">{{ $group->name }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(isset($profile->eventTypes) && $profile->eventTypes->count())
+                    <div style="margin-bottom:16px;">
+                        <h4 style="font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:8px;"><i data-lucide="calendar-heart" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> Tipos de Evento</h4>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            @foreach($profile->eventTypes as $event)
+                                <span style="
+                                    background:linear-gradient(135deg,rgba(22,163,74,.1),rgba(34,197,94,.1));
+                                    border:1px solid rgba(22,163,74,.18);
+                                    color:#15803d;
+                                    padding:4px 12px;
+                                    border-radius:999px;
+                                    font-size:12px;
+                                    font-weight:600;
+                                ">{{ $event->name }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($profile->genres->count())
+                    <div>
+                        <h4 style="font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:8px;"><i data-lucide="music" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:4px;"></i> Géneros Musicales</h4>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            @foreach($profile->genres as $genre)
+                                <span style="
+                                    background:rgba(244,246,251,1);
+                                    border:1px solid var(--border);
+                                    color:var(--text);
+                                    padding:4px 12px;
+                                    border-radius:999px;
+                                    font-size:12px;
+                                    font-weight:600;
+                                ">{{ $genre->name }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
             </div>
-            @endif
 
             {{-- Zona de cobertura --}}
             @if($profile->location || $profile->coverage_notes)

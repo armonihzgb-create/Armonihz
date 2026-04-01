@@ -36,6 +36,10 @@ class UpdateMusicianProfileRequest extends FormRequest
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
             'genres'          => 'nullable|array',
             'genres.*'        => 'integer|exists:genres,id',
+            'group_types'     => 'nullable|array',
+            'group_types.*'   => 'integer|exists:group_types,id',
+            'event_types'     => 'nullable|array',
+            'event_types.*'   => 'integer|exists:event_types,id',
         ];
     }
 
