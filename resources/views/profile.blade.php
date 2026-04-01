@@ -886,9 +886,9 @@
                             <label style="color:var(--accent-blue);font-weight:700;"><i data-lucide="music" style="width:14px;height:14px;margin-right:4px;"></i> {{ $category ?: 'Otros Géneros' }}</label>
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;">
                                 @foreach($categoryGenres as $genre)
-                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#f8f9fa;padding:8px 10px;border-radius:8px;border:1.5px solid {{ clone $profile && clone $profile->genres && clone $profile->genres->contains($genre->id) ? 'var(--accent-blue)' : '#e5e7eb' }};transition:border .2s;">
+                                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#f8f9fa;padding:8px 10px;border-radius:8px;border:1.5px solid {{ $profile && $profile->genres && $profile->genres->contains($genre->id) ? 'var(--accent-blue)' : '#e5e7eb' }};transition:border .2s;">
                                         <input type="checkbox" name="genres[]" value="{{ $genre->id }}"
-                                               {{ $profile && clone $profile->genres && clone $profile->genres->contains($genre->id) ? 'checked' : '' }}
+                                               {{ $profile && $profile->genres && $profile->genres->contains($genre->id) ? 'checked' : '' }}
                                                style="width:15px;height:15px;accent-color:var(--accent-blue);">
                                         {{ $genre->name }}
                                     </label>
@@ -904,9 +904,9 @@
                     <label style="color:#d97706;font-weight:700;font-size:15px;margin-bottom:12px;"><i data-lucide="users" style="width:16px;height:16px;margin-right:6px;"></i> Formato / Tipo de Agrupación</label>
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;">
                         @foreach($groupTypes as $group)
-                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#fffbeb;padding:8px 10px;border-radius:8px;border:1.5px solid {{ clone $profile && clone $profile->groupTypes && clone $profile->groupTypes->contains($group->id) ? '#d97706' : '#fde68a' }};transition:border .2s;">
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#fffbeb;padding:8px 10px;border-radius:8px;border:1.5px solid {{ $profile && $profile->groupTypes && $profile->groupTypes->contains($group->id) ? '#d97706' : '#fde68a' }};transition:border .2s;">
                                 <input type="checkbox" name="group_types[]" value="{{ $group->id }}"
-                                       {{ $profile && clone $profile->groupTypes && clone $profile->groupTypes->contains($group->id) ? 'checked' : '' }}
+                                       {{ $profile && $profile->groupTypes && $profile->groupTypes->contains($group->id) ? 'checked' : '' }}
                                        style="width:15px;height:15px;accent-color:#d97706;">
                                 {{ $group->name }}
                             </label>
@@ -921,9 +921,9 @@
                     <label style="color:#16a34a;font-weight:700;font-size:15px;margin-bottom:12px;"><i data-lucide="calendar-heart" style="width:16px;height:16px;margin-right:6px;"></i> Eventos en los que toca</label>
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;">
                         @foreach($eventTypes as $event)
-                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#f0fdf4;padding:8px 10px;border-radius:8px;border:1.5px solid {{ clone $profile && clone $profile->eventTypes && clone $profile->eventTypes->contains($event->id) ? '#16a34a' : '#bbf7d0' }};transition:border .2s;">
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;font-size:13px;background:#f0fdf4;padding:8px 10px;border-radius:8px;border:1.5px solid {{ $profile && $profile->eventTypes && $profile->eventTypes->contains($event->id) ? '#16a34a' : '#bbf7d0' }};transition:border .2s;">
                                 <input type="checkbox" name="event_types[]" value="{{ $event->id }}"
-                                       {{ $profile && clone $profile->eventTypes && clone $profile->eventTypes->contains($event->id) ? 'checked' : '' }}
+                                       {{ $profile && $profile->eventTypes && $profile->eventTypes->contains($event->id) ? 'checked' : '' }}
                                        style="width:15px;height:15px;accent-color:#16a34a;">
                                 {{ $event->name }}
                             </label>
