@@ -31,7 +31,7 @@ class MusicianVerifiedNotification extends Notification
             ->view('emails.musician-verified', [
                 'user'        => $notifiable,
                 'stageName'   => $stageName,
-                'dashboardUrl' => url('/musician/dashboard'),
+                'dashboardUrl' => url('/dashboard'),
             ]);
     }
 }
