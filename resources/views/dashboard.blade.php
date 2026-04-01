@@ -158,22 +158,25 @@
                     @foreach($upcomingEvents as $event)
                         <li style="align-items:flex-start;">
                             <div style="background:var(--bg-secondary); border-radius:8px; padding:8px 12px; text-align:center; min-width:60px; border:1px solid var(--border-light);">
-                                <span style="display:block; font-size:11px; font-weight:700; color:var(--accent-orange); text-transform:uppercase;">{{ $event->event_date->translatedFormat('M') }}</span>
-                                <span style="display:block; font-size:18px; font-weight:800; color:var(--text-main); line-height:1.2;">{{ $event->event_date->format('d') }}</span>
+                                <span style="display:block; font-size:11px; font-weight:700; color:var(--accent-orange); text-transform:uppercase;">{{ $event->date->translatedFormat('M') }}</span>
+                                <span style="display:block; font-size:18px; font-weight:800; color:var(--text-main); line-height:1.2;">{{ $event->date->format('d') }}</span>
                             </div>
                             <div style="flex-grow:1;">
-                                <strong style="display:block; color:var(--text-main); margin-bottom:2px;">
-                                    @if($user->role === 'musico')
-                                        Evento de {{ $event->client->name ?? 'Cliente' }}
+                                <strong style="display:flex; align-items:center; gap:6px; color:var(--text-main); margin-bottom:4px;">
+                                    @if($event->type === 'casting')
+                                        <i data-lucide="mic-2" style="width:14px;height:14px;color:var(--accent-purple);"></i>
+                                    @elseif($event->type === 'blocked')
+                                        <i data-lucide="lock" style="width:14px;height:14px;color:#94a3b8;"></i>
                                     @else
-                                        {{ $event->musicianProfile->stage_name ?? 'Músico' }}
+                                        <i data-lucide="user-check" style="width:14px;height:14px;color:var(--accent-blue);"></i>
                                     @endif
+                                    {{ Str::limit($event->title, 40) }}
                                 </strong>
-                                <span style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-dim);">
-                                    <i data-lucide="map-pin" style="width:12px;height:12px;"></i> {{ Str::limit($event->event_location, 30) }}
+                                <span style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-dim); margin-bottom:4px;">
+                                    <i data-lucide="map-pin" style="width:12px;height:12px;"></i> {{ Str::limit($event->location, 35) }}
                                 </span>
-                                <span style="display:block; font-size:12px; color:var(--text-dim); margin-top:4px;">
-                                    <i data-lucide="clock" style="width:12px;height:12px; vertical-align:text-bottom;"></i> {{ $event->event_date->format('H:i') }}
+                                <span style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-dim);">
+                                    <i data-lucide="clock" style="width:12px;height:12px;"></i> {{ $event->date->format('H:i') }}
                                 </span>
                             </div>
                         </li>

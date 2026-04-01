@@ -64,14 +64,64 @@ class DashboardController extends Controller
                 // --- NEW: Total Promotion views ---
                 $stats['promo_views'] = $profile->promotions()->sum('views') ?? 0;
 
-                // --- NEW: Upcoming Events (accepted, date >= today) ---
-                $upcomingEvents = $profile->hiringRequests()
+                // --- NEW: Upcoming Events Unified ---
+                $hiringEvents = $profile->hiringRequests()
                     ->with('client')
                     ->where('status', 'accepted')
                     ->whereDate('event_date', '>=', Carbon::today())
-                    ->orderBy('event_date', 'asc')
+                    ->get()
+                    ->map(function ($req) {
+                        return (object) [
+                            'type' => 'hiring',
+                            'title' => 'Evento de ' . ($req->client->name ?? 'Cliente'),
+                            'date' => Carbon::parse($req->event_date),
+                            'location' => $req->event_location,
+                        ];
+                    });
+
+                $castingEvents = \App\Models\CastingApplication::where('musician_profile_id', $profile->id)
+                    ->whereIn('status', ['accepted', 'completed']) // Assuming accepted castings
+                    ->with('event')
+                    ->get()
+                    ->map(function ($app) {
+                        $start = null;
+                        if ($app->event && $app->event->fecha) {
+                            try {
+                                [$start, $end] = \App\Models\ClientEvent::parseDateTimeRange($app->event->fecha, $app->event->duracion);
+                            } catch (\Exception $e) {
+                                $start = null;
+                            }
+                        }
+                        
+                        // Keep only future castings
+                        if (!$start || $start->lessThan(Carbon::today())) {
+                            return null;
+                        }
+
+                        return (object) [
+                            'type' => 'casting',
+                            'title' => $app->event->titulo ?? 'Evento de Casting',
+                            'date' => $start,
+                            'location' => $app->event->ubicacion ?? 'Ubicación no especificada',
+                        ];
+                    })->filter(); // Remove nulls
+
+                $calendarEvents = \App\Models\MusicianCalendarEvent::where('musician_profile_id', $profile->id)
+                    ->whereDate('start', '>=', Carbon::today())
+                    ->get()
+                    ->map(function ($cal) {
+                        return (object) [
+                            'type' => 'blocked',
+                            'title' => $cal->title ?? 'Fecha bloqueada',
+                            'date' => Carbon::parse($cal->start),
+                            'location' => 'Calendario Personal',
+                        ];
+                    });
+
+                $upcomingEvents = $hiringEvents->concat($castingEvents)->concat($calendarEvents)
+                    ->sortBy('date') // Order perfectly chronologically 
                     ->take(4)
-                    ->get();
+                    ->values();
             }
         }
         elseif ($user->role === 'cliente') {
@@ -84,14 +134,22 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get();
 
-            // --- NEW: Upcoming Events for Client ---
+            // --- NEW: Upcoming Events for Client Unified shape ---
             $upcomingEvents = $user->clientRequests()
                 ->with('musicianProfile')
                 ->where('status', 'accepted')
                 ->whereDate('event_date', '>=', Carbon::today())
                 ->orderBy('event_date', 'asc')
                 ->take(4)
-                ->get();
+                ->get()
+                ->map(function ($req) {
+                    return (object) [
+                        'type' => 'hiring',
+                        'title' => 'Concierto de ' . ($req->musicianProfile->stage_name ?? 'Músico'),
+                        'date' => Carbon::parse($req->event_date),
+                        'location' => $req->event_location,
+                    ];
+                });
         }
 
         return view('dashboard', compact('user', 'stats', 'recentActivity', 'recentRequests', 'upcomingEvents'));
