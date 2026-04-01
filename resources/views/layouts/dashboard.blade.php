@@ -90,7 +90,9 @@
                     <li>
                         <a href="/requests" class="{{ Request::is('requests') ? 'active' : '' }}">
                             <i data-lucide="clipboard-list"></i> Solicitudes
-                            <span class="badge">3</span>
+                            @if(isset($pendingRequestsCount) && $pendingRequestsCount > 0)
+                                <span class="badge">{{ $pendingRequestsCount }}</span>
+                            @endif
                         </a>
                     </li>
 

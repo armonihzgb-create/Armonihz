@@ -62,5 +62,19 @@ class AppServiceProvider extends ServiceProvider
             $pendingCount = \App\Models\MusicianProfile::where('verification_status', 'pending')->count();
             $view->with('pendingMusiciansCountSidebar', $pendingCount);
         });
+
+        // Compartir el conteo de solicitudes de contratación pendientes con el layout de músico
+        \Illuminate\Support\Facades\View::composer('layouts.dashboard', function ($view) {
+            $user = Auth::user();
+            $pendingRequestsCount = 0;
+
+            if ($user && $user->role === 'musico' && $user->musicianProfile) {
+                $pendingRequestsCount = \App\Models\HiringRequest::where('musician_profile_id', $user->musicianProfile->id)
+                    ->where('status', 'pending')
+                    ->count();
+            }
+
+            $view->with('pendingRequestsCount', $pendingRequestsCount);
+        });
     }
 }
