@@ -10,21 +10,24 @@
         
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
             <div class="filter-tabs" style="margin: 0;">
-                <a href="{{ route('admin.musicians.index', 'pending') }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}" data-status="pending">
+                @php
+                    $searchSuffix = !empty($search) ? '/' . rawurlencode($search) : '';
+                @endphp
+                <a href="{{ route('admin.musicians.index', 'pending') }}{{ $searchSuffix }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}" data-status="pending">
                     Pendientes <span class="counter">{{ $counts['pending'] }}</span>
                 </a>
-                <a href="{{ route('admin.musicians.index', 'unverified') }}" class="filter-tab {{ $status === 'unverified' ? 'active' : '' }}" data-status="unverified">
+                <a href="{{ route('admin.musicians.index', 'unverified') }}{{ $searchSuffix }}" class="filter-tab {{ $status === 'unverified' ? 'active' : '' }}" data-status="unverified">
                     Sin Documentos <span class="counter">{{ $counts['unverified'] }}</span>
                 </a>
-                <a href="{{ route('admin.musicians.index', 'rejected') }}" class="filter-tab {{ $status === 'rejected' ? 'active' : '' }}" data-status="rejected">
+                <a href="{{ route('admin.musicians.index', 'rejected') }}{{ $searchSuffix }}" class="filter-tab {{ $status === 'rejected' ? 'active' : '' }}" data-status="rejected">
                     Rechazados <span class="counter">{{ $counts['rejected'] }}</span>
                 </a>
-                <a href="{{ route('admin.musicians.index', 'approved') }}" class="filter-tab {{ $status === 'approved' ? 'active' : '' }}" data-status="approved">
+                <a href="{{ route('admin.musicians.index', 'approved') }}{{ $searchSuffix }}" class="filter-tab {{ $status === 'approved' ? 'active' : '' }}" data-status="approved">
                     Aprobados <span class="counter">{{ $counts['approved'] }}</span>
                 </a>
             </div>
 
-            {{-- Buscador sin <form> para evitar conflictos de proxy --}}
+            {{-- Buscador: navega a /admin/musicians/{status}/{term} sin query strings --}}
             <div style="display: flex; gap: 8px; align-items: center;">
                 <input
                     type="text"
@@ -249,32 +252,21 @@
 
     <script>
         function performSearch() {
-            var term = document.getElementById('musician-search').value.trim();
-            var status = document.getElementById('musician-search').dataset.status || 'pending';
-            // Construimos la URL base desde la ruta del path segment
-            var baseUrl = window.location.origin + '/admin/musicians/' + status;
-            if (term.length > 0) {
-                window.location.href = baseUrl + '?search=' + encodeURIComponent(term);
+            var rawTerm = document.getElementById('musician-search').value.trim();
+            var status  = document.getElementById('musician-search').dataset.status || 'pending';
+            var base    = window.location.pathname.split('/').slice(0, 3).join('/'); // /admin/musicians
+
+            if (rawTerm.length > 0) {
+                // Navegar a /admin/musicians/{status}/{term} — SIN query strings
+                window.location.href = window.location.origin + '/admin/musicians/' + encodeURIComponent(status) + '/' + encodeURIComponent(rawTerm);
             } else {
-                window.location.href = baseUrl;
+                window.location.href = window.location.origin + '/admin/musicians/' + encodeURIComponent(status);
             }
         }
 
-        // Permitir buscar con la tecla Enter
+        // Buscar con la tecla Enter
         document.getElementById('musician-search').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') performSearch();
-        });
-
-        // Si hay un termino de busqueda, mantenerlo al cambiar de tab
-        document.querySelectorAll('.filter-tab[data-status]').forEach(function(tab) {
-            tab.addEventListener('click', function(e) {
-                var term = document.getElementById('musician-search').value.trim();
-                if (term.length > 0) {
-                    e.preventDefault();
-                    var newStatus = this.dataset.status;
-                    window.location.href = window.location.origin + '/admin/musicians/' + newStatus + '?search=' + encodeURIComponent(term);
-                }
-            });
         });
     </script>
 

@@ -159,8 +159,8 @@
         function goToSearch() {
             var term = document.getElementById('dashboard-search').value.trim();
             if (term.length > 0) {
-                // Navegar a la sección de músicos con la búsqueda activa (en tab "Sin Documentos" ya que eso tienen los de prueba)
-                window.location.href = window.location.origin + '/admin/musicians/unverified?search=' + encodeURIComponent(term);
+                // Navegar sin query strings — path: /admin/musicians/unverified/{term}
+                window.location.href = window.location.origin + '/admin/musicians/unverified/' + encodeURIComponent(term);
             }
         }
 

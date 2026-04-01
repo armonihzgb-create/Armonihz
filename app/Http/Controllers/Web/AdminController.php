@@ -50,7 +50,7 @@ class AdminController extends Controller
         ));
     }
 
-    public function musiciansIndex(Request $request, string $status = 'pending')
+    public function musiciansIndex(Request $request, string $status = 'pending', ?string $search = null)
     {
         // 1. Conteos usando los scopes — siempre precisos
         $counts = [
@@ -60,13 +60,11 @@ class AdminController extends Controller
             'unverified' => MusicianProfile::unverified()->count(),
         ];
 
-        // 2. Estado activo: Recibido como parámetro en la ruta
-        // Ya no verificamos if (!in_array) aquí porque la ruta (`->where(...)`)
-        // garantiza que sólo entren los 4 valores válidos, o toma el default 'pending'.
+        // $status y $search vienen del path de la URL (ej. /admin/musicians/pending/jose)
+        // Esto evita que proxies como Traefik corrompan los query strings.
+        $search = $search ? urldecode($search) : null;
 
-        $search = $request->input('search');
-
-        // 3. Consulta usando el scopeByStatus y filtro de búsqueda (opcional)
+        // 2. Consulta usando el scopeByStatus y filtro de búsqueda (opcional)
         $musicians = MusicianProfile::with(['user', 'genres'])
             ->byStatus($status)
             ->when($search, function ($query) use ($search) {
@@ -79,8 +77,7 @@ class AdminController extends Controller
                 });
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(15)
-            ->withQueryString();
+            ->paginate(15);
 
         return view('admin.musicians.index', compact('musicians', 'status', 'counts', 'search'));
     }
