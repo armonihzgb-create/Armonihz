@@ -61,10 +61,13 @@
 
     {{-- TABLA DE GESTIÓN --}}
     <div class="dashboard-box">
-        <div class="box-header">
+        <div class="box-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <h3>Gestión de Músicos Recientes</h3>
-            <div class="box-actions">
-                <input type="text" placeholder="Buscar músico..." class="search-small">
+            <div class="box-actions" style="display: flex; gap: 12px; align-items: center;">
+                <a href="{{ route('admin.musicians.index') }}" style="font-size: 13px; font-weight: 500; color: #6366f1; text-decoration: none;">Ver todos &rarr;</a>
+                <form action="{{ route('admin.musicians.index') }}" method="GET" style="margin: 0;">
+                    <input type="text" name="search" placeholder="Buscar músico..." class="search-small" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 14px;">
+                </form>
             </div>
         </div>
 
@@ -111,13 +114,13 @@
                         </td>
                         <td class="text-right">
                             @if($m->verification_status === 'pending')
-                                <a href="{{ route('admin.musicians.verify', $m->id) }}" class="primary-btn small-btn" style="text-decoration: none; display: inline-block;">Validar</a>
-                            @elseif($m->verification_status === 'unverified')
-                                <button class="primary-btn small-btn" disabled title="Falta que el músico suba su documento" style="opacity: 0.5;">Sin Docs</button>
+                                <a href="{{ route('admin.musicians.verify', $m->id) }}" class="primary-btn small-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Validar
+                                </a>
                             @else
-                                <button class="secondary-btn small-btn icon-only" disabled>
-                                    <i data-lucide="more-horizontal"></i>
-                                </button>
+                                <a href="{{ route('admin.musicians.verify', $m->id) }}" class="secondary-btn small-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;" title="Ver perfil de usuario">
+                                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> Detalles
+                                </a>
                             @endif
                         </td>
                     </tr>

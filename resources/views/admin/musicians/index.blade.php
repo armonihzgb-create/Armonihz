@@ -8,19 +8,31 @@
             <p class="dashboard-subtitle">Gestiona y revisa las identidades de los músicos registrados.</p>
         </div>
         
-        <div class="filter-tabs">
-            <a href="{{ route('admin.musicians.index', ['status' => 'pending']) }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}">
-                Pendientes <span class="counter">{{ $counts['pending'] }}</span>
-            </a>
-            <a href="{{ route('admin.musicians.index', ['status' => 'unverified']) }}" class="filter-tab {{ $status === 'unverified' ? 'active' : '' }}">
-                Sin Documentos <span class="counter">{{ $counts['unverified'] }}</span>
-            </a>
-            <a href="{{ route('admin.musicians.index', ['status' => 'rejected']) }}" class="filter-tab {{ $status === 'rejected' ? 'active' : '' }}">
-                Rechazados <span class="counter">{{ $counts['rejected'] }}</span>
-            </a>
-            <a href="{{ route('admin.musicians.index', ['status' => 'approved']) }}" class="filter-tab {{ $status === 'approved' ? 'active' : '' }}">
-                Aprobados <span class="counter">{{ $counts['approved'] }}</span>
-            </a>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+            <div class="filter-tabs" style="margin: 0;">
+                <a href="{{ route('admin.musicians.index', ['status' => 'pending', 'search' => request('search')]) }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}">
+                    Pendientes <span class="counter">{{ $counts['pending'] }}</span>
+                </a>
+                <a href="{{ route('admin.musicians.index', ['status' => 'unverified', 'search' => request('search')]) }}" class="filter-tab {{ $status === 'unverified' ? 'active' : '' }}">
+                    Sin Documentos <span class="counter">{{ $counts['unverified'] }}</span>
+                </a>
+                <a href="{{ route('admin.musicians.index', ['status' => 'rejected', 'search' => request('search')]) }}" class="filter-tab {{ $status === 'rejected' ? 'active' : '' }}">
+                    Rechazados <span class="counter">{{ $counts['rejected'] }}</span>
+                </a>
+                <a href="{{ route('admin.musicians.index', ['status' => 'approved', 'search' => request('search')]) }}" class="filter-tab {{ $status === 'approved' ? 'active' : '' }}">
+                    Aprobados <span class="counter">{{ $counts['approved'] }}</span>
+                </a>
+            </div>
+
+            <form action="{{ route('admin.musicians.index') }}" method="GET" style="display: flex; gap: 8px;">
+                <input type="hidden" name="status" value="{{ $status }}">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar por nombre o correo..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; min-width: 260px;">
+                @if(request('search'))
+                    <a href="{{ route('admin.musicians.index', ['status' => $status]) }}" style="padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; text-decoration: none; color: #64748b; background: white;" title="Limpiar búsqueda">&times;</a>
+                @else
+                    <button type="submit" style="padding: 10px 16px; border-radius: 8px; border: none; background: #6366f1; color: white; cursor: pointer;"><i data-lucide="search" style="width: 16px; height: 16px;"></i></button>
+                @endif
+            </form>
         </div>
     </div>
 
@@ -119,19 +131,26 @@
                         </tr>
                     @empty
                         @php
-                            $emptyMessages = [
-                                'pending'    => 'No hay músicos esperando validación.',
-                                'unverified' => 'Todos los músicos han subido sus documentos.',
-                                'rejected'   => 'No hay verificaciones rechazadas.',
-                                'approved'   => 'Aún no hay músicos aprobados.',
-                            ];
-                            $emptyMsg = $emptyMessages[$status] ?? 'No se encontraron músicos con este estado.';
+                            if (request('search')) {
+                                $emptyMsg = 'No se encontraron resultados para "' . request('search') . '" en este estado.';
+                            } else {
+                                $emptyMessages = [
+                                    'pending'    => 'No hay músicos esperando validación.',
+                                    'unverified' => 'Todos los músicos han subido sus documentos.',
+                                    'rejected'   => 'No hay verificaciones rechazadas.',
+                                    'approved'   => 'Aún no hay músicos aprobados.',
+                                ];
+                                $emptyMsg = $emptyMessages[$status] ?? 'No se encontraron músicos con este estado.';
+                            }
                         @endphp
                         <tr>
                             <td colspan="6" style="text-align: center; padding: 56px 0; color: #94a3b8;">
                                 <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
-                                    <i data-lucide="inbox" style="width: 48px; height: 48px; opacity: 0.2;"></i>
+                                    <i data-lucide="{{ request('search') ? 'search-x' : 'inbox' }}" style="width: 48px; height: 48px; opacity: 0.2;"></i>
                                     <p style="margin: 0; font-size: 14px;">{{ $emptyMsg }}</p>
+                                    @if(request('search'))
+                                        <a href="{{ route('admin.musicians.index', ['status' => $status]) }}" style="font-size: 13px; color: #6366f1; text-decoration: none; margin-top: 8px;">Verificar todos los registros</a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

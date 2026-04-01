@@ -64,14 +64,25 @@ class AdminController extends Controller
         // Ya no verificamos if (!in_array) aquí porque la ruta (`->where(...)`)
         // garantiza que sólo entren los 4 valores válidos, o toma el default 'pending'.
 
-        // 3. Consulta usando el scopeByStatus
+        $search = $request->input('search');
+
+        // 3. Consulta usando el scopeByStatus y filtro de búsqueda (opcional)
         $musicians = MusicianProfile::with(['user', 'genres'])
             ->byStatus($status)
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('stage_name', 'like', '%' . $search . '%')
+                      ->orWhereHas('user', function ($uq) use ($search) {
+                          $uq->where('name', 'like', '%' . $search . '%')
+                             ->orWhere('email', 'like', '%' . $search . '%');
+                      });
+                });
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.musicians.index', compact('musicians', 'status', 'counts'));
+        return view('admin.musicians.index', compact('musicians', 'status', 'counts', 'search'));
     }
 
     public function verifyMusicianView($id)
