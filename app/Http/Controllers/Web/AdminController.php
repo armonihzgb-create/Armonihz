@@ -189,6 +189,18 @@ class AdminController extends Controller
         return response("File not found.\n\nDB Path: " . $musician->id_document_path . "\n\nChecked:\n" . implode("\n", $manualPaths), 404, ['Content-Type' => 'text/plain']);
     }
 
+    public function showCasting($id)
+    {
+        $event = ClientEvent::with([
+            'client',
+            'genre',
+            'applications.musician.user',
+            'applications.musician.genres',
+        ])->findOrFail($id);
+
+        return view('admin.castings.show', compact('event'));
+    }
+
     public function castingsIndex(Request $request)
     {
         $query = ClientEvent::with(['client', 'applications'])->orderBy('created_at', 'desc');

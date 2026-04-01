@@ -71,8 +71,8 @@
                     </td>
                     <td style="padding: 16px; text-align: right; display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
                         
-                        <a href="{{ route('castings.show', $event->id) }}" target="_blank" class="secondary-btn small-btn icon-only" title="Ver detalles públicos" style="text-decoration: none;">
-                            <i data-lucide="external-link" style="width: 14px; height: 14px;"></i>
+                        <a href="{{ route('admin.castings.show', $event->id) }}" class="secondary-btn small-btn" title="Ver detalles del evento" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px;">
+                            <i data-lucide="eye" style="width: 14px; height: 14px;"></i> Detalles
                         </a>
 
                         @if($event->status === 'open')

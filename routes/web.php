@@ -133,6 +133,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/musicians/verification/{id}/document', [\App\Http\Controllers\Web\AdminController::class, 'streamDocument'])->name('admin.musicians.document');
 
                 Route::get('/castings', [\App\Http\Controllers\Web\AdminController::class, 'castingsIndex'])->name('admin.castings.index');
+                Route::get('/castings/{id}', [\App\Http\Controllers\Web\AdminController::class, 'showCasting'])->name('admin.castings.show');
                 Route::patch('/castings/{id}/status', [\App\Http\Controllers\Web\AdminController::class, 'updateCastingStatus'])->name('admin.castings.status');
                 Route::delete('/castings/{id}', [\App\Http\Controllers\Web\AdminController::class, 'destroyCasting'])->name('admin.castings.destroy');
 
