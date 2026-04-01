@@ -157,96 +157,89 @@ public function profile(Request $request)
     }
 
 public function syncClient(Request $request)
-{
-    $firebaseUid = $request->attributes->get('firebase_uid');
-
-    if (!$firebaseUid) {
-        return response()->json(['message' => 'Token de Firebase no detectado'], 401);
-    }
-
-    $nombreCompleto = trim($request->name ?? '');
-    $partes = explode(' ', $nombreCompleto, 2);
-
-    // ✅ Usar nullif para ignorar strings vacíos, no solo null
-    $nombre   = !empty($request->nombre)   ? $request->nombre   : ($partes[0] ?? '');
-    $apellido = !empty($request->apellido) ? $request->apellido : ($partes[1] ?? '');
-
-    $user = User::where('email', $request->email)->first();
-    
-    if (!$user) {
-        $user = User::create([
-            'email'        => $request->email,
-            'name'         => $nombreCompleto,
-            'firebase_uid' => $firebaseUid,
-            'role'         => 'cliente',
-            // Default password for social/api users if not provided
-            'password'     => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(16)),
-        ]);
-    } else {
-        // Update name and firebase_uid, but PRESERVE the existing role
-        $user->update([
-            'name'         => $nombreCompleto,
-            'firebase_uid' => $firebaseUid,
-        ]);
-    }
-
-    $cliente = Client::where('firebase_uid', $firebaseUid)->first();
-
-    if ($cliente) {
-        // ✅ Actualizar user_id si es NULL
-        // ✅ Actualizar nombre/apellido SOLO si están vacíos en BD (primer sync)
-        $changed = false;
-
-        if (!$cliente->user_id) {
-            $cliente->user_id = $user->id;
-            $changed = true;
-        }
-
-        // Si el cliente tiene nombre vacío o null, actualizarlo
-        if (empty($cliente->nombre)) {
-            $cliente->nombre = $nombre;
-            $changed = true;
-        }
-
-        if (empty($cliente->apellido)) {
-            $cliente->apellido = $apellido;
-            $changed = true;
-        }
-
-        if ($changed) {
-            $cliente->save();
-        }
-
-    } else {
-        Client::create([
-            'firebase_uid' => $firebaseUid,
-            'user_id'      => $user->id,
-            'nombre'       => $nombre,
-            'apellido'     => $apellido,
-            'email'        => $request->email,
-        ]);
-    }
-
-    return response()->json([
-        'message' => 'Cliente sincronizado correctamente',
-        'user_id' => $user->id
-    ]);
-}
-    public function updateFcmToken(Request $request)
     {
-        $request->validate([
-            'fcm_token' => 'required|string'
-        ]);
+        $firebaseUid = $request->attributes->get('firebase_uid');
 
-        $cliente = $this->getClient($request);
+        if (!$firebaseUid) {
+            return response()->json(['message' => 'Token de Firebase no detectado'], 401);
+        }
 
-        $cliente->update([
-            'fcm_token' => $request->fcm_token
-        ]);
+        $nombreCompleto = trim($request->name ?? '');
+        $partes = explode(' ', $nombreCompleto, 2);
+
+        // ✅ Usar nullif para ignorar strings vacíos, no solo null
+        $nombre   = !empty($request->nombre)   ? $request->nombre   : ($partes[0] ?? '');
+        $apellido = !empty($request->apellido) ? $request->apellido : ($partes[1] ?? '');
+        
+        // 🔥 NUEVO: Extraemos la URL de la foto de Google que manda la app
+        $googlePhotoUrl = $request->photoUrl ?? $request->picture ?? null;
+
+        $user = User::where('email', $request->email)->first();
+        
+        if (!$user) {
+            $user = User::create([
+                'email'        => $request->email,
+                'name'         => $nombreCompleto,
+                'firebase_uid' => $firebaseUid,
+                'role'         => 'cliente',
+                // Default password for social/api users if not provided
+                'password'     => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(16)),
+            ]);
+        } else {
+            // Update name and firebase_uid, but PRESERVE the existing role
+            $user->update([
+                'name'         => $nombreCompleto,
+                'firebase_uid' => $firebaseUid,
+            ]);
+        }
+
+        $cliente = Client::where('firebase_uid', $firebaseUid)->first();
+
+        if ($cliente) {
+            // ✅ Actualizar user_id si es NULL
+            // ✅ Actualizar nombre/apellido SOLO si están vacíos en BD (primer sync)
+            $changed = false;
+
+            if (!$cliente->user_id) {
+                $cliente->user_id = $user->id;
+                $changed = true;
+            }
+
+            // Si el cliente tiene nombre vacío o null, actualizarlo
+            if (empty($cliente->nombre)) {
+                $cliente->nombre = $nombre;
+                $changed = true;
+            }
+
+            if (empty($cliente->apellido)) {
+                $cliente->apellido = $apellido;
+                $changed = true;
+            }
+
+            // 🔥 NUEVO: Guardamos la foto de Google como respaldo si no la tiene
+            if (empty($cliente->google_picture) && $googlePhotoUrl) {
+                $cliente->google_picture = $googlePhotoUrl;
+                $changed = true;
+            }
+
+            if ($changed) {
+                $cliente->save();
+            }
+
+        } else {
+            Client::create([
+                'firebase_uid'   => $firebaseUid,
+                'user_id'        => $user->id,
+                'nombre'         => $nombre,
+                'apellido'       => $apellido,
+                'email'          => $request->email,
+                'google_picture' => $googlePhotoUrl // 🔥 Guardamos al crearlo por primera vez
+            ]);
+        }
 
         return response()->json([
-            'success' => true,
-            'message' => 'Token guardado correctamente'
+            'message' => 'Cliente sincronizado correctamente',
+            'user_id' => $user->id
         ]);
     }
 

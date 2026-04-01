@@ -75,7 +75,7 @@ class ReviewController extends Controller
         ], 201);
     }
 
-   public function musicianReviews($id)
+    public function musicianReviews($id)
     {
         // Relación directa al cliente móvil
         $reviews = Review::with('client') 
@@ -91,23 +91,23 @@ class ReviewController extends Controller
                 
                 // --- LÓGICA PARA ARMAR LA URL DE LA FOTO ---
                 $photoUrl = null;
-                // Asumiendo que tu columna en la DB se llama 'fotoPerfil'
-                if ($perfil->fotoPerfil) {
-                    // Si empieza con http (ej. Google), la usamos directo
+                
+                if (!empty($perfil->fotoPerfil)) {
+                    // 1. Si subió una foto personalizada
                     if (str_starts_with($perfil->fotoPerfil, 'http')) {
                         $photoUrl = $perfil->fotoPerfil;
                     } else {
-                        // Si no, asumimos que es un archivo local y armamos la ruta completa
-                        // (Ajusta la ruta 'file/perfiles/' si es diferente en tu servidor)
                         $photoUrl = url('file/' . $perfil->fotoPerfil);
                     }
+                } elseif (!empty($perfil->google_picture)) {
+                    // 2. 🔥 PLAN B: Si no tiene foto personalizada, usamos la de Google
+                    $photoUrl = $perfil->google_picture;
                 }
 
                 $clientProfile = [
                     'id' => $perfil->id,
                     'nombre' => $perfil->nombre,
                     'apellido' => $perfil->apellido,
-                    // Usamos la misma clave que Android espera (photoUrl)
                     'photoUrl' => $photoUrl 
                 ];
             }
