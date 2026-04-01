@@ -24,8 +24,7 @@
                 </a>
             </div>
 
-            <form action="{{ route('admin.musicians.index') }}" method="GET" style="display: flex; gap: 8px;">
-                <input type="hidden" name="status" value="{{ $status }}">
+            <form action="{{ route('admin.musicians.index', ['status' => $status]) }}" method="GET" style="display: flex; gap: 8px;">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar por nombre o correo..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; min-width: 260px;">
                 @if(request('search'))
                     <a href="{{ route('admin.musicians.index', ['status' => $status]) }}" style="padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; text-decoration: none; color: #64748b; background: white;" title="Limpiar búsqueda">&times;</a>

@@ -65,7 +65,7 @@
             <h3>Gestión de Músicos Recientes</h3>
             <div class="box-actions" style="display: flex; gap: 12px; align-items: center;">
                 <a href="{{ route('admin.musicians.index') }}" style="font-size: 13px; font-weight: 500; color: #6366f1; text-decoration: none;">Ver todos &rarr;</a>
-                <form action="{{ route('admin.musicians.index') }}" method="GET" style="margin: 0;">
+                <form action="{{ route('admin.musicians.index', ['status' => 'pending']) }}" method="GET" style="margin: 0;">
                     <input type="text" name="search" placeholder="Buscar músico..." class="search-small" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 14px;">
                 </form>
             </div>
