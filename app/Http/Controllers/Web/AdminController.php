@@ -14,10 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    /**
-     * Display the admin dashboard with real metrics.
-     */
-    public function index(Request $request)
+    public function index(Request $request, ?string $search = null)
     {
         // 1. Métricas de Músicos
         $totalMusicians = MusicianProfile::count();
@@ -35,7 +32,8 @@ class AdminController extends Controller
         $totalCompletedEvents = $completedHiring + $completedCastings;
 
         // 4. Lista de músicos (Búsqueda local o Recientes)
-        $search = $request->input('search');
+        // Soporte tanto para query params (?search=) como para path segments (/search/term)
+        $search = $search ? urldecode($search) : $request->input('search');
 
         $recentMusicians = MusicianProfile::with(['user', 'genres'])
             ->when($search, function ($query) use ($search) {

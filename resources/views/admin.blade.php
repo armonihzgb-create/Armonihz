@@ -9,7 +9,7 @@
         </div>
         <span class="date-badge" style="background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 8px 16px; border-radius: 12px; font-weight: 700; color: #475569; letter-spacing: -0.2px;">
             <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 6px; color: #6366f1;"></i>
-            {{ date('D, d M Y') }}
+            {{ \Carbon\Carbon::now()->locale('es')->isoFormat('ddd, D MMM YYYY') }}
         </span>
     </div>
 
@@ -142,8 +142,13 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center" style="padding: 20px; color: #64748b;">
-                            No hay músicos registrados todavía.
+                        <td colspan="5" class="text-center" style="padding: 40px 0; color: #94a3b8;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                                <i data-lucide="{{ !empty($search) ? 'search-x' : 'users' }}" style="width: 40px; height: 40px; opacity: 0.3;"></i>
+                                <p style="margin: 0; font-size: 14px;">
+                                    {{ !empty($search) ? 'No se encontraron músicos para "' . $search . '"' : 'No hay músicos registrados todavía.' }}
+                                </p>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
@@ -165,9 +170,9 @@
     <script>
         function goToSearch() {
             var term = document.getElementById('dashboard-search').value.trim();
-            // Navegar en la misma página para búsqueda local
             if (term.length > 0) {
-                window.location.href = window.location.origin + '/admin?search=' + encodeURIComponent(term);
+                // Navegar a /admin/search/{termino} — EVITA el query string (?search=) que corrompe el proxy
+                window.location.href = window.location.origin + '/admin/search/' + encodeURIComponent(term);
             } else {
                 window.location.href = window.location.origin + '/admin';
             }

@@ -125,6 +125,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // --- ADMIN ROUTES ---
         Route::middleware(['role:admin'])->prefix('admin')->group(function () {
             Route::get('/', [\App\Http\Controllers\Web\AdminController::class, 'index'])->name('admin.dashboard');
+            Route::get('/search/{search?}', [\App\Http\Controllers\Web\AdminController::class, 'index'])->name('admin.dashboard.search');
 
             // Verificación de Músicos
             Route::get('/musicians/verification/{id}', [\App\Http\Controllers\Web\AdminController::class, 'verifyMusicianView'])->name('admin.musicians.verify');
