@@ -49,23 +49,30 @@ class AdminController extends Controller
 
     public function musiciansIndex(Request $request)
     {
-        $status = $request->get('status', 'pending');
-        
-        $query = MusicianProfile::with(['user', 'genres']);
-
-        if (in_array($status, ['pending', 'approved', 'rejected', 'unverified'])) {
-            $query->where('verification_status', $status);
-        }
-
-        $musicians = $query->orderBy('created_at', 'desc')->paginate(15);
-
-        // Conteos para los badges
+        // 1. Calculamos conteos
         $counts = [
             'pending' => MusicianProfile::where('verification_status', 'pending')->count(),
             'approved' => MusicianProfile::where('verification_status', 'approved')->count(),
             'rejected' => MusicianProfile::where('verification_status', 'rejected')->count(),
             'unverified' => MusicianProfile::where('verification_status', 'unverified')->count(),
         ];
+
+        // 2. Determinar el estado inteligente
+        $status = $request->get('status');
+        if (!$status) {
+            $status = ($counts['pending'] > 0) ? 'pending' : (($counts['unverified'] > 0) ? 'unverified' : 'pending');
+        }
+        
+        // 3. Consulta
+        $query = MusicianProfile::with(['user', 'genres']);
+
+        if (in_array($status, ['pending', 'approved', 'rejected', 'unverified'])) {
+            // Aseguramos que solo devuelva los del estado seleccionado
+            $query->where('verification_status', $status);
+        }
+
+        // 4. Paginación con withQueryString para que los botones de paginación conserven "?status=..."
+        $musicians = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
         return view('admin.musicians.index', compact('musicians', 'status', 'counts'));
     }
