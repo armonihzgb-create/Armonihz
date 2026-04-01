@@ -23,8 +23,12 @@ class FirebaseAuthMiddleware
             return response()->json(['message' => 'Token inválido o no proporcionado'], 401);
         }
 
+        // Since this is an API request authenticated via Firebase, we tell Laravel
+        // to use the 'firebase' guard by default for the rest of the request lifecycle.
+        Auth::shouldUse('firebase');
+
         // Bind the resolved client as the authenticated user so that
-        // $request->user() and Auth::user() both return the Client model.
+        // $request->user() and Auth::user() both return the Client model seamlessly.
         Auth::setUser($guard->user());
 
         return $next($request);
