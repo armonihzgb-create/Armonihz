@@ -34,7 +34,7 @@ class MusicianRejectedVerificationNotification extends Notification
                 'user'            => $notifiable,
                 'stageName'       => $stageName,
                 'rejectionReason' => $this->rejectionReason,
-                'retryUrl'        => url('/musician/verification'),
+                'retryUrl'        => url('/verificar-identidad'),
             ]);
     }
 }
