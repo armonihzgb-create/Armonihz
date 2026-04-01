@@ -10,28 +10,37 @@
         
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
             <div class="filter-tabs" style="margin: 0;">
-                <a href="{{ route('admin.musicians.index', ['status' => 'pending', 'search' => request('search')]) }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}">
+                <a href="{{ route('admin.musicians.index', 'pending') }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}" data-status="pending">
                     Pendientes <span class="counter">{{ $counts['pending'] }}</span>
                 </a>
-                <a href="{{ route('admin.musicians.index', ['status' => 'unverified', 'search' => request('search')]) }}" class="filter-tab {{ $status === 'unverified' ? 'active' : '' }}">
+                <a href="{{ route('admin.musicians.index', 'unverified') }}" class="filter-tab {{ $status === 'unverified' ? 'active' : '' }}" data-status="unverified">
                     Sin Documentos <span class="counter">{{ $counts['unverified'] }}</span>
                 </a>
-                <a href="{{ route('admin.musicians.index', ['status' => 'rejected', 'search' => request('search')]) }}" class="filter-tab {{ $status === 'rejected' ? 'active' : '' }}">
+                <a href="{{ route('admin.musicians.index', 'rejected') }}" class="filter-tab {{ $status === 'rejected' ? 'active' : '' }}" data-status="rejected">
                     Rechazados <span class="counter">{{ $counts['rejected'] }}</span>
                 </a>
-                <a href="{{ route('admin.musicians.index', ['status' => 'approved', 'search' => request('search')]) }}" class="filter-tab {{ $status === 'approved' ? 'active' : '' }}">
+                <a href="{{ route('admin.musicians.index', 'approved') }}" class="filter-tab {{ $status === 'approved' ? 'active' : '' }}" data-status="approved">
                     Aprobados <span class="counter">{{ $counts['approved'] }}</span>
                 </a>
             </div>
 
-            <form action="{{ route('admin.musicians.index', ['status' => $status]) }}" method="GET" style="display: flex; gap: 8px;">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar por nombre o correo..." style="padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; min-width: 260px;">
-                @if(request('search'))
-                    <a href="{{ route('admin.musicians.index', ['status' => $status]) }}" style="padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; text-decoration: none; color: #64748b; background: white;" title="Limpiar búsqueda">&times;</a>
-                @else
-                    <button type="submit" style="padding: 10px 16px; border-radius: 8px; border: none; background: #6366f1; color: white; cursor: pointer;"><i data-lucide="search" style="width: 16px; height: 16px;"></i></button>
+            {{-- Buscador sin <form> para evitar conflictos de proxy --}}
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <input
+                    type="text"
+                    id="musician-search"
+                    value="{{ $search ?? '' }}"
+                    placeholder="Buscar por nombre o correo..."
+                    style="padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; min-width: 260px;"
+                    data-status="{{ $status }}"
+                >
+                <button onclick="performSearch()" style="padding: 10px 16px; border-radius: 8px; border: none; background: #6366f1; color: white; cursor: pointer;">
+                    <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+                </button>
+                @if(!empty($search))
+                    <a href="{{ route('admin.musicians.index', $status) }}" style="padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; text-decoration: none; color: #64748b; background: white; display:flex; align-items:center;" title="Limpiar búsqueda">&times;</a>
                 @endif
-            </form>
+            </div>
         </div>
     </div>
 
@@ -237,5 +246,36 @@
         .page-link { border-radius: 8px !important; margin: 0 2px; border: none; font-size: 14px; }
         .page-item.active .page-link { background-color: #6366f1; }
     </style>
+
+    <script>
+        function performSearch() {
+            var term = document.getElementById('musician-search').value.trim();
+            var status = document.getElementById('musician-search').dataset.status || 'pending';
+            // Construimos la URL base desde la ruta del path segment
+            var baseUrl = window.location.origin + '/admin/musicians/' + status;
+            if (term.length > 0) {
+                window.location.href = baseUrl + '?search=' + encodeURIComponent(term);
+            } else {
+                window.location.href = baseUrl;
+            }
+        }
+
+        // Permitir buscar con la tecla Enter
+        document.getElementById('musician-search').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // Si hay un termino de busqueda, mantenerlo al cambiar de tab
+        document.querySelectorAll('.filter-tab[data-status]').forEach(function(tab) {
+            tab.addEventListener('click', function(e) {
+                var term = document.getElementById('musician-search').value.trim();
+                if (term.length > 0) {
+                    e.preventDefault();
+                    var newStatus = this.dataset.status;
+                    window.location.href = window.location.origin + '/admin/musicians/' + newStatus + '?search=' + encodeURIComponent(term);
+                }
+            });
+        });
+    </script>
 
 @endsection

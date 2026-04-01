@@ -65,9 +65,18 @@
             <h3>Gestión de Músicos Recientes</h3>
             <div class="box-actions" style="display: flex; gap: 12px; align-items: center;">
                 <a href="{{ route('admin.musicians.index') }}" style="font-size: 13px; font-weight: 500; color: #6366f1; text-decoration: none;">Ver todos &rarr;</a>
-                <form action="{{ route('admin.musicians.index', ['status' => 'pending']) }}" method="GET" style="margin: 0;">
-                    <input type="text" name="search" placeholder="Buscar músico..." class="search-small" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 14px;">
-                </form>
+                <div style="display: flex; gap: 6px;">
+                    <input
+                        type="text"
+                        id="dashboard-search"
+                        placeholder="Buscar en toda la BD..."
+                        class="search-small"
+                        style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 14px; min-width: 220px;"
+                    >
+                    <button onclick="goToSearch()" style="padding: 8px 12px; border-radius: 6px; border: none; background: #6366f1; color: white; cursor: pointer; font-size: 13px;">
+                        <i data-lucide="search" style="width: 14px; height: 14px;"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -145,5 +154,19 @@
             <strong>Consejo Admin:</strong> Revisa que las fotos de perfil cumplan con los términos de uso antes de validar la cuenta.
         </div>
     </div>
+
+    <script>
+        function goToSearch() {
+            var term = document.getElementById('dashboard-search').value.trim();
+            if (term.length > 0) {
+                // Navegar a la sección de músicos con la búsqueda activa (en tab "Sin Documentos" ya que eso tienen los de prueba)
+                window.location.href = window.location.origin + '/admin/musicians/unverified?search=' + encodeURIComponent(term);
+            }
+        }
+
+        document.getElementById('dashboard-search').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') goToSearch();
+        });
+    </script>
 
 @endsection
