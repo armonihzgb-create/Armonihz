@@ -25,14 +25,14 @@
             </div>
         </div>
 
-        <div class="card stat-card warning-border">
+        <div class="card stat-card warning-border" style="cursor:pointer;" onclick="window.location='{{ route('admin.musicians.index', ['status' => 'pending']) }}'">
             <div class="stat-icon orange">
                 <i data-lucide="alert-circle"></i>
             </div>
             <div>
                 <h4>Perfiles Pendientes</h4>
                 <span class="stat-number text-orange">{{ $pendingMusiciansCount }}</span>
-                <p class="stat-meta">Requieren validación</p>
+                <p class="stat-meta">Requieren validación &rarr;</p>
             </div>
         </div>
 
@@ -97,11 +97,17 @@
                         <td>{{ $m->location ?? 'No especificada' }}</td>
                         <td>{{ $m->genres->first()->name ?? 'N/A' }}</td>
                         <td>
-                            @if($m->is_verified)
-                                <span class="status-pill success">Activo</span>
-                            @else
-                                <span class="status-pill warning">Pendiente</span>
-                            @endif
+                            @php
+                                $vstatus = $m->verification_status ?? 'unverified';
+                                $pillMap = [
+                                    'approved'   => ['class' => 'success',   'label' => 'Aprobado'],
+                                    'pending'    => ['class' => 'warning',   'label' => 'Pendiente'],
+                                    'rejected'   => ['class' => 'danger',    'label' => 'Rechazado'],
+                                    'unverified' => ['class' => 'secondary', 'label' => 'Sin docs'],
+                                ];
+                                $pill = $pillMap[$vstatus] ?? ['class' => 'secondary', 'label' => ucfirst($vstatus)];
+                            @endphp
+                            <span class="status-pill {{ $pill['class'] }}">{{ $pill['label'] }}</span>
                         </td>
                         <td class="text-right">
                             @if($m->verification_status === 'pending')

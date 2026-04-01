@@ -31,6 +31,13 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div style="background: #fef2f2; border: 1px solid #f87171; color: #dc2626; padding: 12px 16px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+            <i data-lucide="x-circle" style="width: 18px; height: 18px;"></i>
+            <span style="font-size: 14px; font-weight: 500;">{{ session('error') }}</span>
+        </div>
+    @endif
+
     {{-- TABLA DE VALIDACIÓN --}}
     <div class="dashboard-box">
         <div class="table-responsive">
@@ -111,10 +118,21 @@
                             </td>
                         </tr>
                     @empty
+                        @php
+                            $emptyMessages = [
+                                'pending'    => 'No hay músicos esperando validación.',
+                                'unverified' => 'Todos los músicos han subido sus documentos.',
+                                'rejected'   => 'No hay verificaciones rechazadas.',
+                                'approved'   => 'Aún no hay músicos aprobados.',
+                            ];
+                            $emptyMsg = $emptyMessages[$status] ?? 'No se encontraron músicos con este estado.';
+                        @endphp
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 48px 0; color: #94a3b8;">
-                                <i data-lucide="users" style="width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.2;"></i>
-                                <p style="margin: 0;">No se encontraron músicos con este estado.</p>
+                            <td colspan="6" style="text-align: center; padding: 56px 0; color: #94a3b8;">
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                                    <i data-lucide="inbox" style="width: 48px; height: 48px; opacity: 0.2;"></i>
+                                    <p style="margin: 0; font-size: 14px;">{{ $emptyMsg }}</p>
+                                </div>
                             </td>
                         </tr>
                     @endforelse

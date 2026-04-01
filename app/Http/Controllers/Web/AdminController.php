@@ -21,19 +21,22 @@ class AdminController extends Controller
     {
         // 1. Métricas de Músicos
         $totalMusicians = MusicianProfile::count();
-        $pendingMusiciansCount = MusicianProfile::where('is_verified', false)->count();
+
+        // Usar verification_status para que coincida exactamente
+        // con el contador de la pestaña de "Validar Músicos"
+        $pendingMusiciansCount = MusicianProfile::pending()->count();
 
         // 2. Métricas de Clientes
         $totalClients = Client::count();
 
         // 3. Métricas de Eventos (Combinando Hiring y Casting)
-        $completedHiring = HiringRequest::where('status', 'completed')->count();
+        $completedHiring   = HiringRequest::where('status', 'completed')->count();
         $completedCastings = CastingApplication::where('status', 'completed')->count();
         $totalCompletedEvents = $completedHiring + $completedCastings;
 
-        // 4. Lista de músicos recientes (últimos 10, priorizando no verificados)
+        // 4. Lista de músicos recientes (priorizando pendientes de validación)
         $recentMusicians = MusicianProfile::with(['user', 'genres'])
-            ->orderBy('is_verified', 'asc') // Primero los no verificados (false = 0)
+            ->orderByRaw("FIELD(verification_status, 'pending', 'unverified', 'rejected', 'approved')")
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
@@ -49,30 +52,28 @@ class AdminController extends Controller
 
     public function musiciansIndex(Request $request)
     {
-        // 1. Calculamos conteos
+        $allowed = [MusicianProfile::STATUS_PENDING, MusicianProfile::STATUS_APPROVED,
+                    MusicianProfile::STATUS_REJECTED, MusicianProfile::STATUS_UNVERIFIED];
+
+        // 1. Conteos usando los nuevos scopes — siempre precisos
         $counts = [
-            'pending' => MusicianProfile::where('verification_status', 'pending')->count(),
-            'approved' => MusicianProfile::where('verification_status', 'approved')->count(),
-            'rejected' => MusicianProfile::where('verification_status', 'rejected')->count(),
-            'unverified' => MusicianProfile::where('verification_status', 'unverified')->count(),
+            'pending'    => MusicianProfile::pending()->count(),
+            'approved'   => MusicianProfile::approved()->count(),
+            'rejected'   => MusicianProfile::rejected()->count(),
+            'unverified' => MusicianProfile::unverified()->count(),
         ];
 
-        // 2. Determinar el estado inteligente
-        $status = $request->get('status');
-        if (!$status) {
-            $status = ($counts['pending'] > 0) ? 'pending' : (($counts['unverified'] > 0) ? 'unverified' : 'pending');
-        }
-        
-        // 3. Consulta
-        $query = MusicianProfile::with(['user', 'genres']);
+        // 2. Estado activo: usa el parámetro GET si es válido; si no, 'pending'
+        $status = in_array($request->get('status'), $allowed)
+            ? $request->get('status')
+            : MusicianProfile::STATUS_PENDING;
 
-        if (in_array($status, ['pending', 'approved', 'rejected', 'unverified'])) {
-            // Aseguramos que solo devuelva los del estado seleccionado
-            $query->where('verification_status', $status);
-        }
-
-        // 4. Paginación con withQueryString para que los botones de paginación conserven "?status=..."
-        $musicians = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        // 3. Consulta usando scopeByStatus para evitar repetir el where
+        $musicians = MusicianProfile::with(['user', 'genres'])
+            ->byStatus($status)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15)
+            ->withQueryString();
 
         return view('admin.musicians.index', compact('musicians', 'status', 'counts'));
     }
@@ -88,30 +89,37 @@ class AdminController extends Controller
     public function verifyMusicianAction(Request $request, $id)
     {
         $musician = MusicianProfile::findOrFail($id);
-        $admin = Auth::user();
 
         $request->validate([
-            'action' => 'required|in:approve,reject',
-            'rejection_reason' => 'nullable|string|max:1000|required_if:action,reject'
+            'action'           => 'required|in:approve,reject',
+            'rejection_reason' => 'nullable|string|max:1000|required_if:action,reject',
         ]);
 
         if ($request->action === 'approve') {
-            $musician->verification_status = 'approved';
-            $musician->is_verified = true; // Sincronizamos con el viejo campo para compatibilidad
-            $musician->verified_at = now();
-            $musician->verified_by = $admin->id;
-            $musician->rejection_reason = null;
-            $musician->save();
+            // is_verified se sincroniza automáticamente por el booted() hook del modelo
+            $musician->update([
+                'verification_status' => MusicianProfile::STATUS_APPROVED,
+                'verified_at'         => now(),
+                'verified_by'         => Auth::id(),
+                'rejection_reason'    => null,
+            ]);
 
-            return redirect()->route('admin.dashboard')->with('success', 'Músico verificado y aprobado correctamente.');
+            $successMsg = 'Músico aprobado correctamente.';
+            $returnStatus = MusicianProfile::STATUS_PENDING; // Volvemos a pendientes
         } else {
-            $musician->verification_status = 'rejected';
-            $musician->is_verified = false;
-            $musician->rejection_reason = $request->rejection_reason;
-            $musician->save();
+            $musician->update([
+                'verification_status' => MusicianProfile::STATUS_REJECTED,
+                'rejection_reason'    => $request->rejection_reason,
+            ]);
 
-            return redirect()->route('admin.dashboard')->with('success', 'Verificación rechazada. El músico ha sido notificado (en el dashboard).');
+            $successMsg = 'Verificación rechazada correctamente.';
+            $returnStatus = MusicianProfile::STATUS_REJECTED; // Volvemos a rechazados
         }
+
+        // Redirigir a la lista conservando el filtro de estado correcto
+        return redirect()
+            ->route('admin.musicians.index', ['status' => $returnStatus])
+            ->with('success', $successMsg);
     }
 
     public function streamDocument($id)

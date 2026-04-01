@@ -9,6 +9,33 @@ class MusicianProfile extends Model
 {
     use HasFactory;
 
+    // ── Valid verification states ────────────────────────────────────────────
+    const STATUS_UNVERIFIED = 'unverified';
+    const STATUS_PENDING    = 'pending';
+    const STATUS_APPROVED   = 'approved';
+    const STATUS_REJECTED   = 'rejected';
+
+    /**
+     * Auto-sync the legacy `is_verified` boolean whenever
+     * `verification_status` is changed, so we never have to update
+     * both fields manually in controllers.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (MusicianProfile $profile) {
+            if ($profile->isDirty('verification_status')) {
+                $profile->is_verified = $profile->verification_status === self::STATUS_APPROVED;
+            }
+        });
+    }
+
+    // ── Query Scopes ─────────────────────────────────────────────────────────
+    public function scopePending($query)    { return $query->where('verification_status', self::STATUS_PENDING); }
+    public function scopeApproved($query)   { return $query->where('verification_status', self::STATUS_APPROVED); }
+    public function scopeRejected($query)   { return $query->where('verification_status', self::STATUS_REJECTED); }
+    public function scopeUnverified($query) { return $query->where('verification_status', self::STATUS_UNVERIFIED); }
+    public function scopeByStatus($query, string $status) { return $query->where('verification_status', $status); }
+
     protected $fillable = [
         'user_id',
         'stage_name',
