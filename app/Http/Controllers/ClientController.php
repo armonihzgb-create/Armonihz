@@ -343,5 +343,25 @@ public function syncClient(Request $request)
         'cliente'  => $cliente
     ]);
 }
+
+public function updateFcmToken(Request $request)
+    {
+        // 1. Validamos que la petición incluya el token
+        $request->validate([
+            'fcm_token' => 'required|string'
+        ]);
+
+        // 2. Obtenemos el cliente autenticado usando tu método helper
+        $cliente = $this->getClient($request);
+
+        // 3. Actualizamos y guardamos
+        $cliente->fcm_token = $request->fcm_token;
+        $cliente->save();
+
+        // 4. Retornamos respuesta de éxito
+        return response()->json([
+            'message' => 'FCM Token actualizado correctamente'
+        ]);
+    }
 }
 
