@@ -294,7 +294,7 @@
                             <span>{{ $event->nombre_cliente }}</span>
                         </div>
                         {{-- 👇 NUEVO: Mostrar Correo si existe 👇 --}}
-                        @if($event->email)
+                         @if(!empty($event->email))
                         <div class="casting-card-detail-row">
                             <i data-lucide="mail" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
                             <span>{{ $event->email }}</span>
@@ -302,7 +302,7 @@
                         @endif
 
                         {{-- 👇 NUEVO: Mostrar Teléfono si existe 👇 --}}
-                        @if($event->telefono)
+                       @if(!empty($event->telefono))
                         <div class="casting-card-detail-row">
                             <i data-lucide="phone" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
                             <span>{{ $event->telefono }}</span>
