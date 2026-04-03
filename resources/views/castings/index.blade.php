@@ -266,8 +266,6 @@
         <div class="casting-grid">
             @foreach($events as $event)
                 <div class="casting-card {{ $event->already_applied ? 'casting-card--applied' : '' }}">
-                
-
                     {{-- Card Top Bar --}}
                     <div class="casting-card-topbar">
                       <span class="casting-tag">{{ $event->genre->name ?? $event->tipo_musica }}</span>
