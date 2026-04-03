@@ -183,6 +183,7 @@ class AuthController extends Controller
 
         \App\Models\Client::create([
             'user_id' => $user->id,
+            'firebase_uid' => 'web_pending_' . \Illuminate\Support\Str::random(16),
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
             'email' => $request->email,
