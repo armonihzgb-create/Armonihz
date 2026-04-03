@@ -266,6 +266,7 @@
         <div class="casting-grid">
             @foreach($events as $event)
                 <div class="casting-card {{ $event->already_applied ? 'casting-card--applied' : '' }}">
+                    <pre>{{ var_dump($event->email, $event->telefono) }}</pre>
 
                     {{-- Card Top Bar --}}
                     <div class="casting-card-topbar">
