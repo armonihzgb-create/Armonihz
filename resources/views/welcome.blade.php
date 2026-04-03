@@ -148,16 +148,20 @@
         .app-features { margin-top: 28px; display: flex; flex-direction: column; gap: 16px; }
         .app-feat { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
         .app-feat i { color: #a78bfa; font-size: 15px; width: 20px; text-align: center; }
-        .app-phones { display: flex; gap: 20px; justify-content: center; }
-        .app-phone { width: 140px; background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 28px; padding: 14px; }
-        .app-phone-screen { background: #1a1230; border-radius: 18px; overflow: hidden; }
-        .app-phone-header { background: linear-gradient(135deg, #1a0b38, #0d2452); padding: 12px; text-align: center; }
-        .app-phone-header .app-name { font-size: 11px; font-weight: 800; color: #fff; }
-        .app-phone-body { padding: 10px; }
-        .app-musician-card { background: rgba(255,255,255,.06); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
-        .app-musician-card .amc-name { font-size: 10px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-        .app-musician-card .amc-genre { font-size: 9px; color: #a78bfa; margin-bottom: 6px; }
-        .app-musician-card .amc-stars { font-size: 9px; color: #f59e0b; }
+        /* ─── PHONE FRAME MOCKUP ─────────────────────────────────────── */
+        .phone-frame { width: 290px; background: #1a1a2e; border-radius: 36px; padding: 12px 10px; box-shadow: 0 0 0 2px #333, 0 0 0 4px #555, 0 20px 60px rgba(0,0,0,.6); position: relative; margin: auto; }
+        .phone-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; background: #1a1a2e; border-radius: 0 0 14px 14px; z-index: 10; display: flex; align-items: center; justify-content: center; }
+        .phone-camera { width: 8px; height: 8px; border-radius: 50%; background: #333; border: 1px solid #555; margin-left: 50px; }
+        .phone-screen { background: #fff; border-radius: 26px; overflow: hidden; height: 500px; display: flex; flex-direction: column; position: relative; }
+        .app-statusbar { background: #1a0b38; color: #fff; padding: 12px 20px 6px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .app-topbar { background: linear-gradient(135deg,#1a0b38,#0d2452); color: #fff; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .app-hero { position: relative; padding: 20px 16px 24px; text-align: center; flex-shrink: 0; overflow: hidden; z-index: 0; }
+        .app-hero::before { content: ''; position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center; filter: grayscale(100%); z-index: -2; }
+        .app-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.75)); z-index: -1; }
+        .app-body { flex: 1; overflow-y: auto; background: #fff; scrollbar-width: none; }
+        .app-body::-webkit-scrollbar { display: none; }
+        .phone-home-indicator { height: 20px; background: #f9f9f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .phone-home-indicator::after { content: ''; width: 80px; height: 4px; background: #d1d5db; border-radius: 2px; }
 
         /* -- TESTIMONIALS -- */
         .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
@@ -397,31 +401,63 @@
                         <div class="app-feat"><i class="fa-solid fa-check-circle"></i> Mayor exposición con promociones dentro de la app</div>
                     </div>
                 </div>
-                <div class="app-phones">
-                    <div class="app-phone">
-                        <div class="app-phone-screen">
-                            <div class="app-phone-header">
-                                <div class="app-name">Armonihz</div>
-                            </div>
-                            <div class="app-phone-body">
-                                <div style="font-size:9px;font-weight:700;color:rgba(248,246,255,.5);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;">Músicos cerca de ti</div>
-                                <div class="app-musician-card">
-                                    <div class="amc-name">Jesús Ramos</div>
-                                    <div class="amc-genre">🎸 Rock · Pop</div>
-                                    <div class="amc-stars">★★★★★ <span style="color:rgba(248,246,255,.4);font-size:8px;">5.0</span></div>
-                                </div>
-                                <div class="app-musician-card">
-                                    <div class="amc-name">Ana Martínez</div>
-                                    <div class="amc-genre">🎻 Cuarteto Clásico</div>
-                                    <div class="amc-stars">★★★★★ <span style="color:rgba(248,246,255,.4);font-size:8px;">4.9</span></div>
-                                </div>
-                                <div class="app-musician-card" style="opacity:.6;">
-                                    <div class="amc-name">Luis Soria</div>
-                                    <div class="amc-genre">🎹 Jazz & Blues</div>
-                                    <div class="amc-stars">★★★★★ <span style="color:rgba(248,246,255,.4);font-size:8px;">4.8</span></div>
-                                </div>
+                <div class="phone-frame" style="transform: scale(0.95); transform-origin: center right; margin-right: 0; margin-left: auto;">
+                    <div class="phone-notch">
+                        <div class="phone-camera"></div>
+                    </div>
+                    <div class="phone-screen">
+                        <div class="app-statusbar">
+                            <span style="font-size:11px;font-weight:700;">9:41</span>
+                            <div style="display:flex;gap:5px;align-items:center;">
+                                <i class="fa-solid fa-signal" style="font-size:10px;"></i>
+                                <i class="fa-solid fa-wifi" style="font-size:10px;"></i>
+                                <i class="fa-solid fa-battery-full" style="font-size:10px;"></i>
                             </div>
                         </div>
+                        <div class="app-topbar">
+                            <button style="background:none;border:none;color:#fff;padding:4px;cursor:pointer;">
+                                <i class="fa-solid fa-chevron-left" style="font-size:16px;"></i>
+                            </button>
+                            <span style="font-size:14px;font-weight:700;color:#fff;">Perfil</span>
+                            <button style="background:none;border:none;color:#fff;padding:4px;cursor:pointer;">
+                                <i class="fa-solid fa-share-nodes" style="font-size:16px;"></i>
+                            </button>
+                        </div>
+                        <div class="app-body">
+                            <div class="app-hero" style="border-radius:0;">
+                                <div style="width:80px;height:80px;margin:0 auto;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0ea5e9);color:#fff;font-size:26px;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
+                                    AM
+                                </div>
+                                <h2 style="margin:10px 0 2px;font-size:17px;font-weight:800;color:#fff;">Ana Martínez</h2>
+                                <p style="font-size:12px;color:rgba(255,255,255,.75);margin:0;">📍 Monterrey, N.L.</p>
+                                <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;">
+                                    <span style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:999px;">Violín</span>
+                                    <span style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:999px;">Clásica</span>
+                                </div>
+                            </div>
+                            <div style="display:flex;border-bottom:1px solid #f0f0f0;">
+                                <div style="flex:1;text-align:center;padding:12px 0;">
+                                    <div style="font-size:16px;font-weight:800;color:#6c3fc5;">⭐ 4.9</div>
+                                    <div style="font-size:10px;color:#9ca3af;margin-top:2px;">Calificación</div>
+                                </div>
+                                <div style="flex:1;text-align:center;padding:12px 0;border-left:1px solid #f0f0f0;border-right:1px solid #f0f0f0;">
+                                    <div style="font-size:16px;font-weight:800;color:#6c3fc5;">1,204</div>
+                                    <div style="font-size:10px;color:#9ca3af;margin-top:2px;">Vistas</div>
+                                </div>
+                                <div style="flex:1;text-align:center;padding:12px 0;">
+                                    <div style="font-size:16px;font-weight:800;color:#6c3fc5;">$1,800</div>
+                                    <div style="font-size:10px;color:#9ca3af;margin-top:2px;">MXN/hr</div>
+                                </div>
+                            </div>
+                            <div style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
+                                <h4 style="font-size:12px;font-weight:700;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Acerca de</h4>
+                                <p style="font-size:13px;color:#4b5563;line-height:1.6;">Violinista clásica con 10 años de experiencia en bodas, XV años y eventos corporativos. Trabajo con pistas o grupos.</p>
+                            </div>
+                            <div style="padding:16px 16px 24px;">
+                                <button style="width:100%;padding:13px;background:linear-gradient(135deg,#6c3fc5,#2f93f5);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;box-shadow:0 4px 16px rgba(108,63,197,.35);cursor:pointer;">Solicitar contratación</button>
+                            </div>
+                        </div>
+                        <div class="phone-home-indicator"></div>
                     </div>
                 </div>
             </div>
@@ -491,6 +527,7 @@
                 </a>
             @endif
         </div>
+        <br><br>
         <p class="cta-note"><i class="fa-solid fa-shield-halved" style="margin-right:4px;"></i> Gratis para siempre · Sin tarjeta de crédito · Cancela cuando quieras</p>
     </section>
 
