@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             'auth/google/callback',
+            'app-registro',
             'app-registro2',
         ]);
 
