@@ -294,7 +294,7 @@
                             <span>{{ $event->nombre_cliente }}</span>
                         </div>
                         {{-- 👇 NUEVO: Mostrar Correo si existe 👇 --}}
-                         @if(!empty($event->email))
+                         @if(isset($event->email) && $event->email !== '')
                         <div class="casting-card-detail-row">
                             <i data-lucide="mail" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
                             <span>{{ $event->email }}</span>
