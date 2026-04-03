@@ -293,6 +293,21 @@
                             <i data-lucide="user" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
                             <span>{{ $event->nombre_cliente }}</span>
                         </div>
+                        {{-- 👇 NUEVO: Mostrar Correo si existe 👇 --}}
+                        @if($event->email)
+                        <div class="casting-card-detail-row">
+                            <i data-lucide="mail" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
+                            <span>{{ $event->email }}</span>
+                        </div>
+                        @endif
+
+                        {{-- 👇 NUEVO: Mostrar Teléfono si existe 👇 --}}
+                        @if($event->telefono)
+                        <div class="casting-card-detail-row">
+                            <i data-lucide="phone" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
+                            <span>{{ $event->telefono }}</span>
+                        </div>
+                        @endif
                         <div class="casting-card-detail-row">
                             <i data-lucide="map-pin" style="width:14px;height:14px;color:#6c3fc5;flex-shrink:0;"></i>
                             <span>{{ $event->ubicacion }}</span>
