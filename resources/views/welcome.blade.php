@@ -18,8 +18,8 @@
             --purple: #6c3fc5;
             --purple-light: #8b5cf6;
             --blue: #2f93f5;
-            --dark: #0f0a1e;
-            --dark-2: #1a1230;
+            --dark: #09090b;
+            --dark-2: #18181b;
             --text: #f8f6ff;
             --text-muted: rgba(248,246,255,.62);
             --border: rgba(255,255,255,.1);
@@ -37,7 +37,7 @@
             border-bottom: 1px solid var(--border); transition: background .3s;
         }
         .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
-        .nav-brand img { width: 32px; height: 32px; border-radius: 8px; }
+        .nav-brand img { width: 32px; border-radius: 8px; filter: brightness(0) invert(1); }
         .nav-brand span { font-size: 20px; font-weight: 800; letter-spacing: -.5px; }
         .nav-links { display: flex; align-items: center; gap: 6px; }
         .nav-link { padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--text-muted); transition: all .2s; }
@@ -87,7 +87,7 @@
 
         /* Profile card mockup */
         .profile-mockup {
-            background: rgba(255,255,255,.05); border: 1px solid var(--border);
+            background: rgba(255,255,255,.05); border: 1px solid var(--border); backdrop-filter: blur(16px);
             border-radius: 24px; padding: 28px; position: relative; overflow: hidden;
         }
         .profile-mockup::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--purple), transparent); }
@@ -111,7 +111,7 @@
         .pm-day.today { background: var(--purple); color: #fff; }
 
         /* -- SECTION -- */
-        section { padding: 100px 6%; }
+        section { padding: 130px 6%; }
         .section-inner { max-width: 1100px; margin: 0 auto; }
         .section-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: #a78bfa; text-transform: uppercase; background: rgba(108,63,197,.12); border: 1px solid rgba(108,63,197,.3); padding: 4px 13px; border-radius: 999px; margin-bottom: 16px; }
         .section-title { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 12px; }
@@ -119,7 +119,7 @@
 
         /* -- FEATURES GRID -- */
         .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
-        .feat-card { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 20px; padding: 28px; transition: all .3s; position: relative; overflow: hidden; }
+        .feat-card { background: rgba(255,255,255,.04); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 28px; transition: all .3s; position: relative; overflow: hidden; }
         .feat-card::before { content: ''; position: absolute; top: -1px; left: -1px; right: -1px; height: 2px; background: linear-gradient(90deg, var(--purple), var(--blue)); border-radius: 20px 20px 0 0; opacity: 0; transition: opacity .3s; }
         .feat-card:hover { background: rgba(255,255,255,.07); border-color: rgba(108,63,197,.35); transform: translateY(-4px); }
         .feat-card:hover::before { opacity: 1; }
@@ -161,7 +161,7 @@
 
         /* -- TESTIMONIALS -- */
         .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
-        .testi-card { background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 20px; padding: 26px; transition: all .3s; }
+        .testi-card { background: rgba(255,255,255,.04); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 26px; transition: all .3s; }
         .testi-card:hover { border-color: rgba(108,63,197,.35); background: rgba(255,255,255,.07); }
         .testi-stars { color: #f59e0b; font-size: 13px; margin-bottom: 14px; }
         .testi-text { font-size: 14px; color: var(--text-muted); line-height: 1.75; font-style: italic; margin-bottom: 18px; }
@@ -180,7 +180,7 @@
         /* -- FOOTER -- */
         footer { padding: 36px 6%; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
         .footer-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
-        .footer-brand img { width: 26px; border-radius: 6px; }
+        .footer-brand img { width: 26px; border-radius: 6px; filter: brightness(0) invert(1); }
         .footer-brand span { font-size: 16px; font-weight: 800; }
         .footer-copy { font-size: 13px; color: var(--text-muted); }
         .footer-links { display: flex; gap: 20px; }
@@ -263,7 +263,7 @@
                         <span style="background:linear-gradient(135deg,#d97706,#dc2626);">LS</span>
                         <span style="background:linear-gradient(135deg,#a855f7,#ec4899);">KP</span>
                     </div>
-                    <span>+2,800 músicos ya registrados</span>
+                    <span>Conectando talento musical directamente con clientes</span>
                 </div>
             </div>
 
@@ -433,7 +433,7 @@
         <div class="section-inner">
             <div class="section-eyebrow"><i class="fa-solid fa-heart"></i> Músicos</div>
             <h2 class="section-title">Lo que dicen los músicos</h2>
-            <p class="section-sub">Más de 2,800 músicos ya confían en Armonihz para crecer profesionalmente.</p>
+            <p class="section-sub">Únete a los pioneros que están revolucionando las contrataciones en vivo.</p>
             <div class="testi-grid">
                 <div class="testi-card">
                     <div class="testi-stars">★★★★★</div>
