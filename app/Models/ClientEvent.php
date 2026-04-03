@@ -22,6 +22,8 @@ class ClientEvent extends Model
         'descripcion',
         'presupuesto',
         'status',
+        'email',
+        'telefono',
     ];
 
     protected $casts = [
