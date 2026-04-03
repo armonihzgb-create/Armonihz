@@ -14,6 +14,8 @@ class MultimediaController extends Controller
     /**
      * Upload an image or video to the musician's profile.
      */
+
+    /* olakease */
     public function upload(Request $request)
     {
         $user = $request->user();
