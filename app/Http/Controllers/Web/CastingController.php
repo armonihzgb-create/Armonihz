@@ -59,6 +59,9 @@ class CastingController extends Controller
         
         // 🔵 ASIGNAMOS EL NOMBRE DEL CLIENTE AL EVENTO
         $event->nombre_cliente = $event->client ? $event->client->nombre : 'Usuario Anónimo';
+
+        $event->email = $event->email;
+        $event->telefono = $event->telefono;
         
         return $event;
     })->sortByDesc('match_score')->values();
