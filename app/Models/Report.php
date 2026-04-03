@@ -10,15 +10,16 @@ class Report extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'client_id', // Cambiado de user_id a client_id
         'musician_profile_id',
         'reason',
         'status'
     ];
 
-    public function reporter()
+    // Cambiamos el nombre de la relación para que sea más claro
+    public function client()
     {
-        return $this->belongsTo(User::class, 'user_id'); // O Client::class, según tu estructura
+        return $this->belongsTo(Client::class, 'client_id');
     }
 
     public function musicianProfile()

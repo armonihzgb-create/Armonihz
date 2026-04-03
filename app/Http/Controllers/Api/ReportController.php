@@ -16,7 +16,7 @@ class ReportController extends Controller
 
         // Asumiendo que tu middleware de Firebase autentica al usuario y lo pone en $request->user()
         Report::create([
-            'user_id' => $request->user()->id, 
+            'client_id' => $request->user()->id, // Asegúrate de que tu middleware Firebase devuelve un Client aquí
             'musician_profile_id' => $musicianId,
             'reason' => $request->reason,
             'status' => 'pending'

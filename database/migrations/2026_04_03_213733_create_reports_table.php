@@ -9,15 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up()
+public function up()
 {
     Schema::create('reports', function (Blueprint $table) {
         $table->id();
-        // ID del cliente que reporta (ajusta 'user_id' según cómo manejes la sesión en Firebase)
-        $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+        // NUEVO: Especificamos explícitamente que es client_id y apunta a la tabla clients
+        $table->foreignId('client_id')->constrained('clients')->onDelete('cascade'); 
         $table->foreignId('musician_profile_id')->constrained()->onDelete('cascade');
         $table->text('reason');
-        $table->string('status')->default('pending'); // pending, reviewed, resolved
+        $table->string('status')->default('pending');
         $table->timestamps();
     });
 }

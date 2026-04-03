@@ -274,10 +274,10 @@ class AdminController extends Controller
 
     public function reportsIndex(Request $request)
     {
-        $status = $request->get('status');
+      $status = $request->get('status');
         
-        $query = Report::with(['reporter', 'musicianProfile.user'])->orderBy('created_at', 'desc');
-        
+        // ACTUALIZADO: Cambiamos 'reporter' por 'client'
+        $query = Report::with(['client', 'musicianProfile.user'])->orderBy('created_at', 'desc');
         if (in_array($status, ['pending', 'reviewed', 'resolved'])) {
             $query->where('status', $status);
         }
