@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\ClientEvent;
 use App\Models\HiringRequest;
 use App\Models\CastingApplication;
+use App\Models\Report; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -269,5 +270,43 @@ class AdminController extends Controller
         $event->delete();
 
         return redirect()->route('admin.castings.index')->with('success', 'El evento ha sido eliminado correctamente (Soft Delete).');
+    }
+
+    public function reportsIndex(Request $request)
+    {
+        $status = $request->get('status');
+        
+        $query = Report::with(['reporter', 'musicianProfile.user'])->orderBy('created_at', 'desc');
+        
+        if (in_array($status, ['pending', 'reviewed', 'resolved'])) {
+            $query->where('status', $status);
+        }
+
+        $reports = $query->paginate(15);
+
+        // Contadores para los Tabs en la vista
+        $counts = [
+            'all'       => Report::count(),
+            'pending'   => Report::where('status', 'pending')->count(),
+            'reviewed'  => Report::where('status', 'reviewed')->count(),
+            'resolved'  => Report::where('status', 'resolved')->count(),
+        ];
+
+        return view('admin.reports.index', compact('reports', 'status', 'counts'));
+    }
+
+    public function updateReportStatus(Request $request, $id)
+    {
+        $report = Report::findOrFail($id);
+        
+        $request->validate([
+            'status' => 'required|in:pending,reviewed,resolved'
+        ]);
+
+        $report->update([
+            'status' => $request->status    
+        ]);
+
+        return redirect()->back()->with('success', 'El estado del reporte ha sido actualizado a ' . strtoupper($request->status) . '.');
     }
 }
