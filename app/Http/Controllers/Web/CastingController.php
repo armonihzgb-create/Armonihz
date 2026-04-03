@@ -92,6 +92,8 @@ class CastingController extends Controller
 
     // 🔵 Le asignamos la variable para la vista
     $event->nombre_cliente = $event->client ? $event->client->nombre : 'Usuario Anónimo';
+    $event->email = $event->email;
+   $event->telefono = $event->telefono;
     
     $user = Auth::user();
     $profile = $user->musicianProfile;
