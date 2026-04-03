@@ -26,6 +26,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class , 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class , 'register'])->name('register.submit');
 
+    // App Client pre-registration
+    Route::get('/app-registro', [AuthController::class , 'showClientRegister'])->name('register.client');
+    Route::post('/app-registro', [AuthController::class , 'registerClient'])->name('register.client.submit');
+
     // Google Sign-In via Firebase
     Route::post('/auth/google/callback', [AuthController::class , 'googleCallback'])->name('auth.google.callback');
 

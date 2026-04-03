@@ -59,6 +59,15 @@ class AuthController extends Controller
         }
 
         if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            if (Auth::user()->role === 'cliente') {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return back()->withErrors([
+                    'auth' => 'Esta plataforma web es exclusiva para Músicos y Admins. Para usar tu cuenta de cliente, por favor espera el lanzamiento de la App Móvil de Armonihz.',
+                ])->onlyInput('email');
+            }
+
             $request->session()->regenerate();
 
             if (Auth::user()->role === 'admin') {
@@ -133,6 +142,54 @@ class AuthController extends Controller
 
         return redirect()->route('verification.notice')
             ->with('status', '¡Cuenta creada! Revisa tu correo para verificar tu dirección.');
+    }
+
+    public function showClientRegister()
+    {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.register-client');
+    }
+
+    public function registerClient(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:100',
+            'apellido' => 'required|string|max:100',
+            'email' => 'required|email|max:255|unique:users',
+            'telefono' => 'required|string|max:20',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'nombre.required' => 'El nombre es obligatorio.',
+            'apellido.required' => 'El apellido es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Ingresa un correo electrónico válido.',
+            'email.unique' => 'Este correo ya está registrado.',
+            'telefono.required' => 'El número de teléfono es obligatorio.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+        ]);
+
+        $user = User::create([
+            'name' => trim($request->nombre . ' ' . $request->apellido),
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'cliente',
+            'is_active' => true,
+            'is_verified' => false,
+        ]);
+
+        \App\Models\Client::create([
+            'user_id' => $user->id,
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'email' => $request->email,
+            'telefono' => $request->telefono,
+        ]);
+
+        return back()->with('status', '¡Registro completado exitosamente! Hemos guardado tus datos. Te notificaremos cuando la App Móvil esté disponible para que inicies sesión.');
     }
 
     // ── LOGOUT ────────────────────────────────────────────────────────────────
