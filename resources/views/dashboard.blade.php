@@ -1,24 +1,30 @@
 @extends('layouts.dashboard')
 
 @section('dashboard-content')
-    <header class="dashboard-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+    <header class="dashboard-header"
+        style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
         <div style="display:flex; align-items:center; gap:16px;">
             <div class="stat-icon purple" style="width:48px; height:48px; flex-shrink:0;">
                 <i data-lucide="sparkles"></i>
             </div>
             <div>
-                <h2 style="margin:0;">Bienvenido, {{ ($user->role === 'musico' && $user->musicianProfile) ? ($user->musicianProfile->stage_name ?? $user->name) : $user->name }}</h2>
+                <h2 style="margin:0;">Bienvenido,
+                    {{ ($user->role === 'musico' && $user->musicianProfile) ? ($user->musicianProfile->stage_name ?? $user->name) : $user->name }}
+                </h2>
                 <p class="dashboard-subtitle" style="margin:0;">Aquí tienes un resumen de tu actividad reciente</p>
             </div>
         </div>
         @if($user->role === 'musico' && $user->musicianProfile && $user->musicianProfile->profile_picture)
             @if(Str::startsWith($user->musicianProfile->profile_picture, ['http://', 'https://']))
-                <img src="{{ $user->musicianProfile->profile_picture }}" alt="Perfil" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <img src="{{ $user->musicianProfile->profile_picture }}" alt="Perfil"
+                    style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
             @else
-                <img src="{{ $user->musicianProfile->profilePictureUrl() }}" alt="Perfil" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <img src="{{ $user->musicianProfile->profilePictureUrl() }}" alt="Perfil"
+                    style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
             @endif
         @else
-            <div style="width:56px; height:56px; border-radius:50%; background:var(--bg-secondary); border: 2px solid #e5e7eb; display:flex; align-items:center; justify-content:center; color:var(--text-dim);">
+            <div
+                style="width:56px; height:56px; border-radius:50%; background:var(--bg-secondary); border: 2px solid #e5e7eb; display:flex; align-items:center; justify-content:center; color:var(--text-dim);">
                 <i data-lucide="user" style="width:24px; height:24px;"></i>
             </div>
         @endif
@@ -90,7 +96,8 @@
             <div class="box-header">
                 <h3>Actividad reciente</h3>
                 @if($recentRequests->isNotEmpty())
-                    <a href="{{ route('requests.index') }}" style="font-size: 13px; color: var(--accent-blue); text-decoration: none;">
+                    <a href="{{ route('requests.index') }}"
+                        style="font-size: 13px; color: var(--accent-blue); text-decoration: none;">
                         Ver todas →
                     </a>
                 @endif
@@ -105,7 +112,8 @@
                     {{-- Solicitudes de contratación recientes --}}
                     @foreach($recentRequests as $req)
                         <li>
-                            <span class="dot {{ $req->status === 'accepted' ? 'green' : ($req->status === 'rejected' ? 'red' : 'blue') }}"></span>
+                            <span
+                                class="dot {{ $req->status === 'accepted' ? 'green' : ($req->status === 'rejected' ? 'red' : 'blue') }}"></span>
                             <div>
                                 @if($user->role === 'musico')
                                     <strong>
@@ -144,7 +152,9 @@
             <div class="box-header" style="display:flex; justify-content:space-between; align-items:center;">
                 <h3 style="margin:0;">Próximos Eventos</h3>
                 @if(isset($upcomingEvents) && $upcomingEvents->isNotEmpty())
-                    <span style="font-size:12px; background:var(--bg-secondary); padding:4px 8px; border-radius:12px; font-weight:600;">{{ $upcomingEvents->count() }} Confirmados</span>
+                    <span
+                        style="font-size:12px; background:var(--bg-secondary); padding:4px 8px; border-radius:12px; font-weight:600;">{{ $upcomingEvents->count() }}
+                        Confirmados</span>
                 @endif
             </div>
 
@@ -157,12 +167,16 @@
                 <ul class="activity-list">
                     @foreach($upcomingEvents as $event)
                         <li style="align-items:flex-start;">
-                            <div style="background:var(--bg-secondary); border-radius:8px; padding:8px 12px; text-align:center; min-width:60px; border:1px solid var(--border-light);">
-                                <span style="display:block; font-size:11px; font-weight:700; color:var(--accent-orange); text-transform:uppercase;">{{ $event->date->translatedFormat('M') }}</span>
-                                <span style="display:block; font-size:18px; font-weight:800; color:var(--text-main); line-height:1.2;">{{ $event->date->format('d') }}</span>
+                            <div
+                                style="background:var(--bg-secondary); border-radius:8px; padding:8px 12px; text-align:center; min-width:60px; border:1px solid var(--border-light);">
+                                <span
+                                    style="display:block; font-size:11px; font-weight:700; color:var(--accent-orange); text-transform:uppercase;">{{ $event->date->translatedFormat('M') }}</span>
+                                <span
+                                    style="display:block; font-size:18px; font-weight:800; color:var(--text-main); line-height:1.2;">{{ $event->date->format('d') }}</span>
                             </div>
                             <div style="flex-grow:1;">
-                                <strong style="display:flex; align-items:center; gap:6px; color:var(--text-main); margin-bottom:4px;">
+                                <strong
+                                    style="display:flex; align-items:center; gap:6px; color:var(--text-main); margin-bottom:4px;">
                                     @if($event->type === 'casting')
                                         <i data-lucide="mic-2" style="width:14px;height:14px;color:var(--accent-purple);"></i>
                                     @elseif($event->type === 'blocked')
@@ -172,8 +186,10 @@
                                     @endif
                                     {{ Str::limit($event->title, 40) }}
                                 </strong>
-                                <span style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-dim); margin-bottom:4px;">
-                                    <i data-lucide="map-pin" style="width:12px;height:12px;"></i> {{ Str::limit($event->location, 35) }}
+                                <span
+                                    style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-dim); margin-bottom:4px;">
+                                    <i data-lucide="map-pin" style="width:12px;height:12px;"></i>
+                                    {{ Str::limit($event->location, 35) }}
                                 </span>
                                 <span style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-dim);">
                                     <i data-lucide="clock" style="width:12px;height:12px;"></i> {{ $event->date->format('H:i') }}
