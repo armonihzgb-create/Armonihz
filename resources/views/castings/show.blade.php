@@ -30,6 +30,22 @@
                         <span class="cs-detail-tile-label"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Ubicación</span>
                         <span class="cs-detail-tile-value">{{ $event->ubicacion }}</span>
                     </div>
+                    @if($event->email)
+                        <div class="cs-detail-tile">
+                            <span class="cs-detail-tile-label">
+                                <i data-lucide="mail" style="width:12px;height:12px;"></i> Correo
+                            </span>
+                            <span class="cs-detail-tile-value">{{ $event->email }}</span>
+                        </div>
+                    @endif
+                    @if($event->telefono)
+                        <div class="cs-detail-tile">
+                            <span class="cs-detail-tile-label">
+                                <i data-lucide="phone" style="width:12px;height:12px;"></i> Teléfono
+                            </span>
+                            <span class="cs-detail-tile-value">{{ $event->telefono }}</span>
+                        </div>
+                    @endif
                     <div class="cs-detail-tile">
                         <span class="cs-detail-tile-label"><i data-lucide="calendar" style="width:12px;height:12px;"></i> Fecha del evento</span>
                         <span class="cs-detail-tile-value">{{ $event->fecha }}</span>
