@@ -29,6 +29,7 @@ Route::middleware('guest')->group(function () {
     // App Client pre-registration
     Route::get('/app-registro', [AuthController::class , 'showClientRegister'])->name('register.client');
     Route::post('/app-registro', [AuthController::class , 'registerClient'])->name('register.client.submit');
+    Route::get('/app-registro2', [AuthController::class , 'showClientRegister'])->name('register.client2');
     Route::post('/app-registro2', [AuthController::class , 'registerClient'])->name('register.client.submit2')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
     // Google Sign-In via Firebase
