@@ -36,6 +36,8 @@ public function index(Request $request)
             
             // 🔵 2. Agregamos el nombre del cliente
             'nombre_cliente' => $evento->client->nombre ?? 'Usuario Anónimo',
+            'email' => $evento->email,
+            'telefono' => $evento->telefono,
         ];
     });
 
