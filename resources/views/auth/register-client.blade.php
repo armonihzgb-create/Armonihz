@@ -100,56 +100,7 @@
                             @error('telefono')<span class="field-error">{{ $message }}</span>@enderror
                         </div>
 
-                        {{-- Contraseña --}}
-                        <div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}">
-                            <label>Contraseña *</label>
-                            <div class="input-wrapper" style="position:relative;">
-                                <i class="fa-solid fa-lock input-icon"></i>
-                                <input type="password" id="reg-password" name="password"
-                                       placeholder="Mínimo 8 caracteres"
-                                       autocomplete="new-password"
-                                       style="padding-right:44px;"
-                                       oninput="checkStrength(this.value); checkMatch();" required>
-                                <button type="button" class="pwd-toggle" id="toggle-reg"
-                                        onclick="togglePwd('reg-password','toggle-reg')" tabindex="-1">
-                                    <i class="fa-regular fa-eye-slash" style="font-size:16px;color:#6b7280;"></i>
-                                </button>
-                            </div>
-                            {{-- Barra de fortaleza --}}
-                            <div class="strength-bar-wrap">
-                                <div class="strength-bar" id="strength-bar"></div>
-                            </div>
-                            <span class="strength-label" id="strength-label"></span>
 
-                            {{-- Requisitos mínimos --}}
-                            <div class="pwd-requirements" id="pwd-requirements">
-                                <span id="req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
-                                <span id="req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
-                                <span id="req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
-                                <span id="req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
-                            </div>
-
-                            @error('password')<span class="field-error">{{ $message }}</span>@enderror
-                        </div>
-
-                        {{-- Confirmar contraseña --}}
-                        <div class="form-group" id="confirm-group">
-                            <label>Confirmar Contraseña *</label>
-                            <div class="input-wrapper" style="position:relative;">
-                                <i class="fa-solid fa-lock input-icon"></i>
-                                <input type="password" id="reg-confirm" name="password_confirmation"
-                                       placeholder="Repite tu contraseña"
-                                       autocomplete="new-password"
-                                       style="padding-right:44px;"
-                                       oninput="checkMatch()" 
-                                       onpaste="return false;" required>
-                                <button type="button" class="pwd-toggle" id="toggle-confirm"
-                                        onclick="togglePwd('reg-confirm','toggle-confirm')" tabindex="-1">
-                                    <i class="fa-regular fa-eye" style="font-size:16px;color:#6b7280;"></i>
-                                </button>
-                            </div>
-                            <span class="field-error" id="match-error" style="display:none;">Las contraseñas no coinciden.</span>
-                        </div>
 
                         {{-- Términos --}}
                         <div class="checkbox-wrapper">
@@ -222,123 +173,13 @@
     }
     .auth-right { overflow-y: auto; }
 
-    /* Requisitos de contraseña */
-    .pwd-requirements {
-        display: none;
-        flex-direction: column;
-        gap: 4px;
-        margin-top: 10px;
-        padding: 10px 12px;
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-    }
-    .pwd-requirements.visible { display: flex; }
-    .req-item {
-        font-size: 12px;
-        color: #6b7280;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        transition: color .2s;
-    }
-    .req-item .req-dot { font-size: 7px; flex-shrink: 0; }
-    .req-item.ok { color: #16a34a; }
-    .req-item.ok .req-dot { color: #16a34a; }
-    .req-item.fail { color: #dc2626; }
-    .req-item.fail .req-dot { color: #dc2626; }
+
 
     .mt-4 { margin-top: 24px; }
     .mt-6 { margin-top: 32px; }
     .text-center { text-align: center; }
 </style>
 
-<script>
-function togglePwd(inputId, btnId) {
-    const input = document.getElementById(inputId);
-    const btn   = document.getElementById(btnId);
-    if(!input || !btn) return;
-    const icon  = btn.querySelector('i');
-    const show  = input.type === 'password';
-    input.type  = show ? 'text' : 'password';
-    icon.className = show ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
-}
 
-function checkStrength(val) {
-    const bar = document.getElementById('strength-bar');
-    const lbl = document.getElementById('strength-label');
-    const req = document.getElementById('pwd-requirements');
-
-    // Requirements checklist
-    const rules = [
-        { id:'req-length',  ok: val.length >= 8 },
-        { id:'req-upper',   ok: /[A-Z]/.test(val) },
-        { id:'req-number',  ok: /[0-9]/.test(val) },
-        { id:'req-special', ok: /[^A-Za-z0-9]/.test(val) },
-    ];
-    if (val.length > 0) {
-        req.classList.add('visible');
-        rules.forEach(r => {
-            const el = document.getElementById(r.id);
-            if(el) {
-                el.classList.toggle('ok',   r.ok);
-                el.classList.toggle('fail', !r.ok);
-            }
-        });
-    } else {
-        req.classList.remove('visible');
-        rules.forEach(r => {
-            const el = document.getElementById(r.id);
-            if(el) el.classList.remove('ok','fail');
-        });
-    }
-
-    // Strength bar
-    let score = rules.filter(r => r.ok).length;
-    const levels = [
-        { w:'25%',  bg:'#ef4444', txt:'Muy débil', color:'#ef4444' },
-        { w:'50%',  bg:'#f97316', txt:'Débil',     color:'#f97316' },
-        { w:'75%',  bg:'#eab308', txt:'Regular',   color:'#eab308' },
-        { w:'100%', bg:'#22c55e', txt:'Fuerte',    color:'#22c55e' },
-    ];
-    if (val.length === 0) { bar.style.width='0'; lbl.textContent=''; return; }
-    const lvl = levels[Math.max(0, score - 1)];
-    bar.style.width      = lvl.w;
-    bar.style.background = lvl.bg;
-    lbl.textContent      = lvl.txt;
-    lbl.style.color      = lvl.color;
-
-    // Also re-validate confirm field
-    checkMatch();
-}
-
-function checkMatch() {
-    const p1el  = document.getElementById('reg-password');
-    const p2el  = document.getElementById('reg-confirm');
-    if(!p1el || !p2el) return;
-    
-    const p1 = p1el.value;
-    const p2 = p2el.value;
-    const err = document.getElementById('match-error');
-    const grp = document.getElementById('confirm-group');
-    // Only evaluate if user has typed something in confirm field
-    if (p2.length === 0) { err.style.display='none'; grp.classList.remove('has-error'); return; }
-    const ok = p1 === p2;
-    err.style.display = ok ? 'none' : 'block';
-    grp.classList.toggle('has-error', !ok);
-}
-
-// Prevent submit if passwords don't match
-const frm = document.getElementById('reg-form');
-if(frm) {
-    frm.addEventListener('submit', function(e) {
-        checkMatch();
-        const err = document.getElementById('match-error');
-        if (err && err.style.display !== 'none') {
-            e.preventDefault();
-        }
-    });
-}
-</script>
 
 @endsection

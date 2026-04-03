@@ -159,7 +159,6 @@ class AuthController extends Controller
             'apellido' => 'required|string|max:100',
             'email' => 'required|email|max:255|unique:users',
             'telefono' => 'required|string|max:20',
-            'password' => 'required|string|min:8|confirmed',
         ], [
             'nombre.required' => 'El nombre es obligatorio.',
             'apellido.required' => 'El apellido es obligatorio.',
@@ -167,22 +166,10 @@ class AuthController extends Controller
             'email.email' => 'Ingresa un correo electrónico válido.',
             'email.unique' => 'Este correo ya está registrado.',
             'telefono.required' => 'El número de teléfono es obligatorio.',
-            'password.required' => 'La contraseña es obligatoria.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.confirmed' => 'Las contraseñas no coinciden.',
-        ]);
-
-        $user = User::create([
-            'name' => trim($request->nombre . ' ' . $request->apellido),
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'cliente',
-            'is_active' => true,
-            'is_verified' => false,
         ]);
 
         \App\Models\Client::create([
-            'user_id' => $user->id,
+            'user_id' => null,
             'firebase_uid' => 'web_pending_' . \Illuminate\Support\Str::random(16),
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
