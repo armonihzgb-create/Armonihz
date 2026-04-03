@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\MusicianMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Process; // <-- IMPORTANTE: Agregar esto
+use Illuminate\Support\Facades\Log; // <-- IMPORTANTE: Para registrar errores si FFmpeg falla
 
 class MultimediaController extends Controller
 {
@@ -39,7 +41,41 @@ class MultimediaController extends Controller
             return response()->json(['error' => 'Límite de videos alcanzado (5).'], 422);
         }
 
+        // 1. Guardar el archivo en storage
         $path = $file->store('musician_media', 'public');
+        
+        // --- INICIO DE OPTIMIZACIÓN DE VIDEO (FAST START) ---
+        if (!$isPhoto) {
+            // Obtener la ruta absoluta del archivo en el servidor
+            $fullPath = Storage::disk('public')->path($path);
+            $tempPath = $fullPath . '.tmp.mp4';
+
+            // Ejecutamos FFmpeg usando un array por seguridad en los nombres de archivo.
+            // -c copy: No recodifica (super rápido).
+            // -movflags +faststart: Mueve el moov atom al principio.
+            $result = Process::run([
+                'ffmpeg', 
+                '-y', // Sobrescribir si el temporal existe
+                '-i', $fullPath, 
+                '-c', 'copy', 
+                '-movflags', '+faststart', 
+                $tempPath
+            ]);
+
+            // Si el comando fue exitoso y el archivo temporal se creó
+            if ($result->successful() && file_exists($tempPath)) {
+                // Reemplazamos el archivo original "roto" por el optimizado
+                rename($tempPath, $fullPath);
+            } else {
+                // Si FFmpeg falla (ej. no está instalado en el servidor), 
+                // borramos el temporal y dejamos el video original para que al menos funcione.
+                if (file_exists($tempPath)) {
+                    unlink($tempPath);
+                }
+                Log::warning("No se pudo aplicar FastStart al video: " . $result->errorOutput());
+            }
+        }
+        // --- FIN DE OPTIMIZACIÓN DE VIDEO ---
 
         $media = $user->musicianProfile->media()->create([
             'type' => $type,
