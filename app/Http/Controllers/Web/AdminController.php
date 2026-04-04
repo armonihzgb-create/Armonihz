@@ -307,6 +307,13 @@ class AdminController extends Controller
             'status' => $request->status    
         ]);
 
-        return redirect()->back()->with('success', 'El estado del reporte ha sido actualizado a ' . strtoupper($request->status) . '.');
+        $statusLabels = [
+            'pending'  => 'Pendiente',
+            'reviewed' => 'Revisado',
+            'resolved' => 'Resuelto',
+        ];
+        $label = $statusLabels[$request->status] ?? $request->status;
+
+        return redirect()->back()->with('success', 'El reporte ha sido marcado como «' . $label . '» correctamente.');
     }
 }
