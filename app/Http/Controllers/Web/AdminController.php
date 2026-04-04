@@ -272,9 +272,12 @@ class AdminController extends Controller
         return redirect()->route('admin.castings.index')->with('success', 'El evento ha sido eliminado correctamente (Soft Delete).');
     }
 
-    public function reportsIndex($status = null)
+    public function reportsIndex(Request $request, $status = null)
     {
-        // Validar que el status sea uno aceptado, caso contrario limpiar el filtro
+        // 1. Tomar el status de la URL nativa o como Query String (fallback para IONOS)
+        $status = $status ?: $request->input('status');
+
+        // 2. Validar que el status sea uno aceptado, caso contrario limpiar el filtro
         if (!in_array($status, ['pending', 'reviewed', 'resolved'])) {
             $status = null;
         }
