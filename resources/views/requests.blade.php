@@ -2,22 +2,20 @@
 
 @section('dashboard-content')
 
-    {{-- CABECERA --}}
-    <div class="page-header">
-        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-            <div>
-                <h2 style="display: flex; align-items: center; gap: 10px;">
-                    <span style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:linear-gradient(135deg,#6c3fc5,#a855f7);border-radius:10px;">
-                        <i data-lucide="inbox" style="width:18px;height:18px;color:#fff;"></i>
-                    </span>
-                    Solicitudes de Contratación
-                </h2>
-                <p class="dashboard-subtitle">Gestiona las propuestas que los clientes te han enviado.</p>
+    {{-- CABECERA (ESTILO PROMOCIONES) --}}
+    <div class="promo-page-header">
+        <div>
+            <div class="promo-eyebrow">
+                <i data-lucide="inbox" style="width:14px;height:14px;color:#6c3fc5;"></i>
+                BANDEJA DE ENTRADA
             </div>
-            <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;font-size:13px;color:#64748b;">
-                <i data-lucide="music" style="width:14px;height:14px;color:#6366f1;"></i>
-                Eventos a la medida
-            </div>
+            <h1 class="promo-page-title">Solicitudes de Contratación</h1>
+            <p class="promo-page-subtitle">Gestiona las propuestas que los clientes te han enviado.</p>
+        </div>
+        
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:13px;color:#64748b;height:fit-content;">
+            <i data-lucide="music" style="width:14px;height:14px;color:#6366f1;"></i>
+            Eventos a la medida
         </div>
     </div>
 
@@ -147,22 +145,18 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" style="padding: 0; background: transparent; border: none;">
-                                <div class="pm-empty-container">
-                                    <div class="pm-empty-card">
-                                        <div class="pm-empty-icon-wrap">
-                                            <i data-lucide="inbox" class="pm-empty-icon"></i>
-                                        </div>
-                                        <h3 class="pm-empty-title">
-                                            @if($status === 'pending') No tienes solicitudes pendientes
-                                            @elseif($status === 'accepted') No tienes solicitudes confirmadas
-                                            @else Aún no tienes solicitudes
-                                            @endif
-                                        </h3>
-                                        <p class="pm-empty-subtitle">
-                                            Las propuestas de contratación aparecerán aquí.
-                                        </p>
+                            <td colspan="6" style="text-align:center;padding:64px 24px;color:#94a3b8;">
+                                <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+                                    <div style="width:64px;height:64px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;">
+                                        <i data-lucide="inbox" style="width:28px;height:28px;opacity:0.3;"></i>
                                     </div>
+                                    <p style="margin:0;font-size:14px;font-weight:600;color:#475569;">
+                                        @if($status === 'pending') No tienes solicitudes pendientes.
+                                        @elseif($status === 'accepted') No tienes solicitudes confirmadas.
+                                        @else Aún no tienes solicitudes
+                                        @endif
+                                    </p>
+                                    <p style="margin:0;font-size:12px;color:#94a3b8;">Las propuestas de contratación aparecerán aquí.</p>
                                 </div>
                             </td>
                         </tr>
@@ -174,6 +168,22 @@
     </div>
 
 <style>
+/* ── ESTILOS DE LA VISTA GENERAL (CABECERA) ─────────────────────────────────────────────────── */
+.promo-page-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 20px; margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;
+}
+.promo-eyebrow {
+    display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800;
+    letter-spacing: .08em; color: #6c3fc5; text-transform: uppercase; margin-bottom: 6px;
+}
+.promo-page-title { font-size: 26px; font-weight: 900; color: #0f172a; margin: 0 0 6px; letter-spacing: -0.5px; }
+.promo-page-subtitle { font-size: 15px; color: #64748b; margin: 0; }
+
+@media (max-width: 640px) {
+    .promo-page-header { flex-direction: column; }
+}
+
 /* ── TABS ─────────────────────────────────────────────────── */
 .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
 .filter-tab {
@@ -251,26 +261,6 @@
 .reviewed-btn { background: #f8fafc; color: #334155; border-color: #e2e8f0; }
 .reviewed-btn:hover { background: #f1f5f9; }
 
-/* Empty State Premium */
-.pm-empty-container { display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
-.pm-empty-card { 
-    background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 24px;
-    max-width: 480px; width: 100%; padding: 48px 32px; text-align: center;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.02); margin: 0 auto;
-    position: relative; overflow: hidden;
-}
-.pm-empty-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
-    background: linear-gradient(90deg, #6c3fc5, #3b82f6);
-}
-.pm-empty-icon-wrap {
-    width: 72px; height: 72px; background: linear-gradient(135deg, rgba(108,63,197,0.08), rgba(59,130,246,0.08));
-    border-radius: 20px; display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px; box-shadow: inset 0 0 0 1px rgba(108,63,197,0.1);
-}
-.pm-empty-icon { width: 32px; height: 32px; color: #6c3fc5; }
-.pm-empty-title { font-size: 22px; font-weight: 800; color: #0f172a; margin: 0 0 10px; letter-spacing: -0.3px; }
-.pm-empty-subtitle { font-size: 14.5px; color: #64748b; margin: 0; line-height: 1.5; }
 </style>
 
 <script>
