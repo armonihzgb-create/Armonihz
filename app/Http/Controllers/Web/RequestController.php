@@ -12,19 +12,26 @@ class RequestController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $status = $request->query('status');
+        $status = $request->get('status');
 
-        if ($user->role === 'musico' && $user->musicianProfile) {
-            $query = $user->musicianProfile->hiringRequests()->with('client')->latest();
-        } else {
-            $query = $user->clientRequests()->with('musicianProfile')->latest();
-        }
+        $baseQuery = $user->role === 'musico' && $user->musicianProfile
+            ? $user->musicianProfile->hiringRequests()
+            : $user->clientRequests();
 
+        // Extraer contadores con clones limpios de Laravel
         $counts = [
-            'all' => (clone $query)->count(),
-            'pending' => (clone $query)->where('status', 'pending')->count(),
-            'accepted' => (clone $query)->where('status', 'accepted')->count(),
+            'all'      => $baseQuery->clone()->count(),
+            'pending'  => $baseQuery->clone()->where('status', 'pending')->count(),
+            'accepted' => $baseQuery->clone()->where('status', 'accepted')->count(),
         ];
+
+        $query = $baseQuery->clone();
+        
+        if ($user->role === 'musico' && $user->musicianProfile) {
+            $query->with('client');
+        } else {
+            $query->with('musicianProfile');
+        }
 
         if ($status && in_array($status, ['pending', 'accepted', 'rejected', 'completed', 'counter_offer'])) {
             $query->where('status', $status);
@@ -32,7 +39,7 @@ class RequestController extends Controller
             $status = null;
         }
 
-        $requests = $query->get();
+        $requests = $query->latest()->get();
 
         return view('requests', compact('requests', 'status', 'counts'));
     }
