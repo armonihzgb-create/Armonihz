@@ -51,6 +51,7 @@ Route::prefix('v1')->group(function () {
 
         // ── Firebase protected routes ────────────────
         Route::middleware('firebase.auth')->group(function () {
+            Route::post('/client/send-verification', [AuthController::class, 'sendCustomVerificationEmail']);
             Route::post('/client/foto', [ClientController::class , 'uploadFotoPerfil']);
             Route::delete('/client/foto', [ClientController::class , 'deleteFotoPerfil']);
             Route::get('/client/profile', [ClientController::class , 'profile']);

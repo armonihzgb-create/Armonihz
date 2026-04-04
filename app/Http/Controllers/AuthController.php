@@ -132,4 +132,32 @@ class AuthController extends Controller
             'user' => $request->user()->load('musicianProfile')
         ], 'Authenticated user retrieved', 200);
     }
+
+    public function sendCustomVerificationEmail(Request $request, FirebaseService $firebaseService)
+    {
+        // 1. Obtenemos el usuario autenticado por Firebase (gracias a tu middleware)
+        $client = $request->user(); 
+
+        if (!$client) {
+            return response()->json(['message' => 'No autorizado'], 401);
+        }
+
+        try {
+            // 2. Le pedimos a Firebase que genere el enlace de verificación (NO que envíe el correo)
+            // Asumiendo que en tu FirebaseService tienes un método getAuth() que devuelve la instancia de Kreait
+            $auth = $firebaseService->getAuth(); 
+            $link = $auth->getEmailVerificationLink($client->email);
+
+            // 3. Enviamos el correo usando tu plantilla Blade bonita
+            // Asegúrate de crear el Mailable VerifyClientEmail
+            \Illuminate\Support\Facades\Mail::to($client->email)
+                ->send(new \App\Mail\VerifyClientEmail($client->nombre, $link));
+
+            return response()->json(['message' => 'Correo enviado exitosamente'], 200);
+
+        } catch (\Exception $e) {
+            \Log::error('Error enviando correo de verificación: ' . $e->getMessage());
+            return response()->json(['message' => 'Error al enviar el correo'], 500);
+        }
+    }
 }
