@@ -272,14 +272,16 @@ class AdminController extends Controller
         return redirect()->route('admin.castings.index')->with('success', 'El evento ha sido eliminado correctamente (Soft Delete).');
     }
 
-    public function reportsIndex(Request $request)
+    public function reportsIndex(Request $request, $status = null)
     {
-      $status = $request->get('status');
+        $status = $status ?: $request->query('status');
         
         $query = Report::with(['client', 'musicianProfile.user']);
 
         if ($status && in_array($status, ['pending', 'reviewed', 'resolved'])) {
             $query->where('status', $status);
+        } else {
+            $status = null;
         }
 
         $reports = $query->orderBy('created_at', 'desc')->paginate(15);
