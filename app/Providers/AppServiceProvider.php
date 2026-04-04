@@ -57,10 +57,12 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->user()->id);
         });
 
-        // Compartir el conteo de músicos pendientes con el layout de admin
+        // Compartir el conteo de músicos pendientes y reportes pendientes con el layout de admin
         \Illuminate\Support\Facades\View::composer('layouts.admin', function ($view) {
             $pendingCount = \App\Models\MusicianProfile::where('verification_status', 'pending')->count();
+            $pendingReportsCount = \App\Models\Report::where('status', 'pending')->count();
             $view->with('pendingMusiciansCountSidebar', $pendingCount);
+            $view->with('pendingReportsCount', $pendingReportsCount);
         });
 
         // Compartir el conteo de solicitudes de contratación pendientes con el layout de músico

@@ -51,6 +51,14 @@
                         </a>
                     </li>
                     <li>
+                        <a href="/admin/reports" class="{{ Request::is('admin/reports*') ? 'active' : '' }}">
+                            <i data-lucide="flag"></i> Reportes
+                            @if(isset($pendingReportsCount) && $pendingReportsCount > 0)
+                                <span class="badge danger">{{ $pendingReportsCount }}</span>
+                            @endif
+                        </a>
+                    </li>
+                    <li>
                         <a href="/admin/promotions" class="{{ Request::is('admin/promotions*') ? 'active' : '' }}">
                             <i data-lucide="monitor"></i> Publicidad Interna
                         </a>
