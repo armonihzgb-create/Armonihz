@@ -26,15 +26,17 @@ public function index(Request $request)
             return response()->json(['data' => []], 200); 
         }
 
-        // 1. SOLICITUDES DIRECTAS (Hiring Requests)
+        // 1. SOLICITUDES DIRECTAS (Hiring Requests) - Límite: Las 50 más recientes
         $hiringRequests = \App\Models\HiringRequest::with('musicianProfile')
             ->withExists('review as has_review')
             ->where('client_id', $cliente->id)
+            ->orderBy('created_at', 'desc') // 🔥 ORDENAMOS EN BASE DE DATOS PRIMERO
+            ->take(50)                      // 🔥 LÍMITE DE SEGURIDAD (50 registros)
             ->get()
             ->map(function ($req) {
                 return [
                     'id' => $req->id,
-                    'type' => 'hiring', // 👈 Identificador
+                    'type' => 'hiring', 
                     'event_date' => $req->event_date,
                     'end_time' => $req->end_time,
                     'event_location' => $req->event_location,
@@ -49,13 +51,15 @@ public function index(Request $request)
                 ];
             });
 
-        // 2. CASTINGS ACEPTADOS / FINALIZADOS
+        // 2. CASTINGS ACEPTADOS / FINALIZADOS - Límite: Los 50 más recientes
         $castingApps = \App\Models\CastingApplication::whereHas('event', function($q) use ($firebaseUid) {
                 $q->where('firebase_uid', $firebaseUid);
             })
             ->whereIn('status', ['accepted', 'completed'])
             ->with(['musician', 'event'])
             ->withExists('review as has_review')
+            ->orderBy('created_at', 'desc') // 🔥 ORDENAMOS EN BASE DE DATOS PRIMERO
+            ->take(50)                      // 🔥 LÍMITE DE SEGURIDAD (50 registros)
             ->get()
             ->map(function ($app) {
                 $start = null;
@@ -90,6 +94,8 @@ public function index(Request $request)
             });
 
         // 3. UNIR AMBAS LISTAS Y ORDENAR
+        // Volvemos a ordenar la colección fusionada para asegurarnos de que queden
+        // perfectamente intercaladas según su fecha de creación.
         $merged = $hiringRequests->concat($castingApps)->sortByDesc('created_at')->values();
 
         return response()->json(['data' => $merged], 200);
