@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Client; // <-- IMPORTANTE: Agregamos el modelo Client
 use App\Models\MusicianProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -91,30 +92,41 @@ class AuthController extends Controller
         $email = $decodedToken->claims()->get('email');
         $name = $decodedToken->claims()->get('name');
         $uid = $decodedToken->claims()->get('sub');
+        $picture = $decodedToken->claims()->get('picture'); // Obtenemos la foto por si acaso
 
         if (!$email) {
             return $this->errorResponse('Firebase token does not contain an email', null, 400);
         }
 
-        $user = User::firstOrCreate(
-        ['email' => $email],
-        [
-            'name' => $name ?? 'Usuario',
-            'firebase_uid' => $uid,
-            'role' => 'cliente',
-            'password' => bcrypt(Str::random(16)),
-        ]
+        // --- MAGIA AQUÍ: Usamos Client en lugar de User ---
+        $client = Client::firstOrCreate(
+            ['email' => $email],
+            [
+                'nombre' => $name ?? 'Usuario',
+                'apellido' => '', // Por defecto vacío si no lo podemos separar
+                'fotoPerfil' => $picture,
+                'firebase_uid' => $uid,
+            ]
         );
 
-        // Update firebase_uid if the user already existed but logged in with Firebase now
-        if (!$user->firebase_uid) {
-            $user->update(['firebase_uid' => $uid]);
+        // Actualizamos el UID de Firebase o foto si el cliente ya existía
+        $changes = [];
+        if (!$client->firebase_uid) {
+            $changes['firebase_uid'] = $uid;
+        }
+        if ($client->fotoPerfil !== $picture && $picture !== null) {
+            $changes['fotoPerfil'] = $picture;
+        }
+        
+        if (!empty($changes)) {
+            $client->update($changes);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Creamos el token de Sanctum amarrado al modelo Client
+        $token = $client->createToken('auth_token')->plainTextToken;
 
         return $this->successResponse([
-            'user' => $user->load('musicianProfile'),
+            'client' => $client,
             'token' => $token
         ], 'Firebase login successful', 200);
     }
@@ -128,8 +140,18 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
+        $authUser = $request->user();
+
+        // Verificación de seguridad: si quien consulta es la App Móvil (Cliente)
+        if ($authUser instanceof Client) {
+            return $this->successResponse([
+                'client' => $authUser
+            ], 'Authenticated client retrieved', 200);
+        }
+
+        // Si quien consulta es un Músico (User)
         return $this->successResponse([
-            'user' => $request->user()->load('musicianProfile')
+            'user' => $authUser->load('musicianProfile')
         ], 'Authenticated user retrieved', 200);
     }
 }
