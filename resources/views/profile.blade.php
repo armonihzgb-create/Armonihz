@@ -2,98 +2,34 @@
 
 @section('dashboard-content')
 
-    {{-- ── FOUC FIX + COMPONENT STYLES (must be before any HTML) ────────── --}}
+    {{-- ── CSS VARIABLES (pre-render) ────────── --}}
     <style>
-        /* Critical above-fold positioning */
-        .nbf-cover { width:100%; height:240px; background-size:cover; background-position:center; filter:grayscale(100%); position:relative; }
-        .nbf-info-bar { display:flex; align-items:flex-start; padding:0 40px 24px 180px; position:relative; min-height:100px; border-bottom:1px solid #edf2f7; }
-        .nbf-avatar-container { position:absolute; left:40px; top:-60px; width:120px; height:120px; border-radius:50%; background:#fff; padding:4px; z-index:10; }
-        .nbf-avatar-container img, .nbf-avatar-initials { width:100%; height:100%; border-radius:50%; object-fit:cover; background:#eef2fb; display:flex; align-items:center; justify-content:center; }
-        @media(max-width:768px) { .nbf-info-bar{flex-direction:column;padding:70px 24px 24px;align-items:center;} .nbf-avatar-container{left:50%;transform:translateX(-50%);} }
-
-        /* Section-title override (was gray) */
-        .nbf-section-title { color:#1e293b !important; font-weight:700 !important; font-size:16px !important; margin:0 !important; border-bottom:none !important; padding-bottom:0 !important; }
-        .nbf-subsection-title { font-size:12px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.06em; margin:0 0 12px; }
-
-        /* Header action buttons */
-        .nbf-action-btn.primary { background:#6c3fc5 !important; color:#fff !important; border:none !important; }
-        .nbf-action-btn.primary:hover { background:#5b32a8 !important; }
-        .nbf-action-btn.secondary { background:rgba(255,255,255,.9) !important; border-color:#e2e8f0 !important; color:#475569 !important; }
-        .nbf-action-btn.secondary:hover { background:#fff !important; border-color:#c4b5fd !important; color:#6c3fc5 !important; }
-
-        /* Global modal buttons */
-        .primary-btn { display:inline-flex; align-items:center; gap:8px; background:#6c3fc5; color:#fff; border:none; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
-        .primary-btn:hover { background:#5b32a8; }
-        .primary-btn i, .primary-btn svg { width:15px; height:15px; }
-        .secondary-btn { display:inline-flex; align-items:center; gap:8px; background:#f1f5f9; color:#475569; border:1.5px solid #e2e8f0; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
-        .secondary-btn:hover { background:#e2e8f0; border-color:#cbd5e1; }
-        .danger-btn { display:inline-flex; align-items:center; gap:8px; background:#dc2626; color:#fff; border:none; padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; }
-        .danger-btn:hover { background:#b91c1c; }
-
-        /* Completion card — subtle */
-        .nbf-completion-card { background:#f8fafc; border:1px solid #e8edf3; border-radius:10px; padding:12px 18px; margin-bottom:28px; display:flex; align-items:center; gap:16px; }
-        .nbf-completion-header { display:flex; align-items:center; justify-content:space-between; flex:1; gap:12px; }
-        .nbf-completion-title { font-size:13px; font-weight:600; color:#64748b; margin:0 0 2px; }
-        .nbf-completion-sub { font-size:11px; color:#94a3b8; margin:0; display:none; }
-        .nbf-completion-badge { font-size:13px; font-weight:700; padding:3px 10px; border-radius:99px; flex-shrink:0; }
-        .nbf-completion-badge.good { color:#16a34a; background:#f0fdf4; }
-        .nbf-completion-badge.mid  { color:#d97706; background:#fffbeb; }
-        .nbf-completion-badge.low  { color:#dc2626; background:#fef2f2; }
-        .nbf-completion-bar { height:4px; background:#e2e8f0; border-radius:99px; overflow:hidden; flex:1; min-width:80px; }
-        .nbf-completion-fill { height:100%; border-radius:99px; background:#6c3fc5; transition:width .6s ease; }
-
-        /* Section header */
-        .nbf-section-header { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
-        .nbf-section-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-
-        /* Row icon */
-        .nbf-detail-label-wrap { display:flex; align-items:center; gap:8px; }
-        .nbf-row-icon { width:15px; height:15px; color:#94a3b8; flex-shrink:0; }
-
-        /* Social cards grid */
-        .nbf-social-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px; }
-        @media(max-width:768px) { .nbf-social-grid{grid-template-columns:1fr;} }
-        .nbf-social-card { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; border:1.5px solid #e8edf3; background:#fff; text-decoration:none; transition:all .2s; }
-        .nbf-social-card.active:hover { border-color:#c4b5fd; transform:translateY(-2px); box-shadow:0 4px 16px rgba(108,63,197,.08); }
-        .nbf-social-card.inactive { opacity:.55; pointer-events:none; }
-        .nbf-social-icon { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .nbf-social-info { display:flex; flex-direction:column; }
-        .nbf-social-name { font-size:12px; font-weight:700; color:#374151; }
-        .nbf-social-handle { font-size:11px; color:#94a3b8; }
-
-        /* Rate badge */
-        .nbf-rate-badge { display:inline-flex; align-items:baseline; gap:4px; color:#15803d; font-size:17px; font-weight:800; }
-        .nbf-rate-badge small { font-size:11px; font-weight:400; color:#6b7280; }
-
-        /* Availability badge */
-        .nbf-availability-badge { display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; padding:5px 13px; border-radius:99px; }
-        .nbf-availability-badge.available { background:#f0fdf4; color:#16a34a; }
-        .nbf-availability-dot { width:7px; height:7px; border-radius:50%; background:currentColor; animation:pulse-dot 2s infinite; }
-        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
-
-        /* Genre chips */
-        .nbf-genre-chip { display:inline-flex; align-items:center; gap:7px; padding:8px 16px; border-radius:99px; font-size:13px; font-weight:600; background:linear-gradient(135deg,rgba(108,63,197,.1),rgba(47,147,245,.1)); border:1px solid rgba(108,63,197,.18); color:#6c3fc5; transition:all .2s; cursor:default; }
-        .nbf-genre-chip:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(108,63,197,.15); }
-
-        /* Empty states */
-        .nbf-empty { color:#94a3b8 !important; font-style:italic; }
-        .nbf-empty-genres { display:flex; align-items:center; gap:12px; width:100%; padding:16px 20px; background:#fafafa; border:1.5px dashed #e2e8f0; border-radius:12px; color:#94a3b8; font-size:14px; }
-        .nbf-add-genres-btn { background:linear-gradient(135deg,#6c3fc5,#2f93f5); color:#fff; border:none; padding:7px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; margin-left:auto; transition:opacity .2s; }
-        .nbf-add-genres-btn:hover { opacity:.85; }
+        :root {
+            --pr-primary:   #6c3fc5;
+            --pr-primary-h: #5b32a8;
+            --pr-blue:      #2f93f5;
+            --pr-text:      #0f172a;
+            --pr-dim:       #64748b;
+            --pr-muted:     #94a3b8;
+            --pr-border:    #e2e8f0;
+            --pr-surface:   #f8fafc;
+            --pr-success:   #16a34a;
+        }
+        /* Prevent FOUC on avatar overlap */
+        .nbf-avatar-container { position:absolute; left:36px; top:-70px; width:130px; height:130px; border-radius:50%; background:#fff; padding:4px; z-index:10; box-shadow:0 4px 20px rgba(0,0,0,.15); }
+        .nbf-info-bar { display:flex; align-items:flex-start; padding:0 36px 28px 200px; position:relative; min-height:100px; }
+        @media(max-width:768px){.nbf-info-bar{flex-direction:column;padding:80px 20px 24px;align-items:center;}.nbf-avatar-container{left:50%;transform:translateX(-50%)!important;top:-65px;}}
     </style>
 
 
-    {{-- ── NBF COVER + FORM LAYOUT ─────────────────────────────────────────────────── --}}
+    {{-- ── PERFIL PRINCIPAL ── --}}
     <div class="nbf-layout">
 
         {{-- 1. HEADER / COVER AREA --}}
         <div class="nbf-header">
-            {{-- B&W Placeholder Cover Image --}}
             <div class="nbf-cover" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');">
-                {{-- Opcional: overlay para oscurecer un poco si es necesario --}}
-                <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.1);"></div>
-                
-                {{-- Cover image visual element only --}}
+                {{-- Overlay degradado moderno --}}
+                <div class="nbf-cover-overlay"></div>
             </div>
 
             {{-- Info Bar (under cover) --}}
@@ -124,11 +60,11 @@
                 </div>
 
                 <div class="nbf-header-actions">
-                    <button type="button" class="nbf-action-btn primary" onclick="openEditModal()">
-                        <i class="fa-solid fa-pen-to-square" style="margin-right:6px;"></i>Editar perfil
+                    <button type="button" class="nbf-btn-primary" onclick="openEditModal()">
+                        <i data-lucide="pencil" style="width:14px;height:14px;"></i> Editar perfil
                     </button>
-                    <button type="button" class="nbf-action-btn secondary" onclick="openPreviewModal()">
-                        <i class="fa-solid fa-mobile-screen-button" style="margin-right:6px;"></i>Vista Previa
+                    <button type="button" class="nbf-btn-secondary" onclick="openPreviewModal()">
+                        <i data-lucide="smartphone" style="width:14px;height:14px;"></i> Vista Previa
                     </button>
                 </div>
             </div>
@@ -139,11 +75,26 @@
 
             {{-- Profile Completion --}}
             <div class="nbf-completion-card">
-                <span class="nbf-completion-badge {{ $completion >= 80 ? 'good' : ($completion >= 50 ? 'mid' : 'low') }}">{{ $completion }}%</span>
-                <div class="nbf-completion-bar">
-                    <div class="nbf-completion-fill" style="width:{{ $completion }}%;"></div>
+                <div class="nbf-completion-icon {{ $completion >= 80 ? 'good' : ($completion >= 50 ? 'mid' : 'low') }}">
+                    <i data-lucide="{{ $completion >= 80 ? 'check-circle' : 'alert-circle' }}" style="width:18px;height:18px;"></i>
                 </div>
-                <span style="font-size:12px;color:#94a3b8;white-space:nowrap;">Perfil completo</span>
+                <div class="nbf-completion-body">
+                    <div class="nbf-completion-top">
+                        <span class="nbf-completion-label">
+                            @if($completion < 50) Completa tu perfil para recibir más contrataciones
+                            @elseif($completion < 80) ¡Buen avance! Agrega más detalles para destacar
+                            @else Tu perfil está listo para recibir solicitudes
+                            @endif
+                        </span>
+                        <span class="nbf-completion-badge {{ $completion >= 80 ? 'good' : ($completion >= 50 ? 'mid' : 'low') }}">{{ $completion }}%</span>
+                    </div>
+                    <div class="nbf-completion-bar">
+                        <div class="nbf-completion-fill" style="width:{{ $completion }}%;"></div>
+                    </div>
+                </div>
+                @if($completion < 80)
+                <button type="button" onclick="openEditModal()" class="nbf-completion-cta">Completar</button>
+                @endif
             </div>
 
             {{-- Personal Details --}}
@@ -391,381 +342,283 @@
     </div>
 
     <style>
-        /* 
-         * NBF COVER + FORM LAYOUT SYSTEM
-         * Strict constraints: 
-         * Backgrounds: White (#ffffff) for body content, subtle greys (#f8f9fa) for inputs.
-         * Structure: Wide cover image, overlapping avatar, clean labels and boxy inputs.
-         */
+        /* ═══════════════════════════════════════════════════════
+           NBF PROFILE — CSS REFACTORIZADO (PREMIUM)
+           ═══════════════════════════════════════════════════════ */
 
         .nbf-layout {
             background: #fff;
-            border-radius: 8px; /* Optional, depending on main dashboard container */
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.05);
             margin-bottom: 24px;
         }
 
-        /* ── HEADER & COVER ── */
-        .nbf-header {
-            width: 100%;
-            position: relative;
-        }
-
+        /* ── COVER ── */
+        .nbf-header { width:100%; position:relative; }
         .nbf-cover {
-            width: 100%;
-            height: 240px;
+            width:100%; height:260px;
             background-color: #e2e8f0;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            position: relative;
-            /* Filter to ensure it's black and white as requested */
-            filter: grayscale(100%);
+            background-size:cover; background-position:center;
+            filter:grayscale(100%);
+            position:relative;
+        }
+        .nbf-cover-overlay {
+            position:absolute; inset:0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%);
         }
 
-        /* Action button on cover */
-        .cover-edit {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.5);
-            color: #fff;
-            border-radius: 50%;
-            width: 36px; height: 36px;
-        }
-
-        /* Info Bar underneath cover */
+        /* ── INFO BAR ── */
         .nbf-info-bar {
-            display: flex;
-            align-items: flex-start;
-            padding: 0 40px 24px 180px; /* Space for absolute avatar */
-            position: relative;
-            min-height: 100px;
-            border-bottom: 1px solid #edf2f7;
+            display:flex; align-items:flex-start;
+            padding:0 36px 28px 200px;
+            position:relative; min-height:100px;
+            border-bottom:1px solid var(--pr-border);
+            gap:16px;
+        }
+        @media(max-width:768px) {
+            .nbf-info-bar { flex-direction:column; padding:80px 20px 24px; align-items:center; text-align:center; }
         }
 
-        @media (max-width: 768px) {
-            .nbf-info-bar {
-                flex-direction: column;
-                padding: 70px 24px 24px 24px;
-                align-items: center;
-                text-align: center;
-            }
-        }
-
-        /* Avatar */
+        /* ── AVATAR ── */
         .nbf-avatar-container {
-            position: absolute;
-            left: 40px;
-            top: -60px; /* Overlaps cover by 60px */
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: #fff;
-            padding: 4px; /* White border effect */
-            z-index: 10;
+            position:absolute; left:36px; top:-70px;
+            width:130px; height:130px;
+            border-radius:50%; background:#fff;
+            padding:4px; z-index:10;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
-
-        @media (max-width: 768px) {
-            .nbf-avatar-container { left: 50%; transform: translateX(-50%); }
-        }
-
         .nbf-avatar-container img, .nbf-avatar-initials {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #eef2fb;
+            width:100%; height:100%; border-radius:50%; object-fit:cover;
         }
-        
         .nbf-avatar-initials {
-            display: flex; align-items: center; justify-content: center;
-            font-size: 40px; font-weight: 700; color: #fff; background: #2b6cb0;
+            display:flex; align-items:center; justify-content:center;
+            background:linear-gradient(135deg,#6c3fc5,#2f93f5);
+            color:#fff; font-size:42px; font-weight:800;
+        }
+        @media(max-width:768px) {
+            .nbf-avatar-container { left:50%; transform:translateX(-50%); top:-65px; }
         }
 
-        .avatar-edit {
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            background: #fff;
-            color: #4a5568;
-            border-radius: 50%;
-            width: 32px; height: 32px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        }
-
-        /* Shared Edit Button style */
-        .nbf-edit-btn {
-            border: none;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-        }
-        .nbf-edit-btn i { width: 14px; height: 14px; }
-        .nbf-edit-btn:hover { transform: scale(1.05); }
-
-        /* User Info (Name & Links) */
-        .nbf-user-info {
-            padding-top: 20px;
-            flex: 1;
-        }
-
+        /* ── NOMBRE ── */
+        .nbf-user-info { padding-top:22px; flex:1; min-width:0; }
         .nbf-name {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1a202c;
-            margin: 0 0 8px 0;
-            line-height: 1;
+            font-size:28px; font-weight:900; color:var(--pr-text);
+            margin:0 0 8px; line-height:1.1; letter-spacing:-0.5px;
         }
+        .nbf-stats-links { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+        @media(max-width:768px) { .nbf-stats-links { justify-content:center; margin-bottom:16px; } }
+        .nbf-stat { font-size:13px; color:var(--pr-primary); font-weight:600; }
+        .nbf-dot { color:#cbd5e1; font-size:10px; }
 
-        .nbf-stats-links {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* ── BOTONES DE HEADER ── */
+        .nbf-header-actions { padding-top:26px; display:flex; gap:10px; flex-shrink:0; }
+        @media(max-width:768px) { .nbf-header-actions { width:100%; flex-direction:column; } }
+
+        .nbf-btn-primary {
+            display:inline-flex; align-items:center; gap:7px;
+            padding:10px 20px; border-radius:10px;
+            background:var(--pr-primary); color:#fff; border:none;
+            font-size:13px; font-weight:700; cursor:pointer;
+            transition:all .2s; box-shadow:0 4px 14px rgba(108,63,197,.25);
         }
-        
-        @media (max-width: 768px) {
-            .nbf-stats-links { justify-content: center; margin-bottom: 20px; }
+        .nbf-btn-primary:hover { background:var(--pr-primary-h); transform:translateY(-1px); }
+        .nbf-btn-secondary {
+            display:inline-flex; align-items:center; gap:7px;
+            padding:10px 20px; border-radius:10px;
+            background:#fff; color:var(--pr-dim); border:1.5px solid var(--pr-border);
+            font-size:13px; font-weight:600; cursor:pointer; transition:all .2s;
         }
+        .nbf-btn-secondary:hover { border-color:#c4b5fd; color:var(--pr-primary); background:#faf5ff; }
 
-        .nbf-stat {
-            font-size: 13px;
-            color: #3182ce;
-            font-weight: 500;
+        /* ── ÁREA DE CONTENIDO ── */
+        .nbf-content { padding:36px 40px; background:#fff; }
+        @media(max-width:768px) { .nbf-content { padding:24px 16px; } }
+
+        /* ── TARJETA COMPLETITUD ── */
+        .nbf-completion-card {
+            display:flex; align-items:center; gap:14px;
+            background:var(--pr-surface); border:1.5px solid var(--pr-border);
+            border-radius:14px; padding:16px 20px; margin-bottom:32px;
         }
-
-        .nbf-dot { color: #cbd5e1; font-size: 10px; }
-
-        /* Header Actions (Buttons) */
-        .nbf-header-actions {
-            padding-top: 24px;
-            display: flex;
-            gap: 12px;
+        .nbf-completion-icon {
+            width:40px; height:40px; border-radius:10px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
         }
-
-        .nbf-action-btn {
-            padding: 10px 20px;
-            border-radius: 24px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: transparent;
+        .nbf-completion-icon.good { background:#f0fdf4; color:#16a34a; }
+        .nbf-completion-icon.mid  { background:#fffbeb; color:#d97706; }
+        .nbf-completion-icon.low  { background:#fef2f2; color:#dc2626; }
+        .nbf-completion-body { flex:1; min-width:0; }
+        .nbf-completion-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:12px; }
+        .nbf-completion-label { font-size:13px; font-weight:600; color:var(--pr-dim); }
+        .nbf-completion-badge { font-size:12px; font-weight:800; padding:3px 10px; border-radius:99px; flex-shrink:0; }
+        .nbf-completion-badge.good { color:#16a34a; background:#f0fdf4; }
+        .nbf-completion-badge.mid  { color:#d97706; background:#fffbeb; }
+        .nbf-completion-badge.low  { color:#dc2626; background:#fef2f2; }
+        .nbf-completion-bar { height:5px; background:#e2e8f0; border-radius:99px; overflow:hidden; }
+        .nbf-completion-fill { height:100%; background:linear-gradient(90deg,#6c3fc5,#2f93f5); border-radius:99px; transition:width .6s ease; }
+        .nbf-completion-cta {
+            padding:8px 16px; border-radius:8px; border:none; background:var(--pr-primary);
+            color:#fff; font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0; transition:opacity .2s;
         }
+        .nbf-completion-cta:hover { opacity:.85; }
 
-        .nbf-action-btn.primary {
-            border: 1px solid #3182ce;
-            color: #3182ce;
-        }
-        .nbf-action-btn.primary:hover { background: #ebf8ff; }
+        /* ── SECCIONES ── */
+        .nbf-section { margin-bottom:32px; }
+        .nbf-divider { border:0; height:1px; background:var(--pr-border); margin:32px 0; }
+        .nbf-section-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+        .nbf-section-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .nbf-section-title { font-size:15px; font-weight:800; color:var(--pr-text); margin:0; }
+        .nbf-subsection-title { font-size:11.5px; font-weight:700; color:var(--pr-muted); text-transform:uppercase; letter-spacing:.07em; margin:0 0 12px; display:flex; align-items:center; gap:6px; }
 
-        .nbf-action-btn.secondary {
-            border: 1px solid #e2e8f0;
-            color: #4a5568;
-        }
-        .nbf-action-btn.secondary:hover { background: #f7fafc; }
-
-        /* ── CONTENT AREA (FORM GRID) ── */
-        .nbf-content {
-            padding: 40px;
-            background: #fff;
-        }
-
-        @media (max-width: 768px) {
-            .nbf-content { padding: 24px; }
-        }
-
-        .nbf-section {
-            margin-bottom: 32px;
-        }
-
-        .nbf-divider {
-            border: 0;
-            height: 1px;
-            background: #f1f5f9;
-            margin: 32px 0;
-        }
-
-        .nbf-section-title {
-            font-size: 18px;
-            color: #a0aec0;
-            font-weight: 500;
-            margin: 0 0 24px 0;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 12px;
-        }
-
+        /* ── DETAIL CARD ── */
         .nbf-detail-card {
-            background: #fafafa;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 24px;
+            background:#fff; border:1.5px solid var(--pr-border);
+            border-radius:14px; overflow:hidden; margin-bottom:24px;
         }
         .nbf-detail-row {
-            display: grid;
-            grid-template-columns: 220px 1fr;
-            align-items: center;
-            gap: 24px;
-            padding: 16px 20px;
-            border-bottom: 1px solid #e2e8f0;
+            display:grid; grid-template-columns:200px 1fr;
+            align-items:center; gap:20px; padding:14px 20px;
+            border-bottom:1px solid #f8fafc; transition:background .15s;
         }
-        .nbf-detail-row.is-vertical {
-            grid-template-columns: 1fr;
-            align-items: flex-start;
-            gap: 8px;
-        }
-        .nbf-detail-row:last-child {
-            border-bottom: none;
-        }
-        .nbf-detail-label {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 600;
-        }
-        .nbf-detail-value {
-            font-size: 14px;
-            color: #1e293b;
-            font-weight: 500;
-            text-align: left;
-            word-break: break-word;
-        }
-        .nbf-social-link {
-            color: #2b6cb0;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .nbf-social-link:hover {
-            text-decoration: underline;
-        }
-        .nbf-subsection-title {
-            font-size: 15px;
-            color: #4a5568;
-            font-weight: 700;
-            margin: 0 0 16px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .nbf-detail-row:hover { background:#fafbff; }
+        .nbf-detail-row.is-vertical { grid-template-columns:1fr; align-items:flex-start; gap:8px; }
+        .nbf-detail-row:last-child { border-bottom:none; }
+        .nbf-detail-label-wrap { display:flex; align-items:center; gap:8px; }
+        .nbf-row-icon { width:14px; height:14px; color:var(--pr-muted); flex-shrink:0; }
+        .nbf-detail-label { font-size:13.5px; color:var(--pr-dim); font-weight:600; }
+        .nbf-detail-value { font-size:14px; color:var(--pr-text); font-weight:500; word-break:break-word; }
+        .nbf-empty { color:var(--pr-muted) !important; font-style:italic; }
+        @media(max-width:768px) {
+            .nbf-detail-row { grid-template-columns:1fr; gap:5px; }
         }
 
-        @media (max-width: 768px) {
-            .nbf-info-bar {
-                flex-direction: column;
-                padding: 70px 24px 24px 24px;
-                align-items: center;
-                text-align: center;
-            }
-            .nbf-header-actions {
-                width: 100%;
-                flex-direction: column;
-                gap: 10px;
-            }
-            .nbf-action-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            .nbf-avatar-container { left: 50%; transform: translateX(-50%); }
-            .nbf-stats-links { justify-content: center; margin-bottom: 20px; }
-            .nbf-content { padding: 24px 16px; }
-            .nbf-detail-row {
-                grid-template-columns: 1fr;
-                gap: 6px;
-            }
-        }
+        /* ── BADGES DE DISPONIBILIDAD Y TARIFA ── */
+        .nbf-rate-badge { display:inline-flex; align-items:baseline; gap:4px; color:#15803d; font-size:17px; font-weight:800; }
+        .nbf-rate-badge small { font-size:11px; font-weight:400; color:var(--pr-dim); }
+        .nbf-availability-badge { display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; padding:5px 13px; border-radius:99px; }
+        .nbf-availability-badge.available { background:#f0fdf4; color:#16a34a; }
+        .nbf-availability-dot { width:7px; height:7px; border-radius:50%; background:currentColor; animation:pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-        .inline-tag {
-            width: auto;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            font-weight: 500;
-            color: #2b6cb0;
+        /* ── REDES SOCIALES ── */
+        .nbf-social-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px; }
+        @media(max-width:768px) { .nbf-social-grid { grid-template-columns:1fr; } }
+        .nbf-social-card {
+            display:flex; align-items:center; gap:12px;
+            padding:12px 14px; border-radius:12px;
+            border:1.5px solid var(--pr-border); background:#fff;
+            text-decoration:none; transition:all .2s;
         }
+        .nbf-social-card.active:hover { border-color:#c4b5fd; transform:translateY(-2px); box-shadow:0 6px 18px rgba(108,63,197,.1); }
+        .nbf-social-card.inactive { opacity:.5; pointer-events:none; }
+        .nbf-social-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .nbf-social-info { display:flex; flex-direction:column; }
+        .nbf-social-name { font-size:12px; font-weight:700; color:#374151; }
+        .nbf-social-handle { font-size:11px; color:var(--pr-muted); }
 
-        .nbf-btn-secondary {
-            border-radius: 6px;
-            font-size: 13px; font-weight: 600;
-            padding: 10px 16px; 
-            border: 1px solid #ced4da;
-            background: #fff; color: #495057;
-            cursor: pointer; transition: all .2s;
-            text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+        /* ── GENRE CHIPS ── */
+        .nbf-genre-chip {
+            display:inline-flex; align-items:center; gap:7px;
+            padding:8px 18px; border-radius:99px; font-size:13px; font-weight:600;
+            background:linear-gradient(135deg,rgba(108,63,197,.08),rgba(47,147,245,.08));
+            border:1.5px solid rgba(108,63,197,.18); color:var(--pr-primary);
+            transition:all .2s; cursor:default;
         }
+        .nbf-genre-chip:hover { transform:translateY(-2px); box-shadow:0 6px 14px rgba(108,63,197,.15); }
 
-        /* ── Media Showcase ─────────────────────────────── */
-        .nbf-media-showcase {
-            width: 100%;
+        /* ── EMPTY STATES ── */
+        .nbf-empty-genres {
+            display:flex; align-items:center; gap:12px; width:100%;
+            padding:16px 20px; background:var(--pr-surface);
+            border:1.5px dashed var(--pr-border); border-radius:12px;
+            color:var(--pr-muted); font-size:14px;
         }
-        .nbf-media-grid {
-            display: grid; gap: 12px;
+        .nbf-add-genres-btn {
+            background:linear-gradient(135deg,#6c3fc5,#2f93f5); color:#fff;
+            border:none; padding:7px 14px; border-radius:8px;
+            font-size:12px; font-weight:700; cursor:pointer;
+            white-space:nowrap; margin-left:auto; transition:opacity .2s;
         }
-        .photos-grid {
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        }
-        .videos-grid {
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-        }
+        .nbf-add-genres-btn:hover { opacity:.85; }
+
+        /* ── MULTIMEDIA ── */
+        .nbf-media-showcase { width:100%; }
+        .nbf-media-grid { display:grid; gap:12px; }
+        .photos-grid { grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); }
+        .videos-grid { grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); margin-top:16px; }
         .nbf-media-item {
-            position: relative; border-radius: 12px; overflow: hidden;
-            background: #f1f5f9; cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,.05);
+            position:relative; border-radius:14px; overflow:hidden;
+            background:var(--pr-surface); cursor:pointer;
+            box-shadow:0 2px 10px rgba(0,0,0,.06); transition:box-shadow .2s;
         }
-        .photos-grid .nbf-media-item {
-            aspect-ratio: 1; /* Squarish for photos */
-        }
-        .videos-grid .nbf-media-item {
-            aspect-ratio: 16/9; /* Widescreen for videos */
-        }
-        .nbf-media-item img, .nbf-media-item video {
-            width: 100%; height: 100%; object-fit: cover;
-            display: block; transition: transform .4s ease;
-        }
-        .nbf-media-item:hover img, .nbf-media-item:hover video {
-            transform: scale(1.05);
-        }
+        .nbf-media-item:hover { box-shadow:0 8px 24px rgba(0,0,0,.12); }
+        .photos-grid .nbf-media-item { aspect-ratio:1; }
+        .videos-grid .nbf-media-item { aspect-ratio:16/9; }
+        .nbf-media-item img, .nbf-media-item video { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease; }
+        .nbf-media-item:hover img, .nbf-media-item:hover video { transform:scale(1.05); }
         .nbf-media-overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,.3);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity .3s;
+            position:absolute; inset:0; background:rgba(0,0,0,.3);
+            display:flex; align-items:center; justify-content:center;
+            opacity:0; transition:opacity .3s;
         }
-        .nbf-media-item:hover .nbf-media-overlay {
-            opacity: 1;
-        }
+        .nbf-media-item:hover .nbf-media-overlay { opacity:1; }
         .nbf-play-indicator {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 48px; height: 48px; border-radius: 50%;
-            background: rgba(108,63,197,.9); backdrop-filter: blur(4px);
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 24px rgba(0,0,0,.3); transition: transform .2s;
+            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+            width:48px; height:48px; border-radius:50%;
+            background:rgba(108,63,197,.9); backdrop-filter:blur(4px);
+            display:flex; align-items:center; justify-content:center;
+            box-shadow:0 8px 24px rgba(0,0,0,.3); transition:transform .2s;
         }
-        .video-item:hover .nbf-play-indicator {
-            transform: translate(-50%, -50%) scale(1.1);
-        }
+        .video-item:hover .nbf-play-indicator { transform:translate(-50%,-50%) scale(1.1); }
         .nbf-featured-badge {
-            position: absolute; top: 12px; left: 12px;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #fff; font-size: 11px; font-weight: 700;
-            padding: 4px 10px; border-radius: 20px;
-            display: flex; align-items: center; gap: 4px;
-            box-shadow: 0 4px 12px rgba(245,158,11,.4);
-            z-index: 2;
+            position:absolute; top:10px; left:10px;
+            background:linear-gradient(135deg,#f59e0b,#d97706);
+            color:#fff; font-size:11px; font-weight:700;
+            padding:4px 10px; border-radius:20px;
+            display:flex; align-items:center; gap:4px;
+            box-shadow:0 4px 12px rgba(245,158,11,.4); z-index:2;
         }
 
-        /* Modal Button Overrides */
-        #view-media-modal button svg {
-            display: inline-block !important;
-            flex-shrink: 0 !important;
-            visibility: visible !important;
+        /* ── BOTONES GLOBALES MODAL ── */
+        .primary-btn {
+            display:inline-flex; align-items:center; gap:8px;
+            background:var(--pr-primary); color:#fff; border:none;
+            padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600;
+            cursor:pointer; transition:all .2s;
         }
+        .primary-btn:hover { background:var(--pr-primary-h); transform:translateY(-1px); }
+        .primary-btn i, .primary-btn svg { width:15px; height:15px; }
+        .secondary-btn {
+            display:inline-flex; align-items:center; gap:8px;
+            background:#f1f5f9; color:#475569; border:1.5px solid var(--pr-border);
+            padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600;
+            cursor:pointer; transition:all .2s;
+        }
+        .secondary-btn:hover { background:#e2e8f0; border-color:#cbd5e1; }
+        .danger-btn {
+            display:inline-flex; align-items:center; gap:8px;
+            background:#dc2626; color:#fff; border:none;
+            padding:11px 24px; border-radius:10px; font-size:14px; font-weight:600;
+            cursor:pointer; transition:all .2s;
+        }
+        .danger-btn:hover { background:#b91c1c; }
+
+        /* ── MODAL MEDIA VIEWER ── */
+        #view-media-modal button svg { display:inline-block !important; flex-shrink:0 !important; visibility:visible !important; }
         .mm-modal-close {
-            position:absolute !important; top:24px !important; right:24px !important; background:rgba(255,255,255,.1) !important;
-            border:none !important; width:48px !important; height:48px !important; border-radius:50% !important; color:#fff !important;
-            display:flex !important; align-items:center !important; justify-content:center !important; cursor:pointer !important;
-            transition:background .2s !important; z-index: 10000 !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important;
+            position:absolute !important; top:24px !important; right:24px !important;
+            background:rgba(255,255,255,.1) !important; border:none !important;
+            width:48px !important; height:48px !important; border-radius:50% !important;
+            color:#fff !important; display:flex !important; align-items:center !important;
+            justify-content:center !important; cursor:pointer !important;
+            transition:background .2s !important; z-index:10000 !important;
+            box-shadow:none !important; margin:0 !important; padding:0 !important;
         }
-        .mm-modal-close:hover { background: rgba(255,255,255,.2) !important; transform: scale(1.1) !important; }
+        .mm-modal-close:hover { background:rgba(255,255,255,.2) !important; transform:scale(1.1) !important; }
     </style>
+
+
 
     {{-- ══════════════  MODAL EDITAR PERFIL  ══════════════ --}}
     <div id="edit-modal-overlay" style="
@@ -972,42 +825,27 @@
         </div>
     </div>
 
-    {{-- ─── ESTILOS LOCALES ─────────────────────────────────────── --}}
+    {{-- ─── ESTILOS FORMULARIO + MODAL CONTRASEÑA ─── --}}
     <style>
-        .profile-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
-        .skills-list { display:flex;flex-wrap:wrap;gap:8px; }
-        .skills-list span { background:rgba(47,147,245,.1);color:var(--accent-blue);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500; }
-        .genre-badge { background:#f3f4f6;color:var(--text-dim);padding:4px 10px;border-radius:4px;font-size:12px; }
-        .social-list { list-style:none;padding:0;margin:0; }
-        .social-list li { display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed var(--border-light); }
-        .social-list li:last-child { border-bottom:none; }
-        .social-list a { color:var(--text-main);text-decoration:none;font-size:14px; }
-        .social-list a:hover { color:var(--accent-blue); }
-        .social-list i { width:18px;height:18px;color:var(--text-dim); }
-        .contact-item { margin-bottom:18px; }
-        .contact-item label { display:block;font-size:11px;text-transform:uppercase;color:var(--text-dim);font-weight:700;margin-bottom:4px; }
-        .contact-item p { margin:0;font-size:15px; }
-        .map-placeholder { background:#e5e7eb;height:140px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px; }
-        .avatar-initials { display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#6c3fc5,#2f93f5);color:#fff;font-size:28px;font-weight:700; }
+        /* ── Form ── */
         .form-group { margin-bottom:16px; }
-        .form-group label { display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text-main); }
-        .form-group input, .form-group textarea { width:100%;padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;color:var(--text-main);background:#fafafa;box-sizing:border-box;transition:border .2s; }
-        .form-group input:focus, .form-group textarea:focus { border-color:var(--accent-blue);outline:none;background:#fff; }
+        .form-group label { display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--pr-text); }
+        .form-group input, .form-group textarea { width:100%;padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;color:var(--pr-text);background:#fafafa;box-sizing:border-box;transition:border .2s; }
+        .form-group input:focus, .form-group textarea:focus { border-color:var(--pr-primary);outline:none;background:#fff;box-shadow:0 0 0 3px rgba(108,63,197,.08); }
         @keyframes slideUp { from { opacity:0;transform:translateY(30px); } to { opacity:1;transform:translateY(0); } }
-        @media (max-width: 768px) { .profile-grid { grid-template-columns:1fr; } }
 
-        /* Estilos para el Cambio de Contraseña */
+        /* ── Password strength ── */
         .strength-bar-wrap { height:4px; background:#e5e7eb; border-radius:2px; margin-top:8px; overflow:hidden; }
         .strength-bar { height:100%; width:0%; border-radius:2px; transition:width .3s, background .3s; }
         .strength-label { font-size:11px; font-weight:600; margin-top:4px; display:block; }
-        .pwd-requirements { display: none; flex-direction: column; gap: 4px; margin-top: 10px; padding: 10px 12px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; }
-        .pwd-requirements.visible { display: flex; }
-        .req-item { font-size: 12px; color: #6b7280; display: flex; align-items: center; gap: 7px; transition: color .2s; }
-        .req-item .req-dot { font-size: 7px; flex-shrink: 0; }
-        .req-item.ok { color: #16a34a; }
-        .req-item.ok .req-dot { color: #16a34a; }
-        .req-item.fail { color: #dc2626; }
-        .req-item.fail .req-dot { color: #dc2626; }
+        .pwd-requirements { display:none; flex-direction:column; gap:4px; margin-top:10px; padding:10px 12px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; }
+        .pwd-requirements.visible { display:flex; }
+        .req-item { font-size:12px; color:#6b7280; display:flex; align-items:center; gap:7px; transition:color .2s; }
+        .req-item .req-dot { font-size:7px; flex-shrink:0; }
+        .req-item.ok { color:#16a34a; }
+        .req-item.ok .req-dot { color:#16a34a; }
+        .req-item.fail { color:#dc2626; }
+        .req-item.fail .req-dot { color:#dc2626; }
     </style>
 
 
