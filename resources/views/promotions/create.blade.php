@@ -2,359 +2,182 @@
 
 @section('dashboard-content')
 
-    {{-- PAGE HEADER --}}
     <div class="promo-page-header">
         <div>
             <div class="promo-eyebrow">
-                <i data-lucide="zap" style="width:14px;height:14px;color:#6c3fc5;"></i>
-                PROMOCIONAR PERFIL
+                <i data-lucide="star" style="width:14px;height:14px;color:#d97706;"></i>
+                VENTAJAS PREMIUM
             </div>
-            <h1 class="promo-page-title">Impulsa tu carrera</h1>
-            <p class="promo-page-subtitle">Llega a más clientes potenciales y aumenta tus contrataciones.</p>
+            <h1 class="promo-page-title">Elige tu Plan de Promoción</h1>
+            <p class="promo-page-subtitle">Destaca por encima de otros músicos en tu área y recibe más solicitudes.</p>
         </div>
         <a href="{{ route('promotions.index') }}" class="promo-secondary-btn">
-            <i data-lucide="bar-chart-2" style="width:15px;height:15px;"></i>
-            Mis campañas
+            <i data-lucide="arrow-left" style="width:15px;height:15px;"></i>
+            Volver
         </a>
     </div>
 
-    <div class="promo-layout">
-
-        {{-- ── LEFT: Form ───────────────────────────────────────── --}}
-        <div class="promo-form-col">
-
-            {{-- Step 1: Content --}}
-            <div class="promo-section-card">
-                <div class="promo-step-header">
-                    <div class="promo-step-num">1</div>
-                    <div>
-                        <h2 class="promo-step-title">¿Qué quieres promocionar?</h2>
-                        <p class="promo-step-desc">Selecciona el contenido que verán los clientes.</p>
-                    </div>
-                </div>
-
-                <div class="promo-option-grid" id="content-grid">
-                    <label class="promo-option selected" id="opt-profile">
-                        <input type="radio" name="content_type" value="profile" checked hidden
-                               onchange="selectOption('content-grid', this.closest('.promo-option'))">
-                        <div class="promo-option-icon" style="background:#ede9fe;">
-                            <i data-lucide="user" style="width:22px;height:22px;color:#6c3fc5;"></i>
-                        </div>
-                        <div>
-                            <span class="promo-option-title">Mi Perfil Principal</span>
-                            <span class="promo-option-subtitle">Muestra toda tu información al cliente</span>
-                        </div>
-                    </label>
-                    <label class="promo-option" id="opt-video">
-                        <input type="radio" name="content_type" value="video" hidden
-                               onchange="selectOption('content-grid', this.closest('.promo-option'))">
-                        <div class="promo-option-icon" style="background:#e0f2fe;">
-                            <i data-lucide="video" style="width:22px;height:22px;color:#0ea5e9;"></i>
-                        </div>
-                        <div>
-                            <span class="promo-option-title">Video Destacado</span>
-                            <span class="promo-option-subtitle">Destaca un video de tu portafolio</span>
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            {{-- Step 2: Reach --}}
-            <div class="promo-section-card">
-                <div class="promo-step-header">
-                    <div class="promo-step-num">2</div>
-                    <div>
-                        <h2 class="promo-step-title">Define tu alcance</h2>
-                        <p class="promo-step-desc">¿A qué área geográfica quieres llegar?</p>
-                    </div>
-                </div>
-
-                <div class="promo-reach-list">
-                    <label class="promo-reach-option selected" id="reach-local">
-                        <input type="radio" name="reach" value="local" checked hidden
-                               onchange="selectReach(this.closest('.promo-reach-option'))">
-                        <div class="promo-reach-left">
-                            <span class="promo-reach-emoji">📍</span>
-                            <div>
-                                <span class="promo-reach-name">Local</span>
-                                <span class="promo-reach-desc">Solo tu ciudad</span>
-                            </div>
-                        </div>
-                        <span class="promo-reach-check"><i data-lucide="check" style="width:14px;height:14px;"></i></span>
-                    </label>
-                    <label class="promo-reach-option" id="reach-regional">
-                        <input type="radio" name="reach" value="regional" hidden
-                               onchange="selectReach(this.closest('.promo-reach-option'))">
-                        <div class="promo-reach-left">
-                            <span class="promo-reach-emoji">🗺️</span>
-                            <div>
-                                <span class="promo-reach-name">Regional</span>
-                                <span class="promo-reach-desc">+50 km a la redonda · +40% visualizaciones</span>
-                            </div>
-                        </div>
-                        <span class="promo-reach-check"><i data-lucide="check" style="width:14px;height:14px;"></i></span>
-                    </label>
-                    <label class="promo-reach-option" id="reach-state">
-                        <input type="radio" name="reach" value="state" hidden
-                               onchange="selectReach(this.closest('.promo-reach-option'))">
-                        <div class="promo-reach-left">
-                            <span class="promo-reach-emoji">🌎</span>
-                            <div>
-                                <span class="promo-reach-name">Todo el Estado</span>
-                                <span class="promo-reach-desc">Máxima visibilidad</span>
-                            </div>
-                        </div>
-                        <span class="promo-reach-check"><i data-lucide="check" style="width:14px;height:14px;"></i></span>
-                    </label>
-                </div>
-            </div>
-
-            {{-- Step 3: Duration --}}
-            <div class="promo-section-card">
-                <div class="promo-step-header">
-                    <div class="promo-step-num">3</div>
-                    <div>
-                        <h2 class="promo-step-title">Duración de la campaña</h2>
-                        <p class="promo-step-desc">Elige cuántos días quieres estar destacado.</p>
-                    </div>
-                </div>
-
-                <div class="promo-duration-grid">
-                    <label class="promo-duration-card" data-price="150" onclick="selectDuration(this, 150)">
-                        <input type="radio" name="duration" value="7" hidden>
-                        <span class="promo-duration-days">7</span>
-                        <span class="promo-duration-label">Días</span>
-                        <span class="promo-duration-price">$150 MXN</span>
-                    </label>
-
-                    <label class="promo-duration-card selected" data-price="250" onclick="selectDuration(this, 250)">
-                        <input type="radio" name="duration" value="15" checked hidden>
-                        <div class="promo-popular-badge">Popular</div>
-                        <span class="promo-duration-days">15</span>
-                        <span class="promo-duration-label">Días</span>
-                        <span class="promo-duration-price">$250 MXN</span>
-                    </label>
-
-                    <label class="promo-duration-card" data-price="450" onclick="selectDuration(this, 450)">
-                        <input type="radio" name="duration" value="30" hidden>
-                        <span class="promo-duration-days">30</span>
-                        <span class="promo-duration-label">Días</span>
-                        <span class="promo-duration-price">$450 MXN</span>
-                    </label>
-                </div>
-            </div>
-
+    {{-- Coming Soon Notice --}}
+    <div class="promo-notice-banner">
+        <div class="promo-notice-icon">
+            <i data-lucide="shopping-bag" style="width:24px;height:24px;"></i>
         </div>
+        <div class="promo-notice-content">
+            <h3>Sistema de Pago Próximamente</h3>
+            <p>La funcionalidad de pago seguro y activación inmediata de campañas estará disponible muy pronto. Actualmente los planes de suscripción están en fase de previsualización.</p>
+        </div>
+    </div>
 
-        {{-- ── RIGHT: Summary panel ────────────────────────────── --}}
-        <div class="promo-summary-col">
-            <div class="promo-section-card promo-summary-card">
-                <h3 class="promo-summary-title">Resumen del pedido</h3>
-
-                <div class="promo-summary-rows">
-                    <div class="promo-summary-row">
-                        <span class="promo-summary-label">Contenido</span>
-                        <span class="promo-summary-value">Mi Perfil</span>
-                    </div>
-                    <div class="promo-summary-row">
-                        <span class="promo-summary-label">Alcance</span>
-                        <span class="promo-summary-value">Local</span>
-                    </div>
-                    <div class="promo-summary-row">
-                        <span class="promo-summary-label">Duración</span>
-                        <span class="promo-summary-value">15 días</span>
-                    </div>
-                </div>
-
-                <div class="promo-total-row">
-                    <span>Total</span>
-                    <span id="total-price">$250 MXN</span>
-                </div>
-
-                <button type="button" class="promo-submit-btn" onclick="Swal.fire({icon:'info', title:'Sistema de Pago', text:'La funcionalidad de pago seguro y activación inmediata estará disponible próximamente.', confirmButtonColor:'#6c3fc5'})">
-                    <i data-lucide="zap" style="width:16px;height:16px;"></i>
-                    Activar Promoción
-                </button>
-                <p class="promo-submit-note">
-                    <i data-lucide="shield-check" style="width:12px;height:12px;"></i>
-                    Pago seguro. Puedes cancelar antes de que inicie.
-                </p>
+    <div class="promo-pricing-grid">
+        {{-- Plan Basic --}}
+        <div class="promo-pricing-card">
+            <div class="promo-pricing-header">
+                <h3>Básico</h3>
+                <div class="promo-price"><span>$</span>99<small>MXN</small></div>
+                <p>Ideal para probar el impacto.</p>
             </div>
-
-            {{-- What you get --}}
-            <div class="promo-section-card promo-benefits-card">
-                <h4 class="promo-benefits-title">¿Qué incluye?</h4>
-                <ul class="promo-benefits-list">
-                    <li><i data-lucide="trending-up" style="width:15px;height:15px;color:#16a34a;"></i> Posición destacada en búsquedas</li>
-                    <li><i data-lucide="eye" style="width:15px;height:15px;color:#2563eb;"></i> Badge "Destacado" en tu perfil</li>
-                    <li><i data-lucide="bell" style="width:15px;height:15px;color:#d97706;"></i> Notificaciones a clientes cercanos</li>
-                    <li><i data-lucide="bar-chart-2" style="width:15px;height:15px;color:#6c3fc5;"></i> Estadísticas de visualizaciones</li>
+            <div class="promo-pricing-body">
+                <ul>
+                    <li><i data-lucide="check"></i> <strong>7 días</strong> de promoción</li>
+                    <li><i data-lucide="check"></i> Posicionamiento superior</li>
+                    <li><i data-lucide="check"></i> Insignia de "Destacado"</li>
+                    <li><i data-lucide="check"></i> Estadísticas básicas</li>
                 </ul>
+                <button class="promo-select-btn disabled-btn" onclick="showComingSoon()">Pagar Plan</button>
             </div>
         </div>
 
+        {{-- Plan Standard --}}
+        <div class="promo-pricing-card popular">
+            <div class="promo-popular-badge">MÁS ELEGIDO</div>
+            <div class="promo-pricing-header">
+                <h3>Estándar</h3>
+                <div class="promo-price"><span>$</span>299<small>MXN</small></div>
+                <p>Mantén un flujo constante de clientes.</p>
+            </div>
+            <div class="promo-pricing-body">
+                <ul>
+                    <li><i data-lucide="check"></i> <strong>30 días</strong> de promoción</li>
+                    <li><i data-lucide="check"></i> Posicionamiento prioritario</li>
+                    <li><i data-lucide="check"></i> Insignia de "Destacado"</li>
+                    <li><i data-lucide="check"></i> Ahorras $97 MXN</li>
+                </ul>
+                <button class="promo-select-btn popular-btn disabled-btn" onclick="showComingSoon()">Pagar Plan</button>
+            </div>
+        </div>
+
+        {{-- Plan Premium --}}
+        <div class="promo-pricing-card">
+            <div class="promo-pricing-header">
+                <h3>Premium</h3>
+                <div class="promo-price"><span>$</span>699<small>MXN</small></div>
+                <p>Dedicación completa para profesionales.</p>
+            </div>
+            <div class="promo-pricing-body">
+                <ul>
+                    <li><i data-lucide="check"></i> <strong>90 días</strong> de promoción</li>
+                    <li><i data-lucide="check"></i> Posicionamiento máximo absoluto</li>
+                    <li><i data-lucide="check"></i> Insignia de "Destacado" dorada</li>
+                    <li><i data-lucide="check"></i> Ahorras $488 MXN</li>
+                </ul>
+                <button class="promo-select-btn disabled-btn" onclick="showComingSoon()">Pagar Plan</button>
+            </div>
+        </div>
     </div>
 
     <style>
         .promo-page-header {
             display: flex; justify-content: space-between; align-items: flex-start;
-            gap: 20px; margin-bottom: 28px; padding-bottom: 24px;
-            border-bottom: 1px solid #f1f5f9;
+            gap: 20px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;
         }
         .promo-eyebrow {
-            display: flex; align-items: center; gap: 6px;
-            font-size: 11px; font-weight: 700; letter-spacing: .08em;
-            color: #6c3fc5; text-transform: uppercase; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800;
+            letter-spacing: .08em; color: #d97706; text-transform: uppercase; margin-bottom: 6px;
         }
-        .promo-page-title { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0 0 4px; }
-        .promo-page-subtitle { font-size: 14px; color: #64748b; margin: 0; }
+        .promo-page-title { font-size: 26px; font-weight: 900; color: #0f172a; margin: 0 0 6px; letter-spacing: -0.5px; }
+        .promo-page-subtitle { font-size: 15px; color: #64748b; margin: 0; }
         .promo-secondary-btn {
-            display: inline-flex; align-items: center; gap: 7px;
-            padding: 10px 18px; border-radius: 8px; background: #f1f5f9;
-            color: #475569; font-size: 13px; font-weight: 600; text-decoration: none;
-            border: 1.5px solid #e2e8f0; transition: all .2s; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; border-radius: 10px;
+            background: #fff; color: #475569; font-size: 13.5px; font-weight: 700; text-decoration: none;
+            border: 1.5px solid #e2e8f0; transition: all .2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
-        .promo-secondary-btn:hover { background: #e2e8f0; }
+        .promo-secondary-btn:hover { background: #f8fafc; border-color: #cbd5e1; color: #0f172a; }
 
-        /* Layout */
-        .promo-layout {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 24px;
-            align-items: start;
+        .promo-notice-banner {
+            display: flex; gap: 18px; background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+            border: 1px solid #bfdbfe; border-radius: 20px; padding: 22px 28px; margin-bottom: 40px;
+            align-items: center; box-shadow: 0 4px 15px rgba(37,99,235,0.05);
         }
-        .promo-section-card {
-            background: #fff; border: 1.5px solid #e8edf3;
-            border-radius: 16px; padding: 24px; margin-bottom: 16px;
-        }
+        .promo-notice-icon { width: 52px; height: 52px; background: #2563eb; color: #fff; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 6px 16px rgba(37,99,235,0.25); }
+        .promo-notice-content h3 { font-size: 16px; font-weight: 800; color: #1e3a8a; margin: 0 0 4px; }
+        .promo-notice-content p { font-size: 14px; color: #3b82f6; margin: 0; line-height: 1.5; font-weight: 500; }
 
-        /* Step header */
-        .promo-step-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
-        .promo-step-num {
-            width: 32px; height: 32px; border-radius: 10px;
-            background: linear-gradient(135deg, #6c3fc5, #2f93f5);
-            color: #fff; font-size: 14px; font-weight: 800;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        .promo-pricing-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; max-width: 1000px; margin: 0 auto 40px;
         }
-        .promo-step-title { font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 3px; }
-        .promo-step-desc { font-size: 13px; color: #94a3b8; margin: 0; }
-
-        /* Content options */
-        .promo-option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .promo-option {
-            display: flex; align-items: center; gap: 14px;
-            padding: 16px; border: 1.5px solid #e2e8f0;
-            border-radius: 12px; cursor: pointer; transition: all .2s;
+        .promo-pricing-card {
+            background: #fff; border: 1.5px solid #e2e8f0; border-radius: 24px;
+            overflow: hidden; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s;
+            display: flex; flex-direction: column;
         }
-        .promo-option:hover { border-color: #a78bfa; }
-        .promo-option.selected { border-color: #6c3fc5; background: rgba(108,63,197,.04); box-shadow: 0 0 0 3px rgba(108,63,197,.08); }
-        .promo-option-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .promo-option-title { display: block; font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
-        .promo-option-subtitle { display: block; font-size: 12px; color: #94a3b8; }
-
-        /* Reach */
-        .promo-reach-list { display: flex; flex-direction: column; gap: 10px; }
-        .promo-reach-option {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 14px 16px; border: 1.5px solid #e2e8f0;
-            border-radius: 12px; cursor: pointer; transition: all .2s;
+        .promo-pricing-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
+        
+        .promo-pricing-card.popular {
+            border: 2.5px solid #6c3fc5; position: relative; box-shadow: 0 12px 32px rgba(108,63,197,0.12);
+            transform: scale(1.03); z-index: 10;
         }
-        .promo-reach-option:hover { border-color: #a78bfa; }
-        .promo-reach-option.selected { border-color: #6c3fc5; background: rgba(108,63,197,.04); }
-        .promo-reach-left { display: flex; align-items: center; gap: 12px; }
-        .promo-reach-emoji { font-size: 20px; }
-        .promo-reach-name { display: block; font-size: 14px; font-weight: 600; color: #0f172a; }
-        .promo-reach-desc { display: block; font-size: 12px; color: #94a3b8; }
-        .promo-reach-check {
-            width: 22px; height: 22px; border-radius: 50%;
-            background: #6c3fc5; color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity .2s;
-        }
-        .promo-reach-option.selected .promo-reach-check { opacity: 1; }
-
-        /* Duration */
-        .promo-duration-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-        .promo-duration-card {
-            position: relative; text-align: center; padding: 20px 12px;
-            border: 1.5px solid #e2e8f0; border-radius: 14px;
-            cursor: pointer; transition: all .2s; display: flex;
-            flex-direction: column; align-items: center; gap: 4px;
-        }
-        .promo-duration-card:hover { border-color: #a78bfa; }
-        .promo-duration-card.selected { border-color: #6c3fc5; background: rgba(108,63,197,.04); box-shadow: 0 0 0 3px rgba(108,63,197,.08); }
+        .promo-pricing-card.popular:hover { transform: scale(1.03) translateY(-6px); box-shadow: 0 24px 48px rgba(108,63,197,0.18); }
+        
         .promo-popular-badge {
-            position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
-            background: linear-gradient(90deg, #f97316, #ef4444);
-            color: #fff; font-size: 10px; font-weight: 700;
-            padding: 3px 10px; border-radius: 999px; white-space: nowrap;
-        }
-        .promo-duration-days { font-size: 26px; font-weight: 900; color: #0f172a; }
-        .promo-duration-label { font-size: 12px; color: #94a3b8; }
-        .promo-duration-price { font-size: 13px; font-weight: 700; color: #6c3fc5; margin-top: 4px; }
-
-        /* Summary panel */
-        .promo-summary-card { margin-bottom: 16px; }
-        .promo-summary-title { font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 20px; }
-        .promo-summary-rows { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
-        .promo-summary-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 11px 0; border-bottom: 1px solid #f8fafc;
-        }
-        .promo-summary-label { font-size: 13px; color: #64748b; }
-        .promo-summary-value { font-size: 13px; font-weight: 600; color: #0f172a; }
-        .promo-total-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 14px 16px; background: #f8fafc; border-radius: 10px;
-            font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 16px;
-        }
-        #total-price { font-size: 20px; color: #6c3fc5; }
-        .promo-submit-btn {
-            width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;
-            padding: 13px; background: linear-gradient(135deg, #6c3fc5, #2f93f5);
-            color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
-            cursor: pointer; box-shadow: 0 4px 16px rgba(108,63,197,.3); transition: opacity .2s;
-        }
-        .promo-submit-btn:hover { opacity: .9; }
-        .promo-submit-note {
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-            text-align: center; font-size: 11.5px; color: #94a3b8; margin: 10px 0 0;
+            background: linear-gradient(90deg, #6c3fc5, #3b82f6); color: #fff; text-align: center; font-size: 11.5px;
+            font-weight: 800; letter-spacing: 1px; padding: 8px; text-transform: uppercase;
         }
 
-        /* Benefits */
-        .promo-benefits-card { padding: 20px 24px; }
-        .promo-benefits-title { font-size: 14px; font-weight: 700; color: #0f172a; margin: 0 0 14px; }
-        .promo-benefits-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
-        .promo-benefits-list li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #334155; }
+        .promo-pricing-header { padding: 36px 28px 24px; border-bottom: 1px solid #f1f5f9; text-align: center; }
+        .promo-pricing-header h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 16px; }
+        .promo-price { font-size: 48px; font-weight: 900; color: #0f172a; line-height: 1; display: flex; justify-content: center; align-items: flex-start; gap: 4px; margin-bottom: 16px; letter-spacing: -1px; }
+        .promo-price span { font-size: 22px; font-weight: 700; color: #64748b; margin-top: 6px; }
+        .promo-price small { font-size: 15px; font-weight: 700; color: #64748b; align-self: flex-end; margin-bottom: 8px; }
+        .promo-pricing-header p { font-size: 14px; color: #64748b; margin: 0; font-weight: 500; }
 
-        @media (max-width: 860px) {
-            .promo-layout { grid-template-columns: 1fr; }
-            .promo-option-grid { grid-template-columns: 1fr; }
+        .promo-pricing-body { padding: 28px; flex-grow: 1; display: flex; flex-direction: column; }
+        .promo-pricing-body ul { list-style: none; padding: 0; margin: 0 0 32px; flex-grow: 1; display: flex; flex-direction: column; gap: 16px; }
+        .promo-pricing-body li { display: flex; align-items: flex-start; gap: 12px; font-size: 14.5px; color: #334155; line-height: 1.4; font-weight: 500;}
+        .promo-pricing-body li i { width: 18px; height: 18px; color: #10b981; flex-shrink: 0; stroke-width: 3px; }
+        .promo-pricing-body li strong { font-weight: 800; color: #0f172a; }
+
+        .promo-select-btn {
+            width: 100%; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 800;
+            text-align: center; cursor: pointer; transition: all 0.2s; border: none; letter-spacing: 0.5px;
         }
-        @media (max-width: 480px) {
-            .promo-duration-grid { grid-template-columns: 1fr; }
+        
+        .promo-select-btn:not(.popular-btn) { background: #f1f5f9; color: #0f172a; }
+        .promo-select-btn.popular-btn { background: #6c3fc5; color: #fff; box-shadow: 0 6px 16px rgba(108,63,197,0.3); }
+        
+        .disabled-btn { opacity: 0.8; cursor: pointer; }
+        .disabled-btn:not(.popular-btn):hover { background: #e2e8f0; }
+
+        @media (max-width: 950px) {
+            .promo-pricing-grid { grid-template-columns: 1fr; max-width: 400px; gap: 32px; margin-bottom: 30px; }
+            .promo-pricing-card.popular { transform: none; }
+            .promo-pricing-card.popular:hover { transform: translateY(-4px); }
+            .promo-notice-banner { flex-direction: column; text-align: center; padding: 20px; }
+            .promo-notice-icon { margin-bottom: 8px; }
         }
     </style>
 
     <script>
-        function selectOption(gridId, el) {
-            document.querySelectorAll('.promo-option').forEach(o => o.classList.remove('selected'));
-            el.classList.add('selected');
-            el.querySelector('input').checked = true;
-        }
-
-        function selectReach(el) {
-            document.querySelectorAll('.promo-reach-option').forEach(o => o.classList.remove('selected'));
-            el.classList.add('selected');
-            el.querySelector('input').checked = true;
-        }
-
-        function selectDuration(el, price) {
-            document.querySelectorAll('.promo-duration-card').forEach(o => o.classList.remove('selected'));
-            el.classList.add('selected');
-            el.querySelector('input').checked = true;
-            document.getElementById('total-price').textContent = '$' + price.toLocaleString() + ' MXN';
+        function showComingSoon() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Sistema de Pago',
+                text: 'La funcionalidad de pago seguro y activación inmediata estará disponible próximamente.',
+                confirmButtonColor: '#6c3fc5',
+                confirmButtonText: 'Entendido',
+                customClass: {
+                    container: 'promo-swal'
+                }
+            });
         }
     </script>
-
 @endsection

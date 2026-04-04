@@ -1,209 +1,99 @@
 @extends('layouts.dashboard')
 
 @section('dashboard-content')
+    <div class="pm-empty-container">
+        <div class="pm-empty-card">
+            <div class="pm-empty-icon-wrap">
+                <i data-lucide="zap" class="pm-empty-icon"></i>
+            </div>
+            
+            <div class="pm-coming-soon-badge">PRÓXIMAMENTE</div>
+            
+            <h1 class="pm-empty-title">Multiplica tus contrataciones</h1>
+            <p class="pm-empty-subtitle">
+                Nuestro sistema de <strong>Promoción de Perfil</strong> te permitirá destacar en la cima de los resultados de búsqueda, atrayendo hasta 4x más clientes.
+            </p>
 
-    {{-- PAGE HEADER --}}
-    <div class="pm-header">
-        <div>
-            <div class="pm-eyebrow">
-                <i data-lucide="bar-chart-2" style="width:14px;height:14px;color:#6c3fc5;"></i>
-                MIS CAMPAÑAS
-            </div>
-            <h1 class="pm-title">Mis Promociones</h1>
-            <p class="pm-subtitle">Historial y estadísticas de tus campañas publicitarias</p>
-        </div>
-        <a href="{{ route('promotions.create') }}" class="pm-new-btn">
-            <i data-lucide="zap" style="width:15px;height:15px;"></i>
-            Nueva campaña
-        </a>
-    </div>
-
-    {{-- IMPACT STATS --}}
-    <div class="pm-stats-row">
-        <div class="pm-stat-card">
-            <div class="pm-stat-icon" style="background:#ede9fe;">
-                <i data-lucide="eye" style="width:20px;height:20px;color:#6c3fc5;"></i>
-            </div>
-            <div>
-                <div class="pm-stat-value">1,240</div>
-                <div class="pm-stat-label">Visualizaciones extra</div>
-            </div>
-        </div>
-        <div class="pm-stat-card">
-            <div class="pm-stat-icon" style="background:#eff6ff;">
-                <i data-lucide="mouse-pointer-click" style="width:20px;height:20px;color:#2563eb;"></i>
-            </div>
-            <div>
-                <div class="pm-stat-value" style="color:#2563eb;">45</div>
-                <div class="pm-stat-label">Clics en perfil</div>
-            </div>
-        </div>
-        <div class="pm-stat-card">
-            <div class="pm-stat-icon" style="background:#f0fdf4;">
-                <i data-lucide="phone-call" style="width:20px;height:20px;color:#16a34a;"></i>
-            </div>
-            <div>
-                <div class="pm-stat-value" style="color:#16a34a;">8</div>
-                <div class="pm-stat-label">Contactos directos</div>
-            </div>
-        </div>
-        <div class="pm-stat-card">
-            <div class="pm-stat-icon" style="background:#fefce8;">
-                <i data-lucide="megaphone" style="width:20px;height:20px;color:#ca8a04;"></i>
-            </div>
-            <div>
-                <div class="pm-stat-value" style="color:#ca8a04;">2</div>
-                <div class="pm-stat-label">Campañas totales</div>
-            </div>
-        </div>
-    </div>
-
-    {{-- CAMPAIGNS LIST --}}
-    <div class="pm-section-header">
-        <h2 class="pm-section-title">Historial de campañas</h2>
-    </div>
-
-    <div class="pm-campaigns">
-
-        {{-- Active campaign --}}
-        <div class="pm-campaign-card pm-campaign-active">
-            <div class="pm-campaign-left">
-                <div class="pm-campaign-status-dot pm-dot-active"></div>
-                <div class="pm-campaign-icon" style="background:#ede9fe;">
-                    <i data-lucide="user" style="width:20px;height:20px;color:#6c3fc5;"></i>
+            <div class="pm-benefits-grid">
+                <div class="pm-benefit-item">
+                    <i data-lucide="trending-up"></i>
+                    <span>Aparece primero en tu ciudad</span>
                 </div>
+                <div class="pm-benefit-item">
+                    <i data-lucide="star"></i>
+                    <span>Insignia "Músico Destacado"</span>
+                </div>
+                 <div class="pm-benefit-item">
+                    <i data-lucide="mouse-pointer-click"></i>
+                    <span>Gana más clicks y vistas</span>
+                </div>
+            </div>
+
+            <div class="pm-notice-box">
+                <i data-lucide="shield-check"></i>
                 <div>
-                    <span class="pm-campaign-name">Perfil Principal</span>
-                    <div class="pm-campaign-meta">
-                        <span><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Regional</span>
-                        <span><i data-lucide="calendar" style="width:12px;height:12px;"></i> 01 Feb – 15 Feb</span>
-                    </div>
+                    <strong>Sistema de Pago</strong>
+                    <p>La funcionalidad de pago seguro y activación inmediata estará disponible próximamente en una futura actualización.</p>
                 </div>
             </div>
-            <div class="pm-campaign-right">
-                <div class="pm-countdown">
-                    <i data-lucide="clock" style="width:13px;height:13px;"></i>
-                    Quedan <strong>6 días</strong>
-                </div>
-                <span class="pm-status-badge pm-badge-active">Activa</span>
-                <span class="pm-campaign-price">$250 MXN</span>
-            </div>
+
+            <a href="{{ route('promotions.create') }}" class="pm-preview-btn">
+                Ver los Planes Disponibles
+                <i data-lucide="arrow-right"></i>
+            </a>
         </div>
-
-        {{-- Past campaign --}}
-        <div class="pm-campaign-card">
-            <div class="pm-campaign-left">
-                <div class="pm-campaign-status-dot pm-dot-done"></div>
-                <div class="pm-campaign-icon" style="background:#f1f5f9;">
-                    <i data-lucide="video" style="width:20px;height:20px;color:#94a3b8;"></i>
-                </div>
-                <div>
-                    <span class="pm-campaign-name" style="color:#64748b;">Video "Boda Civil..."</span>
-                    <div class="pm-campaign-meta">
-                        <span><i data-lucide="map-pin" style="width:12px;height:12px;"></i> Local</span>
-                        <span><i data-lucide="calendar" style="width:12px;height:12px;"></i> 10 Ene – 17 Ene</span>
-                    </div>
-                </div>
-            </div>
-            <div class="pm-campaign-right">
-                <span class="pm-status-badge pm-badge-done">Finalizada</span>
-                <span class="pm-campaign-price" style="color:#94a3b8;">$150 MXN</span>
-            </div>
-        </div>
-
     </div>
-
-    {{-- EMPTY STATE - shown when no campaigns --}}
-    {{-- Uncomment this block and remove the .pm-campaigns div when there are no campaigns
-    <div class="pm-empty">
-        <div class="pm-empty-icon"><i data-lucide="megaphone" style="width:40px;height:40px;color:#cbd5e1;"></i></div>
-        <h3>Sin campañas todavía</h3>
-        <p>Crea tu primera campaña para aparecer destacado ante más clientes.</p>
-        <a href="{{ route('promotions.create') }}" class="pm-new-btn" style="display:inline-flex;">
-            <i data-lucide="zap" style="width:15px;height:15px;"></i> Crear campaña
-        </a>
-    </div>
-    --}}
 
     <style>
-        /* ── Header ─────────────────────────────── */
-        .pm-header {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            gap: 20px; margin-bottom: 28px; padding-bottom: 24px;
-            border-bottom: 1px solid #f1f5f9;
+        .pm-empty-container { display: flex; align-items: center; justify-content: center; min-height: 75vh; padding: 20px; }
+        .pm-empty-card { 
+            background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 24px;
+            max-width: 580px; width: 100%; padding: 48px; text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            position: relative; overflow: hidden;
         }
-        .pm-eyebrow {
-            display: flex; align-items: center; gap: 6px;
-            font-size: 11px; font-weight: 700; letter-spacing: .08em;
-            color: #6c3fc5; text-transform: uppercase; margin-bottom: 6px;
+        .pm-empty-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+            background: linear-gradient(90deg, #6c3fc5, #3b82f6, #06b6d4);
         }
-        .pm-title { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0 0 4px; }
-        .pm-subtitle { font-size: 14px; color: #64748b; margin: 0; }
-        .pm-new-btn {
-            display: inline-flex; align-items: center; gap: 7px;
-            padding: 10px 20px; border-radius: 8px;
-            background: linear-gradient(135deg, #6c3fc5, #2f93f5);
-            color: #fff; font-size: 13px; font-weight: 700; text-decoration: none;
-            box-shadow: 0 4px 16px rgba(108,63,197,.25); transition: opacity .2s;
-            white-space: nowrap;
+        .pm-empty-icon-wrap {
+            width: 84px; height: 84px; background: linear-gradient(135deg, rgba(108,63,197,0.1), rgba(59,130,246,0.1));
+            border-radius: 24px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px; box-shadow: inset 0 0 0 1px rgba(108,63,197,0.15);
         }
-        .pm-new-btn:hover { opacity: .9; }
-
-        /* ── Stats ─────────────────────────────── */
-        .pm-stats-row {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px;
+        .pm-empty-icon { width: 40px; height: 40px; color: #6c3fc5; }
+        .pm-coming-soon-badge {
+            display: inline-block; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe;
+            font-size: 11px; font-weight: 800; padding: 6px 14px; border-radius: 999px;
+            letter-spacing: 0.5px; margin-bottom: 20px;
         }
-        .pm-stat-card {
-            background: #fff; border: 1.5px solid #e8edf3;
-            border-radius: 14px; padding: 18px 20px;
-            display: flex; align-items: center; gap: 14px;
+        .pm-empty-title { font-size: 28px; font-weight: 900; color: #0f172a; margin: 0 0 12px; line-height: 1.2; letter-spacing: -0.5px; }
+        .pm-empty-subtitle { font-size: 15px; color: #64748b; margin: 0 0 36px; line-height: 1.5; }
+        
+        .pm-benefits-grid { display: flex; flex-direction: column; gap: 14px; text-align: left; background: #f8fafc; padding: 24px; border-radius: 16px; margin-bottom: 30px; border: 1px solid #f1f5f9; }
+        .pm-benefit-item { display: flex; align-items: center; gap: 12px; font-size: 14.5px; font-weight: 600; color: #334155; }
+        .pm-benefit-item i { width: 18px; height: 18px; color: #3b82f6; }
+
+        .pm-notice-box {
+            display: flex; gap: 12px; align-items: flex-start; text-align: left;
+            background: #fefce8; border: 1px dashed #fef08a; padding: 18px; border-radius: 12px; margin-bottom: 30px;
         }
-        .pm-stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .pm-stat-value { font-size: 22px; font-weight: 900; color: #0f172a; line-height: 1; margin-bottom: 3px; }
-        .pm-stat-label { font-size: 12px; color: #64748b; font-weight: 500; }
+        .pm-notice-box i { width: 22px; height: 22px; color: #ca8a04; flex-shrink: 0; margin-top: 2px; }
+        .pm-notice-box strong { display: block; font-size: 14px; font-weight: 700; color: #854d0e; margin-bottom: 4px; }
+        .pm-notice-box p { margin: 0; font-size: 13px; color: #a16207; line-height: 1.4; }
 
-        /* ── Section Header ─────────────────────── */
-        .pm-section-header { margin-bottom: 14px; }
-        .pm-section-title { font-size: 16px; font-weight: 700; color: #0f172a; margin: 0; }
-
-        /* ── Campaign Cards ─────────────────────── */
-        .pm-campaigns { display: flex; flex-direction: column; gap: 12px; }
-        .pm-campaign-card {
-            display: flex; justify-content: space-between; align-items: center;
-            gap: 16px; background: #fff; border: 1.5px solid #e8edf3;
-            border-radius: 14px; padding: 18px 22px; transition: box-shadow .2s;
+        .pm-preview-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; background: #0f172a; color: #fff; padding: 16px;
+            border-radius: 14px; font-size: 15px; font-weight: 700; text-decoration: none;
+            transition: all 0.2s; box-shadow: 0 10px 20px rgba(15,23,42,0.15);
         }
-        .pm-campaign-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.04); }
-        .pm-campaign-active { border-color: #c4b5fd; background: linear-gradient(140deg, rgba(108,63,197,.03), #fff); }
+        .pm-preview-btn:hover { background: #1e293b; transform: translateY(-2px); box-shadow: 0 12px 24px rgba(15,23,42,0.2); }
+        .pm-preview-btn i { width: 16px; height: 16px; }
 
-        .pm-campaign-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
-        .pm-campaign-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .pm-dot-active { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.2); }
-        .pm-dot-done   { background: #d1d5db; }
-        .pm-campaign-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .pm-campaign-name { display: block; font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 5px; }
-        .pm-campaign-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: #64748b; }
-        .pm-campaign-meta span { display: flex; align-items: center; gap: 4px; }
-
-        .pm-campaign-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
-        .pm-countdown { font-size: 12px; color: #d97706; font-weight: 600; display: flex; align-items: center; gap: 5px; background: #fef9c3; padding: 4px 10px; border-radius: 999px; }
-        .pm-status-badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 999px; }
-        .pm-badge-active { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-        .pm-badge-done   { background: #f8fafc; color: #94a3b8; border: 1px solid #e2e8f0; }
-        .pm-campaign-price { font-size: 15px; font-weight: 800; color: #0f172a; }
-
-        /* ── Empty ────────────────────────────── */
-        .pm-empty { text-align: center; padding: 80px 0; color: #94a3b8; }
-        .pm-empty-icon { margin-bottom: 16px; }
-        .pm-empty h3  { font-size: 18px; color: #64748b; margin: 0 0 8px; }
-        .pm-empty p   { font-size: 14px; margin: 0 0 20px; }
-
-        @media (max-width: 900px) { .pm-stats-row { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 640px) {
-            .pm-header, .pm-campaign-card { flex-direction: column; align-items: flex-start; }
-            .pm-campaign-right { flex-wrap: wrap; }
-            .pm-stats-row { grid-template-columns: 1fr 1fr; }
+        @media (max-width: 600px) {
+            .pm-empty-card { padding: 30px 20px; }
+            .pm-empty-title { font-size: 24px; }
         }
     </style>
-
 @endsection
