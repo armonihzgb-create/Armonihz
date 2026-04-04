@@ -26,7 +26,9 @@ class MusicianProfileController extends Controller
                 }
             ])
             ->withAvg('reviews', 'rating')
-            ->orderByDesc('has_active_promotion');
+            ->orderByDesc('has_active_promotion')
+            ->orderByDesc('id');
+
 
         $query->when($request->filled('search'), function (Builder $q) use ($request) {
             $search = $request->input('search');
