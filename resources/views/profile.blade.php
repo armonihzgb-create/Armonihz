@@ -16,9 +16,9 @@
             --pr-success:   #16a34a;
         }
         /* Prevent FOUC on avatar overlap */
-        .nbf-avatar-container { position:absolute; left:36px; top:-70px; width:130px; height:130px; border-radius:50%; background:#fff; padding:4px; z-index:10; box-shadow:0 4px 20px rgba(0,0,0,.15); }
-        .nbf-info-bar { display:flex; align-items:flex-start; padding:0 36px 28px 200px; position:relative; min-height:100px; }
-        @media(max-width:768px){.nbf-info-bar{flex-direction:column;padding:80px 20px 24px;align-items:center;}.nbf-avatar-container{left:50%;transform:translateX(-50%)!important;top:-65px;}}
+        .nbf-avatar-container { position:absolute; left:36px; top:-90px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); padding:8px; z-index:10; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+        .nbf-info-bar { display:flex; align-items:flex-start; padding:0 36px 28px 220px; position:relative; min-height:100px; }
+        @media(max-width:768px){.nbf-info-bar{flex-direction:column;padding:100px 20px 24px;align-items:center;}.nbf-avatar-container{left:50%;transform:translateX(-50%)!important;top:-80px;}}
     </style>
 
 
@@ -347,17 +347,20 @@
            ═══════════════════════════════════════════════════════ */
 
         .nbf-layout {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
             margin-bottom: 24px;
         }
 
         /* ── COVER ── */
         .nbf-header { width:100%; position:relative; }
         .nbf-cover {
-            width:100%; height:260px;
+            width:100%; height:320px; /* Aumentado para dar aire tipo Spotify */
             background-color: #e2e8f0;
             background-size:cover; background-position:center;
             filter:grayscale(100%);
@@ -365,7 +368,7 @@
         }
         .nbf-cover-overlay {
             position:absolute; inset:0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,0.85) 100%);
         }
 
         /* ── INFO BAR ── */
@@ -382,11 +385,12 @@
 
         /* ── AVATAR ── */
         .nbf-avatar-container {
-            position:absolute; left:36px; top:-70px;
-            width:130px; height:130px;
-            border-radius:50%; background:#fff;
-            padding:4px; z-index:10;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position:absolute; left:36px; top:-90px;
+            width:160px; height:160px;
+            border-radius:50%; background:rgba(255,255,255,0.15);
+            backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+            padding:8px; z-index:10;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
         }
         .nbf-avatar-container img, .nbf-avatar-initials {
             width:100%; height:100%; border-radius:50%; object-fit:cover;
@@ -394,21 +398,22 @@
         .nbf-avatar-initials {
             display:flex; align-items:center; justify-content:center;
             background:linear-gradient(135deg,#6c3fc5,#2f93f5);
-            color:#fff; font-size:42px; font-weight:800;
+            color:#fff; font-size:52px; font-weight:800;
         }
         @media(max-width:768px) {
-            .nbf-avatar-container { left:50%; transform:translateX(-50%); top:-65px; }
+            .nbf-avatar-container { left:50%; transform:translateX(-50%); top:-80px; }
         }
 
-        /* ── NOMBRE ── */
+        /* ── NOMBRE E INFO TIPO SPOTIFY ── */
         .nbf-user-info { padding-top:22px; flex:1; min-width:0; }
         .nbf-name {
-            font-size:28px; font-weight:900; color:var(--pr-text);
-            margin:0 0 8px; line-height:1.1; letter-spacing:-0.5px;
+            font-size:42px; font-weight:900; color:var(--pr-text);
+            margin:0 0 4px; line-height:1.05; letter-spacing:-1.5px;
         }
-        .nbf-stats-links { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+        @media(max-width:768px) { .nbf-name { font-size:32px; letter-spacing:-1px; } }
+        .nbf-stats-links { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:8px; }
         @media(max-width:768px) { .nbf-stats-links { justify-content:center; margin-bottom:16px; } }
-        .nbf-stat { font-size:13px; color:var(--pr-primary); font-weight:600; }
+        .nbf-stat { font-size:14px; color:var(--pr-primary); font-weight:700; }
         .nbf-dot { color:#cbd5e1; font-size:10px; }
 
         /* ── BOTONES DE HEADER ── */
@@ -432,14 +437,16 @@
         .nbf-btn-secondary:hover { border-color:#c4b5fd; color:var(--pr-primary); background:#faf5ff; }
 
         /* ── ÁREA DE CONTENIDO ── */
-        .nbf-content { padding:36px 40px; background:#fff; }
+        .nbf-content { padding:36px 40px; background: transparent; }
         @media(max-width:768px) { .nbf-content { padding:24px 16px; } }
 
         /* ── TARJETA COMPLETITUD ── */
         .nbf-completion-card {
             display:flex; align-items:center; gap:14px;
-            background:var(--pr-surface); border:1.5px solid var(--pr-border);
+            background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
             border-radius:14px; padding:16px 20px; margin-bottom:32px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.02);
         }
         .nbf-completion-icon {
             width:40px; height:40px; border-radius:10px; flex-shrink:0;
@@ -473,15 +480,17 @@
 
         /* ── DETAIL CARD ── */
         .nbf-detail-card {
-            background:#fff; border:1.5px solid var(--pr-border);
+            background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius:14px; overflow:hidden; margin-bottom:24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: transform 0.2s;
         }
         .nbf-detail-row {
             display:grid; grid-template-columns:200px 1fr;
             align-items:center; gap:20px; padding:14px 20px;
-            border-bottom:1px solid #f8fafc; transition:background .15s;
+            border-bottom:1px solid rgba(255,255,255,0.4); transition:background .15s;
         }
-        .nbf-detail-row:hover { background:#fafbff; }
+        .nbf-detail-row:hover { background: rgba(255,255,255, 0.7); }
         .nbf-detail-row.is-vertical { grid-template-columns:1fr; align-items:flex-start; gap:8px; }
         .nbf-detail-row:last-child { border-bottom:none; }
         .nbf-detail-label-wrap { display:flex; align-items:center; gap:8px; }
@@ -507,10 +516,15 @@
         .nbf-social-card {
             display:flex; align-items:center; gap:12px;
             padding:12px 14px; border-radius:12px;
-            border:1.5px solid var(--pr-border); background:#fff;
-            text-decoration:none; transition:all .2s;
+            background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            text-decoration:none; transition:all .3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
-        .nbf-social-card.active:hover { border-color:#c4b5fd; transform:translateY(-2px); box-shadow:0 6px 18px rgba(108,63,197,.1); }
+        .nbf-social-card.active:hover {
+            border-color: rgba(108,63,197,0.4); transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 24px rgba(108,63,197,0.15);
+            background: rgba(255, 255, 255, 0.7);
+        }
         .nbf-social-card.inactive { opacity:.5; pointer-events:none; }
         .nbf-social-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         .nbf-social-info { display:flex; flex-direction:column; }
@@ -521,11 +535,19 @@
         .nbf-genre-chip {
             display:inline-flex; align-items:center; gap:7px;
             padding:8px 18px; border-radius:99px; font-size:13px; font-weight:600;
-            background:linear-gradient(135deg,rgba(108,63,197,.08),rgba(47,147,245,.08));
-            border:1.5px solid rgba(108,63,197,.18); color:var(--pr-primary);
-            transition:all .2s; cursor:default;
+            background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4));
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.8);
+            color: var(--pr-primary);
+            transition:all .3s ease; cursor:default;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
-        .nbf-genre-chip:hover { transform:translateY(-2px); box-shadow:0 6px 14px rgba(108,63,197,.15); }
+        .nbf-genre-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(108,63,197,0.18);
+            background: linear-gradient(135deg, rgba(108,63,197,0.1), rgba(47,147,245,0.1));
+            border-color: rgba(108,63,197,0.3);
+        }
 
         /* ── EMPTY STATES ── */
         .nbf-empty-genres {
@@ -545,17 +567,19 @@
         /* ── MULTIMEDIA ── */
         .nbf-media-showcase { width:100%; }
         .nbf-media-grid { display:grid; gap:12px; }
-        .photos-grid { grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); }
+        /* Masonry Support for photos */
+        .photos-grid { display: block; columns: 2 200px; gap: 12px; }
         .videos-grid { grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); margin-top:16px; }
         .nbf-media-item {
             position:relative; border-radius:14px; overflow:hidden;
-            background:var(--pr-surface); cursor:pointer;
-            box-shadow:0 2px 10px rgba(0,0,0,.06); transition:box-shadow .2s;
+            background: rgba(255,255,255,0.4); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.6);
+            cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,.04); transition:all .3s ease;
         }
-        .nbf-media-item:hover { box-shadow:0 8px 24px rgba(0,0,0,.12); }
-        .photos-grid .nbf-media-item { aspect-ratio:1; }
+        .nbf-media-item:hover { box-shadow:0 12px 32px rgba(108,63,197,.15); transform: translateY(-4px) scale(1.02); z-index: 2; }
+        .photos-grid .nbf-media-item { aspect-ratio: auto; min-height: 150px; display: inline-block; width: 100%; margin-bottom: 12px; }
         .videos-grid .nbf-media-item { aspect-ratio:16/9; }
-        .nbf-media-item img, .nbf-media-item video { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease; }
+        .nbf-media-item img, .nbf-media-item video { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease; border-radius: 12px; }
         .nbf-media-item:hover img, .nbf-media-item:hover video { transform:scale(1.05); }
         .nbf-media-overlay {
             position:absolute; inset:0; background:rgba(0,0,0,.3);
@@ -565,12 +589,13 @@
         .nbf-media-item:hover .nbf-media-overlay { opacity:1; }
         .nbf-play-indicator {
             position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-            width:48px; height:48px; border-radius:50%;
-            background:rgba(108,63,197,.9); backdrop-filter:blur(4px);
+            width:56px; height:56px; border-radius:50%;
+            background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.8);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
             display:flex; align-items:center; justify-content:center;
-            box-shadow:0 8px 24px rgba(0,0,0,.3); transition:transform .2s;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15); transition:all .3s ease;
         }
-        .video-item:hover .nbf-play-indicator { transform:translate(-50%,-50%) scale(1.1); }
+        .video-item:hover .nbf-play-indicator { transform:translate(-50%,-50%) scale(1.15); background: rgba(255,255,255,0.4); border-color: #fff; }
         .nbf-featured-badge {
             position:absolute; top:10px; left:10px;
             background:linear-gradient(135deg,#f59e0b,#d97706);
