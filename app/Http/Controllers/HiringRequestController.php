@@ -17,7 +17,7 @@ class HiringRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-public function index(Request $request)
+    public function index(Request $request)
     {
         $firebaseUid = $request->attributes->get('firebase_uid');
         $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
