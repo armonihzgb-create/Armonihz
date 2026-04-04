@@ -4,8 +4,8 @@
     <header class="dashboard-header"
         style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
         <div style="display:flex; align-items:center; gap:16px;">
-            <div class="stat-icon purple" style="width:48px; height:48px; flex-shrink:0;">
-                <i data-lucide="sparkles"></i>
+            <div class="stat-icon purple" style="width:56px; height:56px; flex-shrink:0;">
+                <i data-lucide="sparkles" style="width:24px; height:24px;"></i>
             </div>
             <div>
                 <h2 style="margin:0;">Bienvenido,
@@ -17,15 +17,15 @@
         @if($user->role === 'musico' && $user->musicianProfile && $user->musicianProfile->profile_picture)
             @if(Str::startsWith($user->musicianProfile->profile_picture, ['http://', 'https://']))
                 <img src="{{ $user->musicianProfile->profile_picture }}" alt="Perfil"
-                    style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    style="width:64px; height:64px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.12);">
             @else
                 <img src="{{ $user->musicianProfile->profilePictureUrl() }}" alt="Perfil"
-                    style="width:56px; height:56px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    style="width:64px; height:64px; border-radius:50%; object-fit:cover; border: 2px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.12);">
             @endif
         @else
             <div
-                style="width:56px; height:56px; border-radius:50%; background:var(--bg-secondary); border: 2px solid #e5e7eb; display:flex; align-items:center; justify-content:center; color:var(--text-dim);">
-                <i data-lucide="user" style="width:24px; height:24px;"></i>
+                style="width:64px; height:64px; border-radius:50%; background:var(--bg-secondary); border: 2px solid #e5e7eb; display:flex; align-items:center; justify-content:center; color:var(--text-dim);">
+                <i data-lucide="user" style="width:28px; height:28px;"></i>
             </div>
         @endif
     </header>
