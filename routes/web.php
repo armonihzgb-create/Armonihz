@@ -157,7 +157,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 })->name('admin.settings.index');
 
                 // Gestión de reportes
-                Route::get('/reports', [\App\Http\Controllers\Web\AdminController::class, 'reportsIndex'])->name('admin.reports.index');
+                Route::get('/reports/{status?}', [\App\Http\Controllers\Web\AdminController::class, 'reportsIndex'])
+                    ->where('status', 'pending|reviewed|resolved')
+                    ->name('admin.reports.index');
                 Route::patch('/reports/{id}/status', [\App\Http\Controllers\Web\AdminController::class, 'updateReportStatus'])->name('admin.reports.status');
         });
     }); // End verified_musician middleware

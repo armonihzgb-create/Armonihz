@@ -28,15 +28,15 @@
                 <i data-lucide="layout-grid" style="width:14px;height:14px;"></i>
                 Todos <span class="tab-counter">{{ $counts['all'] }}</span>
             </a>
-            <a href="{{ route('admin.reports.index', ['status' => 'pending']) }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}">
+            <a href="{{ route('admin.reports.index', 'pending') }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}">
                 <i data-lucide="alert-circle" style="width:14px;height:14px;"></i>
                 Pendientes <span class="tab-counter pending">{{ $counts['pending'] }}</span>
             </a>
-            <a href="{{ route('admin.reports.index', ['status' => 'reviewed']) }}" class="filter-tab {{ $status === 'reviewed' ? 'active' : '' }}">
+            <a href="{{ route('admin.reports.index', 'reviewed') }}" class="filter-tab {{ $status === 'reviewed' ? 'active' : '' }}">
                 <i data-lucide="clipboard-check" style="width:14px;height:14px;"></i>
                 Revisados <span class="tab-counter reviewed">{{ $counts['reviewed'] }}</span>
             </a>
-            <a href="{{ route('admin.reports.index', ['status' => 'resolved']) }}" class="filter-tab {{ $status === 'resolved' ? 'active' : '' }}">
+            <a href="{{ route('admin.reports.index', 'resolved') }}" class="filter-tab {{ $status === 'resolved' ? 'active' : '' }}">
                 <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
                 Resueltos <span class="tab-counter resolved">{{ $counts['resolved'] }}</span>
             </a>
