@@ -69,11 +69,31 @@
             {{-- Highlight card --}}
             <div class="rv-highlight-card">
                 <div class="rv-highlight-icon">
-                    <i data-lucide="trending-up" style="width:18px;height:18px;color:#6c3fc5;"></i>
+                    @if($totalReviews == 0)
+                        <i data-lucide="info" style="width:18px;height:18px;color:#6c3fc5;"></i>
+                    @elseif($averageRating >= 4.5)
+                        <i data-lucide="trending-up" style="width:18px;height:18px;color:#6c3fc5;"></i>
+                    @else
+                        <i data-lucide="award" style="width:18px;height:18px;color:#6c3fc5;"></i>
+                    @endif
                 </div>
                 <div>
-                    <span class="rv-highlight-title">¡Excelente reputación!</span>
-                    <p class="rv-highlight-text">Estás en el <strong>top 10%</strong> de músicos en tu zona. Sigue así.</p>
+                    @if($totalReviews == 0)
+                        <span class="rv-highlight-title">Sin reseñas aún</span>
+                        <p class="rv-highlight-text">Completa tu primer evento para empezar a recibir feedback de tus clientes.</p>
+                    @elseif($averageRating >= 4.8)
+                        <span class="rv-highlight-title">¡Reputación de élite!</span>
+                        <p class="rv-highlight-text">Tu promedio de <strong>{{ $averageRating }}</strong> estrellas es excepcional. ¡Sigue con ese nivel!</p>
+                    @elseif($averageRating >= 4.5)
+                        <span class="rv-highlight-title">¡Excelente reputación!</span>
+                        <p class="rv-highlight-text">Los clientes están muy satisfechos con tu trabajo. Estás haciendo un gran papel.</p>
+                    @elseif($averageRating >= 4.0)
+                        <span class="rv-highlight-title">¡Muy buena reputación!</span>
+                        <p class="rv-highlight-text">Tienes una calificación sólida. Sigue respondiendo y mejorando cada día.</p>
+                    @else
+                        <span class="rv-highlight-title">Reputación en progreso</span>
+                        <p class="rv-highlight-text">Sigue ofreciendo lo mejor en cada evento para elevar tu promedio actual.</p>
+                    @endif
                 </div>
             </div>
 
