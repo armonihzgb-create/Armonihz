@@ -167,11 +167,10 @@ public function syncClient(Request $request)
         $nombreCompleto = trim($request->name ?? '');
         $partes = explode(' ', $nombreCompleto, 2);
 
-        // ✅ Usar nullif para ignorar strings vacíos, no solo null
         $nombre   = !empty($request->nombre)   ? $request->nombre   : ($partes[0] ?? '');
         $apellido = !empty($request->apellido) ? $request->apellido : ($partes[1] ?? '');
         
-        // 🔥 NUEVO: Extraemos la URL de la foto de Google que manda la app
+        // Extraemos la URL de la foto de Google que manda la app
         $googlePhotoUrl = $request->photoUrl ?? $request->picture ?? null;
 
         $user = User::where('email', $request->email)->first();
@@ -182,13 +181,13 @@ public function syncClient(Request $request)
                 'name'         => $nombreCompleto,
                 'firebase_uid' => $firebaseUid,
                 'role'         => 'cliente',
-                // Default password for social/api users if not provided
                 'password'     => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(16)),
             ]);
         } else {
-            // Update name and firebase_uid, but PRESERVE the existing role
+            // Actualizamos name solo si está vacío o si se quedó como 'Usuario'
+            $nuevoName = (empty($user->name) || $user->name === 'Usuario') ? $nombreCompleto : $user->name;
             $user->update([
-                'name'         => $nombreCompleto,
+                'name'         => $nuevoName,
                 'firebase_uid' => $firebaseUid,
             ]);
         }
@@ -196,8 +195,6 @@ public function syncClient(Request $request)
         $cliente = Client::where('firebase_uid', $firebaseUid)->first();
 
         if ($cliente) {
-            // ✅ Actualizar user_id si es NULL
-            // ✅ Actualizar nombre/apellido SOLO si están vacíos en BD (primer sync)
             $changed = false;
 
             if (!$cliente->user_id) {
@@ -205,8 +202,8 @@ public function syncClient(Request $request)
                 $changed = true;
             }
 
-            // Si el cliente tiene nombre vacío o null, actualizarlo
-            if (empty($cliente->nombre)) {
+            // 🔥 LA MAGIA AQUÍ: Si dice 'Usuario', lo sobreescribimos con el nombre real
+            if (empty($cliente->nombre) || $cliente->nombre === 'Usuario') {
                 $cliente->nombre = $nombre;
                 $changed = true;
             }
@@ -216,7 +213,7 @@ public function syncClient(Request $request)
                 $changed = true;
             }
 
-            // 🔥 NUEVO: Guardamos la foto de Google como respaldo si no la tiene
+            // Guardamos la foto de Google como respaldo si no la tiene
             if (empty($cliente->google_picture) && $googlePhotoUrl) {
                 $cliente->google_picture = $googlePhotoUrl;
                 $changed = true;
@@ -233,7 +230,7 @@ public function syncClient(Request $request)
                 'nombre'         => $nombre,
                 'apellido'       => $apellido,
                 'email'          => $request->email,
-                'google_picture' => $googlePhotoUrl // 🔥 Guardamos al crearlo por primera vez
+                'google_picture' => $googlePhotoUrl
             ]);
         }
 
