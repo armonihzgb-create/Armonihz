@@ -58,7 +58,8 @@ class MusicianProfileController extends Controller
             $q->where('location', 'like', '%' . $request->input('location') . '%');
         });
 
-        $musicians = $query->paginate(10);
+      $page = $request->header('X-Page', 1); // Lee el Header que mandamos desde Android
+        $musicians = $query->paginate(10, ['*'], 'page', $page); // Fuerza a Laravel a usar esa página
 
         return $this->successResponse(
             MusicianProfileResource::collection($musicians)->response()->getData(true),
