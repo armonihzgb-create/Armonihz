@@ -60,8 +60,8 @@ class CastingController extends Controller
         // 🔵 ASIGNAMOS EL NOMBRE DEL CLIENTE AL EVENTO
         $event->nombre_cliente = $event->client ? $event->client->nombre : 'Usuario Anónimo';
 
-        $event->email = $event->email;
-        $event->telefono = $event->telefono;
+       $event->email = $event->email ?? ($event->client->email ?? null);
+        $event->telefono = $event->telefono ?? ($event->client->telefono ?? null);
         
         return $event;
     })->sortByDesc('match_score')->values();
@@ -92,8 +92,8 @@ class CastingController extends Controller
 
     // 🔵 Le asignamos la variable para la vista
     $event->nombre_cliente = $event->client ? $event->client->nombre : 'Usuario Anónimo';
-    $event->email = $event->email;
-   $event->telefono = $event->telefono;
+    $event->email = $event->email ?? ($event->client->email ?? null);
+    $event->telefono = $event->telefono ?? ($event->client->telefono ?? null);
     
     $user = Auth::user();
     $profile = $user->musicianProfile;

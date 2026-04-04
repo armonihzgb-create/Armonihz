@@ -36,8 +36,8 @@ public function index(Request $request)
             
             // 🔵 2. Agregamos el nombre del cliente
             'nombre_cliente' => $evento->client->nombre ?? 'Usuario Anónimo',
-            'email' => $evento->email,
-            'telefono' => $evento->telefono,
+           'email' => $evento->email ?? ($evento->client->email ?? null),
+           'telefono' => $evento->telefono ?? ($evento->client->telefono ?? null)
         ];
     });
 
@@ -206,6 +206,8 @@ public function store(Request $request)
         'ubicacion'   => 'required|string',
         'descripcion' => 'nullable|string',
         'presupuesto' => 'required|numeric',
+        'email'       => 'nullable|email',  // 👇 Nuevo
+        'telefono'    => 'nullable|string', // 👇 Nuevo
     ]);
 
     // 3. Actualizamos la base de datos mapeando genre_id a tipo_musica
@@ -217,6 +219,8 @@ public function store(Request $request)
         'ubicacion'   => $validated['ubicacion'],
         'descripcion' => $validated['descripcion'],
         'presupuesto' => $validated['presupuesto'],
+        'email'       => $validated['email'] ?? $evento->email,
+        'telefono'    => $validated['telefono'] ?? $evento->telefono,
     ]);
 
     return response()->json([
