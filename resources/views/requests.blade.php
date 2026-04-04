@@ -28,11 +28,11 @@
                 <i data-lucide="layout-grid" style="width:14px;height:14px;"></i>
                 Todas <span class="tab-counter">{{ $counts['all'] }}</span>
             </a>
-            <a href="{{ route('requests.index', ['status' => 'pending']) }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}">
+            <a href="{{ route('requests.index', 'pending') }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}">
                 <i data-lucide="alert-circle" style="width:14px;height:14px;"></i>
                 Pendientes <span class="tab-counter pending">{{ $counts['pending'] }}</span>
             </a>
-            <a href="{{ route('requests.index', ['status' => 'accepted']) }}" class="filter-tab {{ $status === 'accepted' ? 'active' : '' }}">
+            <a href="{{ route('requests.index', 'accepted') }}" class="filter-tab {{ $status === 'accepted' ? 'active' : '' }}">
                 <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
                 Confirmadas <span class="tab-counter resolved">{{ $counts['accepted'] }}</span>
             </a>

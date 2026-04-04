@@ -106,7 +106,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/availability/{id}', [\App\Http\Controllers\Web\AvailabilityController::class, 'update'])->name('availability.update');
             Route::delete('/availability/{id}', [\App\Http\Controllers\Web\AvailabilityController::class, 'destroy'])->name('availability.destroy');
 
-            Route::get('/requests', [RequestController::class , 'index'])->name('requests.index');
+            Route::get('/requests/{status?}', [RequestController::class , 'index'])
+                ->where('status', 'pending|accepted|rejected|completed|counter_offer')
+                ->name('requests.index');
             Route::get('/requests/{id}', [RequestController::class , 'show'])->name('requests.show');
 
             Route::patch('/requests/{id}/status', [RequestController::class , 'updateStatus'])->name('requests.update-status');

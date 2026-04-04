@@ -9,10 +9,12 @@ use App\Notifications\HiringRequestStatusNotification; // 1. FALTA ESTA IMPORTAC
 
 class RequestController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, $status = null)
     {
         $user = $request->user();
-        $status = $request->get('status');
+        
+        // Tomcat o Nginx en entornos compartidos podrían arrojar vacíos en inputs, lo tomamos del path
+        $status = $status ?: $request->input('status');
 
         $baseQuery = $user->role === 'musico' && $user->musicianProfile
             ? $user->musicianProfile->hiringRequests()
