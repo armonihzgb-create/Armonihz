@@ -31,5 +31,12 @@ class FirebaseService
         } catch (FailedToVerifyToken $e) {
             throw new \Exception('Invalid Firebase token');
         }
+
+        
+    }
+    // 👇 AGREGA ESTO AQUÍ 👇
+    public function getAuth(): Auth
+    {
+        return $this->auth;
     }
 }
