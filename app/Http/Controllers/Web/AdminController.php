@@ -272,26 +272,29 @@ class AdminController extends Controller
         return redirect()->route('admin.castings.index')->with('success', 'El evento ha sido eliminado correctamente (Soft Delete).');
     }
 
-    public function reportsIndex(Request $request, $status = null)
+    public function reportsIndex(Request $request)
     {
-        $status = $status ?: $request->query('status');
-        
+        $status = $request->get('status');
+
+        // Validar que el status sea uno aceptado
+        if (!in_array($status, ['pending', 'reviewed', 'resolved'])) {
+            $status = null;
+        }
+
         $query = Report::with(['client', 'musicianProfile.user']);
 
-        if ($status && in_array($status, ['pending', 'reviewed', 'resolved'])) {
+        if ($status) {
             $query->where('status', $status);
-        } else {
-            $status = null;
         }
 
         $reports = $query->orderBy('created_at', 'desc')->paginate(15);
 
-        // Contadores para los Tabs en la vista
+        // Contadores para los Tabs
         $counts = [
-            'all'       => Report::count(),
-            'pending'   => Report::where('status', 'pending')->count(),
-            'reviewed'  => Report::where('status', 'reviewed')->count(),
-            'resolved'  => Report::where('status', 'resolved')->count(),
+            'all'      => Report::count(),
+            'pending'  => Report::where('status', 'pending')->count(),
+            'reviewed' => Report::where('status', 'reviewed')->count(),
+            'resolved' => Report::where('status', 'resolved')->count(),
         ];
 
         return view('admin.reports.index', compact('reports', 'status', 'counts'));
