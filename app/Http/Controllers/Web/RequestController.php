@@ -12,15 +12,29 @@ class RequestController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $status = $request->query('status');
 
         if ($user->role === 'musico' && $user->musicianProfile) {
-            $requests = $user->musicianProfile->hiringRequests()->with('client')->latest()->get();
-        }
-        else {
-            $requests = $user->clientRequests()->with('musicianProfile')->latest()->get();
+            $query = $user->musicianProfile->hiringRequests()->with('client')->latest();
+        } else {
+            $query = $user->clientRequests()->with('musicianProfile')->latest();
         }
 
-        return view('requests', compact('requests'));
+        $counts = [
+            'all' => (clone $query)->count(),
+            'pending' => (clone $query)->where('status', 'pending')->count(),
+            'accepted' => (clone $query)->where('status', 'accepted')->count(),
+        ];
+
+        if ($status && in_array($status, ['pending', 'accepted', 'rejected', 'completed', 'counter_offer'])) {
+            $query->where('status', $status);
+        } else {
+            $status = null;
+        }
+
+        $requests = $query->get();
+
+        return view('requests', compact('requests', 'status', 'counts'));
     }
 
     public function show(Request $request, $id)

@@ -24,17 +24,17 @@
     {{-- TABS + CONTADORES --}}
     <div style="margin-bottom: 24px;">
         <div class="filter-tabs">
-            <a href="#" class="filter-tab active">
+            <a href="{{ route('requests.index') }}" class="filter-tab {{ is_null($status) ? 'active' : '' }}">
                 <i data-lucide="layout-grid" style="width:14px;height:14px;"></i>
-                Todas <span class="tab-counter">{{ $requests->count() }}</span>
+                Todas <span class="tab-counter">{{ $counts['all'] }}</span>
             </a>
-            <a href="#" class="filter-tab">
+            <a href="{{ route('requests.index', ['status' => 'pending']) }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}">
                 <i data-lucide="alert-circle" style="width:14px;height:14px;"></i>
-                Pendientes <span class="tab-counter pending">{{ $requests->where('status', 'pending')->count() }}</span>
+                Pendientes <span class="tab-counter pending">{{ $counts['pending'] }}</span>
             </a>
-            <a href="#" class="filter-tab">
+            <a href="{{ route('requests.index', ['status' => 'accepted']) }}" class="filter-tab {{ $status === 'accepted' ? 'active' : '' }}">
                 <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
-                Confirmadas <span class="tab-counter resolved">{{ $requests->where('status', 'accepted')->count() }}</span>
+                Confirmadas <span class="tab-counter resolved">{{ $counts['accepted'] }}</span>
             </a>
         </div>
     </div>
@@ -153,7 +153,10 @@
                                         <i data-lucide="inbox" style="width:28px;height:28px;opacity:0.3;"></i>
                                     </div>
                                     <p style="margin:0;font-size:14px;font-weight:600;color:#475569;">
-                                        Aún no tienes solicitudes
+                                        @if($status === 'pending') No tienes solicitudes pendientes.
+                                        @elseif($status === 'accepted') No tienes solicitudes confirmadas.
+                                        @else Aún no tienes solicitudes
+                                        @endif
                                     </p>
                                     <p style="margin:0;font-size:12px;color:#94a3b8;">Las propuestas de contratación aparecerán aquí.</p>
                                 </div>
