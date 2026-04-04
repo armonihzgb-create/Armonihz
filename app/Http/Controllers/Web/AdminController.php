@@ -276,13 +276,13 @@ class AdminController extends Controller
     {
       $status = $request->get('status');
         
-        // ACTUALIZADO: Cambiamos 'reporter' por 'client'
-        $query = Report::with(['client', 'musicianProfile.user'])->orderBy('created_at', 'desc');
-        if (in_array($status, ['pending', 'reviewed', 'resolved'])) {
+        $query = Report::with(['client', 'musicianProfile.user']);
+
+        if ($status && in_array($status, ['pending', 'reviewed', 'resolved'])) {
             $query->where('status', $status);
         }
 
-        $reports = $query->paginate(15);
+        $reports = $query->orderBy('created_at', 'desc')->paginate(15);
 
         // Contadores para los Tabs en la vista
         $counts = [
