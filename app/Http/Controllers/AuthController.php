@@ -160,4 +160,33 @@ class AuthController extends Controller
             return response()->json(['message' => 'Error al enviar el correo'], 500);
         }
     }
+
+    public function sendCustomPasswordResetEmail(Request $request, \App\Services\FirebaseService $firebaseService)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        $email = $request->email;
+
+        try {
+            // Le pedimos a Firebase que genere el link de recuperación
+            $auth = $firebaseService->getAuth(); 
+            $link = $auth->getPasswordResetLink($email);
+
+            // Enviamos nuestro correo bonito
+            \Illuminate\Support\Facades\Mail::to($email)
+                ->send(new \App\Mail\ResetPasswordEmail($link));
+
+            return response()->json(['message' => 'Correo de recuperación enviado'], 200);
+
+        } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
+            // Por seguridad, si el correo no existe, no le decimos al hacker que no existe, 
+            // simulamos que se envió para evitar robo de información.
+            return response()->json(['message' => 'Si el correo existe, se ha enviado un enlace.'], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error al enviar correo de recuperación: ' . $e->getMessage());
+            return response()->json(['message' => 'Error al procesar la solicitud'], 500);
+        }
+    }
 }

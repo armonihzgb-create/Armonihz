@@ -31,6 +31,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/promotions', [App\Http\Controllers\PromotionController::class , 'index'])->middleware('throttle:public-api');
         Route::get('/test-notification', [ClientController::class, 'testNotification']);
         Route::get('/genres', [GenreController::class, 'index']);
+        Route::post('/client/forgot-password', [AuthController::class, 'sendCustomPasswordResetEmail']);
 
         // ── Authenticated routes (Sanctum) ────────────
         Route::middleware('auth:sanctum')->group(function () {
