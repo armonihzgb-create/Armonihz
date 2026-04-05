@@ -789,10 +789,10 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                     <div class="form-group">
                         <label>Ciudad / Ubicación</label>
-                        <input type="text" name="location"
+                        <input type="text" name="location" id="locationInput"
                                value="{{ old('location', $profile->location) }}"
                                placeholder="Ej. Guadalajara, Jal."
-                               oninput="this.value = this.value.replace(/[0-9]/g, '')">
+                               autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label>Tarifa por hora (MXN)</label>
@@ -1611,5 +1611,54 @@
             container.innerHTML = ''; // This stops the video from playing
             document.getElementById('view-media-modal').style.display = 'none';
         }
+    </script>
+
+    {{-- AWESOMPLETE TYPEAHEAD PARA UBICACIÓN --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+    <style>
+        /* Ajustar Awesomplete para que no rompa el diseño del input */
+        .awesomplete { width: 100%; display: block; }
+        .awesomplete > ul { border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--pr-border); margin-top: 4px; padding: 0; overflow: hidden; }
+        .awesomplete > ul > li { padding: 10px 14px; font-size: 13.5px; color: var(--pr-text); transition: background 0.2s; list-style: none; margin: 0; }
+        .awesomplete > ul > li:hover, .awesomplete > ul > li[aria-selected="true"] { background: #f8fafc; color: var(--pr-primary); font-weight: 600; cursor: pointer; }
+        .awesomplete mark { background: rgba(108, 63, 197, 0.15); color: var(--pr-primary); font-weight: 800; padding: 0 2px; border-radius: 4px; }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const locationInput = document.getElementById('locationInput');
+            if (locationInput) {
+                const mexicoCities = [
+                    "Aguascalientes, Ags.", "Boca del Río, Ver.", "Cabo San Lucas, B.C.S.", "Campeche, Camp.",
+                    "Cancún, Q.R.", "Celaya, Gto.", "Chalco, Méx.", "Chetumal, Q.R.", "Chihuahua, Chih.",
+                    "Chilpancingo, Gro.", "Ciudad Acuña, Coah.", "Ciudad de México, CDMX", "Ciudad del Carmen, Camp.",
+                    "Ciudad Juárez, Chih.", "Ciudad Madero, Tamps.", "Ciudad Obregón, Son.", "Ciudad Valles, S.L.P.",
+                    "Ciudad Victoria, Tamps.", "Coatzacoalcos, Ver.", "Colima, Col.", "Córdoba, Ver.", "Cuautla, Mor.",
+                    "Cuernavaca, Mor.", "Culiacán, Sin.", "Durango, Dgo.", "Ecatepec, Méx.", "Ensenada, B.C.",
+                    "Fresnillo, Zac.", "Gómez Palacio, Dgo.", "Guadalajara, Jal.", "Guanajuato, Gto.", "Guaymas, Son.",
+                    "Hermosillo, Son.", "Iguala, Gro.", "Irapuato, Gto.", "Jalapa (Xalapa), Ver.", "Juárez, N.L.",
+                    "La Paz, B.C.S.", "León, Gto.", "Los Mochis, Sin.", "Manzanillo, Col.", "Matamoros, Tamps.",
+                    "Mazatlán, Sin.", "Mérida, Yuc.", "Mexicali, B.C.", "Minatitlán, Ver.", "Monclova, Coah.",
+                    "Monterrey, N.L.", "Morelia, Mich.", "Naucalpan, Méx.", "Navojoa, Son.", "Nezahualcóyotl, Méx.",
+                    "Nogales, Son.", "Nuevo Laredo, Tamps.", "Oaxaca de Juárez, Oax.", "Orizaba, Ver.", "Pachuca, Hgo.",
+                    "Piedras Negras, Coah.", "Playa del Carmen, Q.R.", "Poza Rica, Ver.", "Puebla, Pue.",
+                    "Puerto Vallarta, Jal.", "Querétaro, Qro.", "Reynosa, Tamps.", "Rosarito, B.C.", "Salamanca, Gto.",
+                    "Saltillo, Coah.", "San Cristóbal de las Casas, Chis.", "San Juan del Río, Qro.", "San Luis Potosí, S.L.P.",
+                    "San Miguel de Allende, Gto.", "San Pedro Garza García, N.L.", "Tampico, Tamps.", "Tapachula, Chis.",
+                    "Tecate, B.C.", "Tehuacán, Pue.", "Tepic, Nay.", "Texcoco, Méx.", "Tijuana, B.C.", "Tlalnepantla, Méx.",
+                    "Tlaquepaque, Jal.", "Tlaxcala, Tlax.", "Toluca, Méx.", "Tonalá, Jal.", "Torreón, Coah.", "Tula, Hgo.",
+                    "Tulancingo, Hgo.", "Tuxpan, Ver.", "Tuxtla Gutiérrez, Chis.", "Uruapan, Mich.", "Valle de Bravo, Méx.",
+                    "Veracruz, Ver.", "Villahermosa, Tab.", "Xalapa, Ver.", "Xochimilco, CDMX", "Zacatecas, Zac.",
+                    "Zamora, Mich.", "Zapopan, Jal."
+                ];
+
+                new Awesomplete(locationInput, {
+                    list: mexicoCities,
+                    minChars: 1, 
+                    maxItems: 8, 
+                    autoFirst: true 
+                });
+            }
+        });
     </script>
 @endsection
