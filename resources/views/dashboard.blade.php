@@ -216,4 +216,179 @@
             @endif
         </div>
     </div>
+
+    {{-- ═══════════════════════════════════════════════════════
+         MODAL DE BIENVENIDA - Solo aparece al iniciar sesión
+         ═══════════════════════════════════════════════════════ --}}
+    @if(session('show_welcome_modal') && $user->role === 'musico')
+    <div id="welcome-overlay" style="
+        position:fixed; inset:0; z-index:9999;
+        background:rgba(10,10,30,0.65);
+        backdrop-filter:blur(6px);
+        display:flex; align-items:center; justify-content:center;
+        padding:16px;
+        animation: wm-fadein 0.35s ease;
+    ">
+        <div id="welcome-modal" style="
+            background:linear-gradient(145deg,#ffffff,#f5f3ff);
+            border-radius:20px;
+            box-shadow:0 32px 80px rgba(108,63,197,0.22), 0 4px 16px rgba(0,0,0,0.08);
+            max-width:520px; width:100%;
+            max-height:90vh; overflow-y:auto;
+            padding:36px 32px 28px;
+            position:relative;
+            animation: wm-slidein 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        ">
+            {{-- Header --}}
+            <div style="text-align:center; margin-bottom:24px;">
+                <div style="
+                    width:64px; height:64px; border-radius:50%;
+                    background:linear-gradient(135deg,#6c3fc5,#2f93f5);
+                    display:flex; align-items:center; justify-content:center;
+                    margin:0 auto 16px;
+                    box-shadow:0 8px 24px rgba(108,63,197,0.35);
+                ">
+                    <i data-lucide="music-2" style="width:28px;height:28px;color:#fff;"></i>
+                </div>
+                <h2 style="margin:0 0 6px;font-size:22px;font-weight:800;color:#0f172a;">
+                    ¡Bienvenido a Armonihz,
+                    {{ $user->musicianProfile->stage_name ?? $user->name }}! 🎶
+                </h2>
+                <p style="margin:0;font-size:14px;color:#64748b;line-height:1.6;">
+                    Tu cuenta fue aprobada. Aquí tienes un resumen de lo que puedes hacer en tu panel.
+                </p>
+            </div>
+
+            {{-- Funcionalidades del sistema --}}
+            <div style="
+                background:#f8f5ff; border-radius:14px; padding:18px 20px;
+                border:1px solid #ede9fe; margin-bottom:20px;
+            ">
+                <p style="margin:0 0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#6c3fc5;">
+                    ¿Qué puedes hacer aquí?
+                </p>
+                <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;">
+                    <li style="display:flex;align-items:center;gap:12px;font-size:13.5px;color:#334155;">
+                        <i data-lucide="bell" style="width:16px;height:16px;color:#6c3fc5;flex-shrink:0;"></i>
+                        <span>Recibe y gestiona <strong>solicitudes de contratación</strong> de clientes de la app móvil.</span>
+                    </li>
+                    <li style="display:flex;align-items:center;gap:12px;font-size:13.5px;color:#334155;">
+                        <i data-lucide="calendar" style="width:16px;height:16px;color:#2f93f5;flex-shrink:0;"></i>
+                        <span>Administra tu <strong>calendario de disponibilidad</strong> para bloquear fechas ocupadas.</span>
+                    </li>
+                    <li style="display:flex;align-items:center;gap:12px;font-size:13.5px;color:#334155;">
+                        <i data-lucide="star" style="width:16px;height:16px;color:#f59e0b;flex-shrink:0;"></i>
+                        <span>Consulta las <strong>reseñas y calificaciones</strong> que los clientes dejan de tus actuaciones.</span>
+                    </li>
+                    <li style="display:flex;align-items:center;gap:12px;font-size:13.5px;color:#334155;">
+                        <i data-lucide="user" style="width:16px;height:16px;color:#10b981;flex-shrink:0;"></i>
+                        <span>Optimiza tu <strong>perfil público</strong> para destacar entre otros músicos.</span>
+                    </li>
+                </ul>
+            </div>
+
+            {{-- Sugerencias dinámicas --}}
+            @if(count($welcomeTips) > 0)
+            <div style="margin-bottom:20px;">
+                <p style="margin:0 0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#ef4444;">
+                    🔔 Acciones recomendadas para tu perfil
+                </p>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    @foreach($welcomeTips as $tip)
+                    <div style="
+                        display:flex; align-items:center; gap:14px;
+                        background:#fff; border-radius:12px; padding:14px 16px;
+                        border:1px solid #f1f5f9;
+                        box-shadow:0 2px 8px rgba(0,0,0,0.04);
+                    ">
+                        <div style="
+                            width:36px; height:36px; border-radius:10px; flex-shrink:0;
+                            background:{{ $tip['color'] }}18;
+                            display:flex; align-items:center; justify-content:center;
+                        ">
+                            <i data-lucide="{{ $tip['icon'] }}" style="width:16px;height:16px;color:{{ $tip['color'] }};"></i>
+                        </div>
+                        <p style="margin:0;font-size:13px;color:#475569;flex-grow:1;line-height:1.5;">
+                            {!! $tip['message'] !!}
+                        </p>
+                        <a href="{{ $tip['action'] }}" style="
+                            display:inline-block; padding:6px 12px; border-radius:8px;
+                            background:{{ $tip['color'] }}18; color:{{ $tip['color'] }};
+                            font-size:12px; font-weight:600; text-decoration:none;
+                            white-space:nowrap; flex-shrink:0;
+                            transition:background .2s;
+                        ">{{ $tip['label'] }}</a>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @else
+            {{-- Perfil completo --}}
+            <div style="
+                background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+                border:1px solid #86efac; border-radius:14px;
+                padding:16px 20px; margin-bottom:20px;
+                display:flex; align-items:center; gap:14px;
+            ">
+                <i data-lucide="badge-check" style="width:28px;height:28px;color:#16a34a;flex-shrink:0;"></i>
+                <div>
+                    <p style="margin:0 0 2px;font-weight:700;font-size:14px;color:#15803d;">¡Tu perfil está completo! 🎉</p>
+                    <p style="margin:0;font-size:13px;color:#166534;">Estás listo para recibir solicitudes de contratación. ¡Mucho éxito!</p>
+                </div>
+            </div>
+            @endif
+
+            {{-- Botones --}}
+            <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;">
+                <button onclick="closeWelcomeModal()" style="
+                    padding:10px 22px; border-radius:10px;
+                    border:2px solid #e5e7eb; background:#fff;
+                    color:#475569; font-size:14px; font-weight:600;
+                    cursor:pointer; transition:all .2s;
+                " onmouseover="this.style.borderColor='#cbd5e1'" onmouseout="this.style.borderColor='#e5e7eb'">
+                    Ir al panel
+                </button>
+                <a href="{{ route('profile.edit') }}" style="
+                    padding:10px 22px; border-radius:10px;
+                    background:linear-gradient(135deg,#6c3fc5,#2f93f5);
+                    color:#fff; font-size:14px; font-weight:600;
+                    text-decoration:none; transition:opacity .2s;
+                " onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+                    ✏️ Completar mi perfil
+                </a>
+            </div>
+
+            {{-- Botón X --}}
+            <button onclick="closeWelcomeModal()" style="
+                position:absolute; top:16px; right:16px;
+                background:none; border:none; cursor:pointer;
+                color:#94a3b8; padding:4px; border-radius:6px;
+                transition:color .2s;
+            " onmouseover="this.style.color='#475569'" onmouseout="this.style.color='#94a3b8'">
+                <i data-lucide="x" style="width:20px;height:20px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @keyframes wm-fadein  { from { opacity:0; }          to { opacity:1; } }
+        @keyframes wm-slidein { from { opacity:0; transform:translateY(24px) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
+        #welcome-modal::-webkit-scrollbar { width:4px; }
+        #welcome-modal::-webkit-scrollbar-thumb { background:#d8b4fe; border-radius:4px; }
+    </style>
+    <script>
+        function closeWelcomeModal() {
+            const overlay = document.getElementById('welcome-overlay');
+            overlay.style.animation = 'wm-fadein .2s ease reverse';
+            setTimeout(() => overlay.remove(), 200);
+        }
+        // Cerrar al hacer clic en el overlay (fuera del modal)
+        document.getElementById('welcome-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closeWelcomeModal();
+        });
+        // Re-render lucide para los iconos del modal
+        if (window.lucide) lucide.createIcons();
+    </script>
+    @endif
+
 @endsection

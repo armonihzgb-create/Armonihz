@@ -152,6 +152,60 @@ class DashboardController extends Controller
                 });
         }
 
-        return view('dashboard', compact('user', 'stats', 'recentActivity', 'recentRequests', 'upcomingEvents'));
+        // --- Welcome Modal: sugerencias dinámicas según perfil ---
+        $welcomeTips = [];
+        if ($user->role === 'musico') {
+            $profile = $profile ?? $user->musicianProfile;
+            if ($profile) {
+                if (empty($profile->profile_picture)) {
+                    $welcomeTips[] = [
+                        'icon'    => 'camera',
+                        'color'   => '#6c3fc5',
+                        'message' => 'Sube una <strong>foto de perfil</strong> para dar mayor confianza a los clientes.',
+                        'action'  => route('profile.edit'),
+                        'label'   => 'Subir foto',
+                    ];
+                }
+                if (empty($profile->bio)) {
+                    $welcomeTips[] = [
+                        'icon'    => 'file-text',
+                        'color'   => '#2f93f5',
+                        'message' => 'Escribe tu <strong>biografía</strong>: cuéntales a los clientes tu historia y estilo musical.',
+                        'action'  => route('profile.edit'),
+                        'label'   => 'Agregar bio',
+                    ];
+                }
+                if (empty($profile->location)) {
+                    $welcomeTips[] = [
+                        'icon'    => 'map-pin',
+                        'color'   => '#f59e0b',
+                        'message' => 'Indica tu <strong>ciudad</strong> para recibir solicitudes de clientes cercanos.',
+                        'action'  => route('profile.edit'),
+                        'label'   => 'Agregar ciudad',
+                    ];
+                }
+                if (empty($profile->hourly_rate)) {
+                    $welcomeTips[] = [
+                        'icon'    => 'dollar-sign',
+                        'color'   => '#10b981',
+                        'message' => 'Define tu <strong>tarifa por hora</strong> para que los clientes sepan qué esperar.',
+                        'action'  => route('profile.edit'),
+                        'label'   => 'Definir tarifa',
+                    ];
+                }
+                $hasMedia = $profile->mediaFiles()->exists();
+                if (!$hasMedia) {
+                    $welcomeTips[] = [
+                        'icon'    => 'video',
+                        'color'   => '#ef4444',
+                        'message' => 'Los perfiles con <strong>fotos y videos</strong> tienen un 80% más de efectividad. ¡Sube una demostración!',
+                        'action'  => route('profile.edit'),
+                        'label'   => 'Subir multimedia',
+                    ];
+                }
+            }
+        }
+
+        return view('dashboard', compact('user', 'stats', 'recentActivity', 'recentRequests', 'upcomingEvents', 'welcomeTips'));
     }
 }

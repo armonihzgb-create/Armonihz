@@ -74,6 +74,9 @@ class AuthController extends Controller
                 return redirect()->intended(route('admin.dashboard'));
             }
 
+            // Flash para mostrar el modal de bienvenida en el dashboard
+            session()->flash('show_welcome_modal', true);
+
             return redirect()->intended(route('dashboard'));
         }
 
@@ -489,6 +492,9 @@ class AuthController extends Controller
         if ($user->role === 'admin') {
             return redirect()->intended(route('admin.dashboard'));
         }
+
+        // Flash para mostrar el modal de bienvenida en el dashboard
+        session()->flash('show_welcome_modal', true);
 
         return redirect()->intended(route('dashboard'));
     }
