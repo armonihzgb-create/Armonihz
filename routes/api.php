@@ -84,6 +84,7 @@ Route::prefix('v1')->group(function () {
             Route::post('hiring-requests/{id}/respond', [HiringRequestController::class, 'respondToCounterOffer']);
             // En routes/api.php (dentro de middleware 'firebase.auth')
             Route::post('/musicians/{id}/report', [\App\Http\Controllers\Api\ReportController::class, 'store']);
+            Route::post('/musicians/{id}/mobile-view', [\App\Http\Controllers\MusicianProfileController::class, 'recordMobileView']);
             
         }
         );
