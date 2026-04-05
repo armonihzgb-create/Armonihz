@@ -55,7 +55,7 @@
                         <span class="nbf-dot">•</span>
                         <span class="nbf-stat">{{ $profile->profile_views ?? 0 }} vistas</span>
                         <span class="nbf-dot">•</span>
-                        <span class="nbf-stat">5.0 ⭐</span>
+                        <span class="nbf-stat">{{ number_format($profile->averageRating(), 1) }} ⭐</span>
                     </div>
                 </div>
 
