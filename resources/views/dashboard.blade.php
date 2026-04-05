@@ -348,7 +348,7 @@
                 " onmouseover="this.style.borderColor='#cbd5e1'" onmouseout="this.style.borderColor='#e5e7eb'">
                     Ir al panel
                 </button>
-                <a href="{{ route('profile.edit') }}" style="
+                <a href="{{ route('profile') }}" style="
                     padding:10px 22px; border-radius:10px;
                     background:linear-gradient(135deg,#6c3fc5,#2f93f5);
                     color:#fff; font-size:14px; font-weight:600;

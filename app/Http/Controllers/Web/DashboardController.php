@@ -162,7 +162,7 @@ class DashboardController extends Controller
                         'icon'    => 'camera',
                         'color'   => '#6c3fc5',
                         'message' => 'Sube una <strong>foto de perfil</strong> para dar mayor confianza a los clientes.',
-                        'action'  => route('profile.edit'),
+                        'action'  => route('profile'),
                         'label'   => 'Subir foto',
                     ];
                 }
@@ -171,7 +171,7 @@ class DashboardController extends Controller
                         'icon'    => 'file-text',
                         'color'   => '#2f93f5',
                         'message' => 'Escribe tu <strong>biografía</strong>: cuéntales a los clientes tu historia y estilo musical.',
-                        'action'  => route('profile.edit'),
+                        'action'  => route('profile'),
                         'label'   => 'Agregar bio',
                     ];
                 }
@@ -180,7 +180,7 @@ class DashboardController extends Controller
                         'icon'    => 'map-pin',
                         'color'   => '#f59e0b',
                         'message' => 'Indica tu <strong>ciudad</strong> para recibir solicitudes de clientes cercanos.',
-                        'action'  => route('profile.edit'),
+                        'action'  => route('profile'),
                         'label'   => 'Agregar ciudad',
                     ];
                 }
@@ -189,7 +189,7 @@ class DashboardController extends Controller
                         'icon'    => 'dollar-sign',
                         'color'   => '#10b981',
                         'message' => 'Define tu <strong>tarifa por hora</strong> para que los clientes sepan qué esperar.',
-                        'action'  => route('profile.edit'),
+                        'action'  => route('profile'),
                         'label'   => 'Definir tarifa',
                     ];
                 }
@@ -199,7 +199,7 @@ class DashboardController extends Controller
                         'icon'    => 'video',
                         'color'   => '#ef4444',
                         'message' => 'Los perfiles con <strong>fotos y videos</strong> tienen un 80% más de efectividad. ¡Sube una demostración!',
-                        'action'  => route('profile.edit'),
+                        'action'  => route('profile'),
                         'label'   => 'Subir multimedia',
                     ];
                 }
