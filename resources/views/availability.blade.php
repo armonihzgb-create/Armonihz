@@ -857,20 +857,20 @@
                             ? info.event.start.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
                             : '';
 
-                        // Función para formatear hora en 24h sin desfase de timezone
-                        function fmtTime(dateObj) {
-                            if (!dateObj) return '';
-                            const h = String(dateObj.getHours()).padStart(2, '0');
-                            const m = String(dateObj.getMinutes()).padStart(2, '0');
-                            return `${h}:${m}`;
+                        // Extraer hora del ISO string crudo (sin conversión de timezone)
+                        function fmtTime(isoStr) {
+                            if (!isoStr) return '';
+                            const timePart = isoStr.split('T')[1];
+                            if (!timePart) return '';
+                            return timePart.substring(0, 5); // HH:MM
                         }
 
                         // Reemplazar emojis de boda/anillo por micrófono
                         const cleanTitle = info.event.title.replace(/💍/g, '🎤');
 
-                        const hasTimes = !info.event.allDay && info.event.start;
+                        const hasTimes = !info.event.allDay && info.event.startStr && info.event.startStr.includes('T');
                         const timeInfo = hasTimes
-                            ? `<div><strong>Hora:</strong> ${fmtTime(info.event.start)} a ${info.event.end ? fmtTime(info.event.end) : ''}</div>`
+                            ? `<div><strong>Hora:</strong> ${fmtTime(info.event.startStr)} a ${info.event.endStr ? fmtTime(info.event.endStr) : ''}</div>`
                             : '';
 
                         // Simple styled alert using our delete modal repurposed as info

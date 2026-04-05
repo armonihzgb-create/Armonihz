@@ -44,8 +44,7 @@ class AvailabilityController extends Controller
                     'event_source' => 'manual',
                     'event_type' => $ev->type,
                 ];
-            }
-            else {
+            } else {
                 $events[] = [
                     'id' => 'manual_' . $ev->id,
                     'real_id' => $ev->id,
@@ -63,32 +62,32 @@ class AvailabilityController extends Controller
         }
 
         // 2. Contrataciones Directas Aceptadas
-       $hiringRequests = $profile->hiringRequests()->where('status', 'accepted')->get();
+        $hiringRequests = $profile->hiringRequests()->where('status', 'accepted')->get();
         foreach ($hiringRequests as $hr) {
-            
+
             // 1. Nos aseguramos de manejar las fechas con Carbon
             $start = \Carbon\Carbon::parse($hr->event_date);
             $end = $hr->end_time ? \Carbon\Carbon::parse($hr->end_time) : $start->copy()->addHours(3);
-            
+
             // 2. Armamos el texto bonito del horario (Ej: 20:00 a 01:00)
             $horario = $start->format('H:i') . ' a ' . $end->format('H:i');
 
             $events[] = [
-                'id'              => 'hiring_' . $hr->id,
+                'id' => 'hiring_' . $hr->id,
                 // 3. Metemos el horario directamente en el título
-                'title'           => '💍 ' . $horario . ' - Evento Privado', 
-                'start'           => $start->toIso8601String(),
-                'end'             => $end->toIso8601String(),
+                'title' => ' 🎤 ' . $horario . ' - Evento Privado',
+                'start' => $start->toIso8601String(),
+                'end' => $end->toIso8601String(),
                 'backgroundColor' => '#4f46e5',
-                'borderColor'     => 'transparent',
-                'extendedProps'   => ['source' => 'system', 'description' => 'Contratación directa.'],
-                'real_id'         => $hr->id,
-                'event_source'    => 'hiring',
-                'event_type'      => 'busy',
+                'borderColor' => 'transparent',
+                'extendedProps' => ['source' => 'system', 'description' => 'Contratación directa.'],
+                'real_id' => $hr->id,
+                'event_source' => 'hiring',
+                'event_type' => 'busy',
             ];
         }
 
-       // 3. Castings Aceptados
+        // 3. Castings Aceptados
         $castingApps = $profile->castingApplications()->where('status', 'accepted')->with('event')->get();
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
@@ -99,16 +98,16 @@ class AvailabilityController extends Controller
                     );
 
                     $events[] = [
-                        'id'              => 'casting_' . $app->id,
-                        'title'           => '🎤 Casting: ' . $app->event->titulo,
-                        'start'           => $start->format('Y-m-d\TH:i:s'),
-                        'end'             => $end->format('Y-m-d\TH:i:s'),
+                        'id' => 'casting_' . $app->id,
+                        'title' => '🎤 Casting: ' . $app->event->titulo,
+                        'start' => $start->format('Y-m-d\TH:i:s'),
+                        'end' => $end->format('Y-m-d\TH:i:s'),
                         'backgroundColor' => '#9333ea',
-                        'borderColor'     => 'transparent',
-                        'extendedProps'   => ['source' => 'system', 'description' => 'Casting aceptado.'],
-                        'real_id'         => $app->event->id,
-                        'event_source'    => 'casting',
-                        'event_type'      => 'busy',
+                        'borderColor' => 'transparent',
+                        'extendedProps' => ['source' => 'system', 'description' => 'Casting aceptado.'],
+                        'real_id' => $app->event->id,
+                        'event_source' => 'casting',
+                        'event_type' => 'busy',
                     ];
                 } catch (\Exception $e) {
                     \Log::error("Error parseando fecha de casting ID {$app->id}: " . $e->getMessage());
@@ -149,8 +148,7 @@ class AvailabilityController extends Controller
         if ($isAllDay) {
             $start = Carbon::parse($request->start)->startOfDay(); // 00:00:00
             $end = Carbon::parse($request->end)->setTime(23, 59, 59); // 23:59:59
-        }
-        else {
+        } else {
             $start = Carbon::parse($request->start);
             $end = Carbon::parse($request->end);
 
@@ -173,7 +171,7 @@ class AvailabilityController extends Controller
             $overlap = MusicianCalendarEvent::where('musician_profile_id', $profile->id)
                 ->where(function ($q) use ($start, $end) {
                     $q->where('start', '<', $end)
-                      ->where('end',   '>',  $start);
+                        ->where('end', '>', $start);
                 })
                 ->lockForUpdate() // ← blocks concurrent overlapping inserts
                 ->exists();
@@ -187,18 +185,18 @@ class AvailabilityController extends Controller
 
             $ev = MusicianCalendarEvent::create([
                 'musician_profile_id' => $profile->id,
-                'title'               => $request->title,
-                'start'               => $start,
-                'end'                 => $end,
-                'type'                => $request->type,
-                'color'               => '#dc2626',
+                'title' => $request->title,
+                'start' => $start,
+                'end' => $end,
+                'type' => $request->type,
+                'color' => '#dc2626',
             ]);
 
             return response()->json([
-                'success'      => true,
-                'event'        => $ev,
+                'success' => true,
+                'event' => $ev,
                 'event_source' => 'manual',
-                'event_type'   => $ev->type,
+                'event_type' => $ev->type,
             ]);
         });
     }
@@ -218,8 +216,7 @@ class AvailabilityController extends Controller
         if ($isAllDay) {
             $start = Carbon::parse($request->start)->startOfDay();
             $end = Carbon::parse($request->end)->subDay()->setTime(23, 59, 59); // end is exclusive in FC
-        }
-        else {
+        } else {
             $start = Carbon::parse($request->start);
             $end = Carbon::parse($request->end ?: $request->start);
 
@@ -240,7 +237,7 @@ class AvailabilityController extends Controller
                 ->where('id', '!=', $id)
                 ->where(function ($q) use ($start, $end) {
                     $q->where('start', '<', $end)
-                      ->where('end',   '>',  $start);
+                        ->where('end', '>', $start);
                 })
                 ->lockForUpdate()
                 ->exists();
