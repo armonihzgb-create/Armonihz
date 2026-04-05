@@ -857,20 +857,14 @@
                             ? info.event.start.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
                             : '';
 
-                        // Extraer hora del ISO string crudo (sin conversión de timezone)
-                        function fmtTime(isoStr) {
-                            if (!isoStr) return '';
-                            const timePart = isoStr.split('T')[1];
-                            if (!timePart) return '';
-                            return timePart.substring(0, 5); // HH:MM
-                        }
-
                         // Reemplazar emojis de boda/anillo por micrófono
                         const cleanTitle = info.event.title.replace(/💍/g, '🎤');
 
-                        const hasTimes = !info.event.allDay && info.event.startStr && info.event.startStr.includes('T');
-                        const timeInfo = hasTimes
-                            ? `<div><strong>Hora:</strong> ${fmtTime(info.event.startStr)} a ${info.event.endStr ? fmtTime(info.event.endStr) : ''}</div>`
+                        // Extraer hora directamente del título (PHP ya la inyecta correcta: "16:00 a 22:00")
+                        // Esto evita por completo el problema de conversión de timezone en JS
+                        const timeMatch = cleanTitle.match(/(\d{2}:\d{2})\s+a\s+(\d{2}:\d{2})/);
+                        const timeInfo = timeMatch
+                            ? `<div><strong>Hora:</strong> ${timeMatch[1]} a ${timeMatch[2]}</div>`
                             : '';
 
                         // Simple styled alert using our delete modal repurposed as info
