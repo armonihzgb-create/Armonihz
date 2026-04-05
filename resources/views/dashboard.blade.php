@@ -221,172 +221,218 @@
          MODAL DE BIENVENIDA - Solo aparece al iniciar sesión
          ═══════════════════════════════════════════════════════ --}}
     @if(session('show_welcome_modal') && $user->role === 'musico')
-    <div id="welcome-overlay" style="
-        position:fixed; inset:0; z-index:9999;
-        background:rgba(10,10,30,0.65);
-        backdrop-filter:blur(6px);
-        display:flex; align-items:center; justify-content:center;
-        padding:16px;
-        animation: wm-fadein 0.35s ease;
-    ">
-        <div id="welcome-modal" style="
-            background:linear-gradient(145deg,#ffffff,#f5f3ff);
-            border-radius:20px;
-            box-shadow:0 32px 80px rgba(108,63,197,0.22), 0 4px 16px rgba(0,0,0,0.08);
-            max-width:520px; width:100%;
+    <style>
+        @keyframes wm-fadein  { from{opacity:0} to{opacity:1} }
+        @keyframes wm-slidein { from{opacity:0;transform:translateY(20px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+        #welcome-overlay {
+            position:fixed; inset:0; z-index:9999;
+            background:rgba(8,8,20,0.55);
+            backdrop-filter:blur(10px);
+            -webkit-backdrop-filter:blur(10px);
+            display:flex; align-items:center; justify-content:center;
+            padding:16px;
+            animation:wm-fadein .3s ease;
+        }
+        #welcome-modal {
+            background:rgba(255,255,255,0.82);
+            backdrop-filter:blur(20px);
+            -webkit-backdrop-filter:blur(20px);
+            border:1px solid rgba(255,255,255,0.6);
+            border-radius:22px;
+            box-shadow:0 24px 60px rgba(0,0,0,0.14), 0 1px 0 rgba(255,255,255,0.9) inset;
+            max-width:500px; width:100%;
             max-height:90vh; overflow-y:auto;
-            padding:36px 32px 28px;
+            padding:32px 28px 24px;
             position:relative;
-            animation: wm-slidein 0.4s cubic-bezier(0.34,1.56,0.64,1);
-        ">
+            animation:wm-slidein .4s cubic-bezier(0.34,1.45,0.64,1);
+        }
+        #welcome-modal::-webkit-scrollbar { width:4px; }
+        #welcome-modal::-webkit-scrollbar-thumb { background:rgba(108,63,197,0.25); border-radius:4px; }
+
+        .wm-icon-wrap {
+            width:52px; height:52px; border-radius:16px;
+            background:rgba(108,63,197,0.1);
+            border:1px solid rgba(108,63,197,0.15);
+            display:flex; align-items:center; justify-content:center;
+            margin:0 auto 16px;
+        }
+        .wm-features { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px; }
+        .wm-feature-item {
+            display:flex; align-items:center; gap:12px;
+            font-size:13.5px; color:#374151; line-height:1.45;
+        }
+        .wm-feature-icon {
+            width:32px; height:32px; border-radius:9px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .wm-tip-card {
+            display:flex; align-items:center; gap:12px;
+            background:rgba(255,255,255,0.7);
+            border:1px solid rgba(0,0,0,0.06);
+            border-radius:12px; padding:12px 14px;
+            backdrop-filter:blur(6px);
+        }
+        .wm-tip-icon {
+            width:34px; height:34px; border-radius:9px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .wm-tip-action {
+            display:inline-flex; align-items:center; gap:5px;
+            padding:5px 11px; border-radius:7px;
+            font-size:12px; font-weight:600; text-decoration:none;
+            white-space:nowrap; flex-shrink:0;
+            transition:opacity .2s;
+        }
+        .wm-tip-action:hover { opacity:.75; }
+        .wm-btn-secondary {
+            display:inline-flex; align-items:center; gap:7px;
+            padding:10px 20px; border-radius:11px;
+            border:1.5px solid #e2e8f0; background:rgba(255,255,255,0.7);
+            color:#475569; font-size:13.5px; font-weight:600;
+            cursor:pointer; transition:border-color .2s, background .2s;
+        }
+        .wm-btn-secondary:hover { border-color:#c7d2e0; background:#fff; }
+        .wm-btn-primary {
+            display:inline-flex; align-items:center; gap:7px;
+            padding:10px 20px; border-radius:11px;
+            background:#6c3fc5; border:none;
+            color:#fff; font-size:13.5px; font-weight:600;
+            text-decoration:none; transition:opacity .2s;
+        }
+        .wm-btn-primary:hover { opacity:.85; }
+        .wm-close-btn {
+            position:absolute; top:14px; right:14px;
+            background:rgba(0,0,0,0.04); border:none; cursor:pointer;
+            color:#94a3b8; padding:6px; border-radius:8px;
+            display:flex; align-items:center; justify-content:center;
+            transition:background .2s, color .2s;
+        }
+        .wm-close-btn:hover { background:rgba(0,0,0,0.08); color:#475569; }
+        .wm-divider {
+            height:1px; background:rgba(0,0,0,0.07); margin:18px 0;
+        }
+        .wm-section-label {
+            font-size:11px; font-weight:700; text-transform:uppercase;
+            letter-spacing:.9px; margin:0 0 10px;
+        }
+    </style>
+
+    <div id="welcome-overlay">
+        <div id="welcome-modal">
+
+            {{-- Botón X --}}
+            <button onclick="closeWelcomeModal()" class="wm-close-btn">
+                <i data-lucide="x" style="width:18px;height:18px;"></i>
+            </button>
+
             {{-- Header --}}
-            <div style="text-align:center; margin-bottom:24px;">
-                <div style="
-                    width:64px; height:64px; border-radius:50%;
-                    background:linear-gradient(135deg,#6c3fc5,#2f93f5);
-                    display:flex; align-items:center; justify-content:center;
-                    margin:0 auto 16px;
-                    box-shadow:0 8px 24px rgba(108,63,197,0.35);
-                ">
-                    <i data-lucide="music-2" style="width:28px;height:28px;color:#fff;"></i>
+            <div style="text-align:center; margin-bottom:22px;">
+                <div class="wm-icon-wrap">
+                    <i data-lucide="music-2" style="width:24px;height:24px;color:#6c3fc5;"></i>
                 </div>
-                <h2 style="margin:0 0 6px;font-size:22px;font-weight:800;color:#0f172a;">
-                    ¡Bienvenido a Armonihz,
-                    {{ $user->musicianProfile->stage_name ?? $user->name }}! 🎶
+                <h2 style="margin:0 0 6px;font-size:20px;font-weight:800;color:#0f172a;letter-spacing:-.3px;">
+                    ¡Bienvenido, {{ $user->musicianProfile->stage_name ?? $user->name }}!
                 </h2>
-                <p style="margin:0;font-size:14px;color:#64748b;line-height:1.6;">
-                    Tu cuenta fue aprobada. Aquí tienes un resumen de lo que puedes hacer en tu panel.
+                <p style="margin:0;font-size:13.5px;color:#64748b;line-height:1.55;">
+                    Aquí tienes un resumen de lo que puedes hacer en tu panel.
                 </p>
             </div>
 
+            <div class="wm-divider"></div>
+
             {{-- Funcionalidades del sistema --}}
-            <div style="
-                background:#f8f5ff; border-radius:14px; padding:18px 20px;
-                border:1px solid #ede9fe; margin-bottom:20px;
-            ">
-                <p style="margin:0 0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#6c3fc5;">
-                    ¿Qué puedes hacer aquí?
-                </p>
-                <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;">
-                    <li style="display:flex;align-items:center;gap:12px;font-size:13.5px;color:#334155;">
-                        <i data-lucide="bell" style="width:16px;height:16px;color:#6c3fc5;flex-shrink:0;"></i>
-                        <span>Recibe y gestiona <strong>solicitudes de contratación</strong> de clientes de la app móvil.</span>
-                    </li>
-                    <li style="display:flex;align-items:center;gap:12px;font-size:13.5px;color:#334155;">
-                        <i data-lucide="calendar" style="width:16px;height:16px;color:#2f93f5;flex-shrink:0;"></i>
-                        <span>Administra tu <strong>calendario de disponibilidad</strong> para bloquear fechas ocupadas.</span>
-                    </li>
-                    <li style="display:flex;align-items:center;gap:12px;font-size:13.5px;color:#334155;">
-                        <i data-lucide="star" style="width:16px;height:16px;color:#f59e0b;flex-shrink:0;"></i>
-                        <span>Consulta las <strong>reseñas y calificaciones</strong> que los clientes dejan de tus actuaciones.</span>
-                    </li>
-                    <li style="display:flex;align-items:center;gap:12px;font-size:13.5px;color:#334155;">
-                        <i data-lucide="user" style="width:16px;height:16px;color:#10b981;flex-shrink:0;"></i>
-                        <span>Optimiza tu <strong>perfil público</strong> para destacar entre otros músicos.</span>
-                    </li>
-                </ul>
-            </div>
+            <p class="wm-section-label" style="color:#6c3fc5;">¿Qué puedes hacer aquí?</p>
+            <ul class="wm-features">
+                <li class="wm-feature-item">
+                    <div class="wm-feature-icon" style="background:rgba(108,63,197,0.08);">
+                        <i data-lucide="bell" style="width:15px;height:15px;color:#6c3fc5;"></i>
+                    </div>
+                    Recibe y gestiona <strong style="margin-left:3px;">solicitudes de contratación</strong>&nbsp;de la app móvil.
+                </li>
+                <li class="wm-feature-item">
+                    <div class="wm-feature-icon" style="background:rgba(47,147,245,0.08);">
+                        <i data-lucide="calendar-days" style="width:15px;height:15px;color:#2f93f5;"></i>
+                    </div>
+                    Administra tu <strong style="margin-left:3px;">calendario de disponibilidad</strong>&nbsp;y bloquea fechas.
+                </li>
+                <li class="wm-feature-item">
+                    <div class="wm-feature-icon" style="background:rgba(245,158,11,0.08);">
+                        <i data-lucide="star" style="width:15px;height:15px;color:#f59e0b;"></i>
+                    </div>
+                    Consulta las <strong style="margin-left:3px;">reseñas y calificaciones</strong>&nbsp;de tus actuaciones.
+                </li>
+                <li class="wm-feature-item">
+                    <div class="wm-feature-icon" style="background:rgba(16,185,129,0.08);">
+                        <i data-lucide="user-circle" style="width:15px;height:15px;color:#10b981;"></i>
+                    </div>
+                    Optimiza tu <strong style="margin-left:3px;">perfil público</strong>&nbsp;para destacar entre otros músicos.
+                </li>
+            </ul>
 
             {{-- Sugerencias dinámicas --}}
             @if(count($welcomeTips) > 0)
-            <div style="margin-bottom:20px;">
-                <p style="margin:0 0 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#ef4444;">
-                    🔔 Acciones recomendadas para tu perfil
-                </p>
-                <div style="display:flex;flex-direction:column;gap:10px;">
-                    @foreach($welcomeTips as $tip)
-                    <div style="
-                        display:flex; align-items:center; gap:14px;
-                        background:#fff; border-radius:12px; padding:14px 16px;
-                        border:1px solid #f1f5f9;
-                        box-shadow:0 2px 8px rgba(0,0,0,0.04);
-                    ">
-                        <div style="
-                            width:36px; height:36px; border-radius:10px; flex-shrink:0;
-                            background:{{ $tip['color'] }}18;
-                            display:flex; align-items:center; justify-content:center;
-                        ">
-                            <i data-lucide="{{ $tip['icon'] }}" style="width:16px;height:16px;color:{{ $tip['color'] }};"></i>
-                        </div>
-                        <p style="margin:0;font-size:13px;color:#475569;flex-grow:1;line-height:1.5;">
-                            {!! $tip['message'] !!}
-                        </p>
-                        <a href="{{ $tip['action'] }}" style="
-                            display:inline-block; padding:6px 12px; border-radius:8px;
-                            background:{{ $tip['color'] }}18; color:{{ $tip['color'] }};
-                            font-size:12px; font-weight:600; text-decoration:none;
-                            white-space:nowrap; flex-shrink:0;
-                            transition:background .2s;
-                        ">{{ $tip['label'] }}</a>
+            <div class="wm-divider"></div>
+            <p class="wm-section-label" style="color:#dc2626;">
+                <i data-lucide="alert-circle" style="width:12px;height:12px;display:inline-block;vertical-align:middle;margin-right:4px;"></i>
+                Acciones recomendadas
+            </p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+                @foreach($welcomeTips as $tip)
+                <div class="wm-tip-card">
+                    <div class="wm-tip-icon" style="background:{{ $tip['color'] }}14;">
+                        <i data-lucide="{{ $tip['icon'] }}" style="width:15px;height:15px;color:{{ $tip['color'] }};"></i>
                     </div>
-                    @endforeach
+                    <p style="margin:0;font-size:13px;color:#475569;flex-grow:1;line-height:1.45;">
+                        {!! $tip['message'] !!}
+                    </p>
+                    <a href="{{ $tip['action'] }}" class="wm-tip-action" style="background:{{ $tip['color'] }}12;color:{{ $tip['color'] }};">
+                        <i data-lucide="arrow-right" style="width:11px;height:11px;"></i>
+                        {{ $tip['label'] }}
+                    </a>
                 </div>
+                @endforeach
             </div>
             @else
             {{-- Perfil completo --}}
+            <div class="wm-divider"></div>
             <div style="
-                background:linear-gradient(135deg,#f0fdf4,#dcfce7);
-                border:1px solid #86efac; border-radius:14px;
-                padding:16px 20px; margin-bottom:20px;
-                display:flex; align-items:center; gap:14px;
+                background:rgba(240,253,244,0.8); border:1px solid #a7f3d0;
+                border-radius:12px; padding:14px 16px;
+                display:flex; align-items:center; gap:12px;
             ">
-                <i data-lucide="badge-check" style="width:28px;height:28px;color:#16a34a;flex-shrink:0;"></i>
+                <i data-lucide="badge-check" style="width:24px;height:24px;color:#16a34a;flex-shrink:0;"></i>
                 <div>
-                    <p style="margin:0 0 2px;font-weight:700;font-size:14px;color:#15803d;">¡Tu perfil está completo! 🎉</p>
-                    <p style="margin:0;font-size:13px;color:#166534;">Estás listo para recibir solicitudes de contratación. ¡Mucho éxito!</p>
+                    <p style="margin:0 0 2px;font-weight:700;font-size:13.5px;color:#15803d;">¡Tu perfil está completo!</p>
+                    <p style="margin:0;font-size:12.5px;color:#166534;">Estás listo para recibir solicitudes de contratación.</p>
                 </div>
             </div>
             @endif
 
             {{-- Botones --}}
-            <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;">
-                <button onclick="closeWelcomeModal()" style="
-                    padding:10px 22px; border-radius:10px;
-                    border:2px solid #e5e7eb; background:#fff;
-                    color:#475569; font-size:14px; font-weight:600;
-                    cursor:pointer; transition:all .2s;
-                " onmouseover="this.style.borderColor='#cbd5e1'" onmouseout="this.style.borderColor='#e5e7eb'">
+            <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:22px;">
+                <button onclick="closeWelcomeModal()" class="wm-btn-secondary">
+                    <i data-lucide="layout-dashboard" style="width:15px;height:15px;"></i>
                     Ir al panel
                 </button>
-                <a href="{{ route('profile') }}" style="
-                    padding:10px 22px; border-radius:10px;
-                    background:linear-gradient(135deg,#6c3fc5,#2f93f5);
-                    color:#fff; font-size:14px; font-weight:600;
-                    text-decoration:none; transition:opacity .2s;
-                " onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-                    ✏️ Completar mi perfil
+                <a href="{{ route('profile') }}" class="wm-btn-primary">
+                    <i data-lucide="user-pen" style="width:15px;height:15px;"></i>
+                    Completar mi perfil
                 </a>
             </div>
-
-            {{-- Botón X --}}
-            <button onclick="closeWelcomeModal()" style="
-                position:absolute; top:16px; right:16px;
-                background:none; border:none; cursor:pointer;
-                color:#94a3b8; padding:4px; border-radius:6px;
-                transition:color .2s;
-            " onmouseover="this.style.color='#475569'" onmouseout="this.style.color='#94a3b8'">
-                <i data-lucide="x" style="width:20px;height:20px;"></i>
-            </button>
         </div>
     </div>
 
-    <style>
-        @keyframes wm-fadein  { from { opacity:0; }          to { opacity:1; } }
-        @keyframes wm-slidein { from { opacity:0; transform:translateY(24px) scale(.96); } to { opacity:1; transform:translateY(0) scale(1); } }
-        #welcome-modal::-webkit-scrollbar { width:4px; }
-        #welcome-modal::-webkit-scrollbar-thumb { background:#d8b4fe; border-radius:4px; }
-    </style>
     <script>
         function closeWelcomeModal() {
             const overlay = document.getElementById('welcome-overlay');
-            overlay.style.animation = 'wm-fadein .2s ease reverse';
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity .2s ease';
             setTimeout(() => overlay.remove(), 200);
         }
-        // Cerrar al hacer clic en el overlay (fuera del modal)
         document.getElementById('welcome-overlay').addEventListener('click', function(e) {
             if (e.target === this) closeWelcomeModal();
         });
-        // Re-render lucide para los iconos del modal
         if (window.lucide) lucide.createIcons();
     </script>
     @endif
