@@ -193,7 +193,7 @@ class DashboardController extends Controller
                         'label'   => 'Definir tarifa',
                     ];
                 }
-                $hasMedia = $profile->mediaFiles()->exists();
+                $hasMedia = $profile->media()->exists();
                 if (!$hasMedia) {
                     $welcomeTips[] = [
                         'icon'    => 'video',
