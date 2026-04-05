@@ -97,47 +97,50 @@
                 @endif
             </div>
 
-            {{-- Personal Details --}}
+            {{-- Personal Details (Bento Grid) --}}
             <div class="nbf-section">
                 <div class="nbf-section-header">
-                    <div class="nbf-section-icon" style="background:rgba(108,63,197,.1);">
-                        <i data-lucide="user-circle" style="width:16px;height:16px;color:#6c3fc5;"></i>
+                    <div class="nbf-section-icon" style="background:linear-gradient(135deg, rgba(108,63,197,.15), rgba(47,147,245,.15));">
+                        <i data-lucide="user-circle" style="width:18px;height:18px;color:#6c3fc5;"></i>
                     </div>
                     <h2 class="nbf-section-title">Datos Personales</h2>
                 </div>
 
-                <div class="nbf-detail-card">
-                    <div class="nbf-detail-row">
-                        <div class="nbf-detail-label-wrap">
-                            <i data-lucide="badge" class="nbf-row-icon"></i>
-                            <span class="nbf-detail-label">Nombre Artístico</span>
+                <div class="nbf-bento-grid nbf-bento-grid-2">
+                    <div class="nbf-bento-box">
+                        <div class="nbf-bento-icon"><i data-lucide="badge"></i></div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-label">Nombre Artístico</span>
+                            <span class="nbf-bento-value">{{ $profile->stage_name ?? $user->name }}</span>
                         </div>
-                        <span class="nbf-detail-value">{{ $profile->stage_name ?? $user->name }}</span>
                     </div>
-                    <div class="nbf-detail-row">
-                        <div class="nbf-detail-label-wrap">
-                            <i data-lucide="map-pin" class="nbf-row-icon"></i>
-                            <span class="nbf-detail-label">Ubicación</span>
+                    
+                    <div class="nbf-bento-box">
+                        <div class="nbf-bento-icon"><i data-lucide="mail"></i></div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-label">Correo Electrónico</span>
+                            <span class="nbf-bento-value">{{ $user->email }}</span>
                         </div>
-                        <span class="nbf-detail-value {{ !$profile->location ? 'nbf-empty' : '' }}">
-                            {{ $profile->location ?? 'Agrega tu ciudad' }}
-                        </span>
                     </div>
-                    <div class="nbf-detail-row">
-                        <div class="nbf-detail-label-wrap">
-                            <i data-lucide="phone" class="nbf-row-icon"></i>
-                            <span class="nbf-detail-label">Teléfono / WhatsApp</span>
+                    
+                    <div class="nbf-bento-box">
+                        <div class="nbf-bento-icon"><i data-lucide="map-pin"></i></div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-label">Ubicación</span>
+                            <span class="nbf-bento-value {{ !$profile->location ? 'nbf-empty' : '' }}">
+                                {{ $profile->location ?? 'Agrega tu ciudad' }}
+                            </span>
                         </div>
-                        <span class="nbf-detail-value {{ !$profile->phone ? 'nbf-empty' : '' }}">
-                            {{ $profile->phone ?? 'Agrega tu número' }}
-                        </span>
                     </div>
-                    <div class="nbf-detail-row">
-                        <div class="nbf-detail-label-wrap">
-                            <i data-lucide="mail" class="nbf-row-icon"></i>
-                            <span class="nbf-detail-label">Correo Electrónico</span>
+                    
+                    <div class="nbf-bento-box">
+                        <div class="nbf-bento-icon"><i data-lucide="phone"></i></div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-label">Teléfono / WhatsApp</span>
+                            <span class="nbf-bento-value {{ !$profile->phone ? 'nbf-empty' : '' }}">
+                                {{ $profile->phone ?? 'Agrega tu número' }}
+                            </span>
                         </div>
-                        <span class="nbf-detail-value">{{ $user->email }}</span>
                     </div>
                 </div>
 
@@ -146,7 +149,7 @@
                     <a href="{{ $profile->instagram ? 'https://instagram.com/'.ltrim($profile->instagram,'@') : '#' }}"
                        target="{{ $profile->instagram ? '_blank' : '_self' }}"
                        class="nbf-social-card {{ $profile->instagram ? 'active' : 'inactive' }}">
-                        <div class="nbf-social-icon" style="background:#fdf4ff;">
+                        <div class="nbf-social-icon" style="background:rgba(225,48,108,0.1);">
                             <i class="fa-brands fa-instagram" style="color:#E1306C;font-size:18px;"></i>
                         </div>
                         <div class="nbf-social-info">
@@ -158,7 +161,7 @@
                     <a href="{{ $profile->facebook ? (Str::startsWith($profile->facebook,['http','https']) ? $profile->facebook : 'https://'.$profile->facebook) : '#' }}"
                        target="{{ $profile->facebook ? '_blank' : '_self' }}"
                        class="nbf-social-card {{ $profile->facebook ? 'active' : 'inactive' }}">
-                        <div class="nbf-social-icon" style="background:#eff6ff;">
+                        <div class="nbf-social-icon" style="background:rgba(24,119,242,0.1);">
                             <i class="fa-brands fa-facebook-f" style="color:#1877F2;font-size:18px;"></i>
                         </div>
                         <div class="nbf-social-info">
@@ -170,7 +173,7 @@
                     <a href="{{ $profile->youtube ? (Str::startsWith($profile->youtube,['http','https']) ? $profile->youtube : 'https://'.$profile->youtube) : '#' }}"
                        target="{{ $profile->youtube ? '_blank' : '_self' }}"
                        class="nbf-social-card {{ $profile->youtube ? 'active' : 'inactive' }}">
-                        <div class="nbf-social-icon" style="background:#fef2f2;">
+                        <div class="nbf-social-icon" style="background:rgba(255,0,0,0.1);">
                             <i class="fa-brands fa-youtube" style="color:#FF0000;font-size:18px;"></i>
                         </div>
                         <div class="nbf-social-info">
@@ -184,108 +187,125 @@
 
             <hr class="nbf-divider">
 
-            {{-- Professional Details --}}
+            {{-- Professional Details (Bento Grid) --}}
             <div class="nbf-section">
                 <div class="nbf-section-header">
-                    <div class="nbf-section-icon" style="background:rgba(47,147,245,.1);">
-                        <i data-lucide="briefcase" style="width:16px;height:16px;color:#2f93f5;"></i>
+                    <div class="nbf-section-icon" style="background:linear-gradient(135deg, rgba(47,147,245,.15), rgba(45,212,191,.15));">
+                        <i data-lucide="briefcase" style="width:18px;height:18px;color:#2f93f5;"></i>
                     </div>
                     <h2 class="nbf-section-title">Datos Profesionales</h2>
                 </div>
 
-                <div class="nbf-detail-card">
-                    <div class="nbf-detail-row is-vertical">
-                        <div class="nbf-detail-label-wrap">
-                            <i data-lucide="file-text" class="nbf-row-icon"></i>
-                            <span class="nbf-detail-label">Biografía / Acerca de</span>
+                <div class="nbf-bento-grid nbf-bento-grid-2">
+                    <div class="nbf-bento-box bento-span-2">
+                        <div class="nbf-bento-icon"><i data-lucide="file-text"></i></div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-label">Biografía / Acerca de</span>
+                            <span class="nbf-bento-value" style="white-space:pre-wrap;font-weight:400;line-height:1.6;margin-top:4px;display:block;">@if(empty($profile->bio))<span class="nbf-empty">Escribe algo sobre tu trayectoria e instrumentos...</span>@else{!! nl2br(e(trim($profile->bio))) !!}@endif</span>
                         </div>
-                        <span class="nbf-detail-value" style="white-space:pre-wrap;font-weight:400;line-height:1.6;">@if(empty($profile->bio))<span class="nbf-empty">Escribe algo sobre tu trayectoria e instrumentos...</span>@else{!! nl2br(e(trim($profile->bio))) !!}@endif</span>
                     </div>
-                    <div class="nbf-detail-row">
-                        <div class="nbf-detail-label-wrap">
-                            <i data-lucide="dollar-sign" class="nbf-row-icon" style="color:#16a34a;"></i>
-                            <span class="nbf-detail-label">Tarifa Base</span>
+
+                    <div class="nbf-bento-box">
+                        <div class="nbf-bento-icon" style="color:#16a34a; background:rgba(22,163,74,0.1);"><i data-lucide="dollar-sign"></i></div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-label">Tarifa Base</span>
+                            <span class="nbf-bento-value">
+                                @if($profile->hourly_rate)
+                                    <span class="nbf-rate-badge">${{ number_format($profile->hourly_rate,0) }} <small>MXN / hr</small></span>
+                                @else
+                                    <span class="nbf-empty">Por acordar</span>
+                                @endif
+                            </span>
                         </div>
-                        <span class="nbf-detail-value">
-                            @if($profile->hourly_rate)
-                                <span class="nbf-rate-badge">${{ number_format($profile->hourly_rate,0) }} <small>MXN / hr</small></span>
-                            @else
-                                <span class="nbf-empty">Por acordar</span>
-                            @endif
-                        </span>
                     </div>
-                    <div class="nbf-detail-row">
-                        <div class="nbf-detail-label-wrap">
-                            <i data-lucide="activity" class="nbf-row-icon" style="color:#16a34a;"></i>
-                            <span class="nbf-detail-label">Estado</span>
+
+                    <div class="nbf-bento-box">
+                        <div class="nbf-bento-icon" style="color:#16a34a; background:rgba(22,163,74,0.1);"><i data-lucide="activity"></i></div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-label">Estado</span>
+                            <span class="nbf-availability-badge available" style="margin-top:3px;">
+                                <span class="nbf-availability-dot"></span> Disponible
+                            </span>
                         </div>
-                        <span class="nbf-availability-badge available">
-                            <span class="nbf-availability-dot"></span> Disponible
-                        </span>
                     </div>
-                    <div class="nbf-detail-row is-vertical">
-                        <div class="nbf-detail-label-wrap">
-                            <i data-lucide="map" class="nbf-row-icon"></i>
-                            <span class="nbf-detail-label">Zona de Cobertura</span>
+
+                    <div class="nbf-bento-box bento-span-2">
+                        <div class="nbf-bento-icon"><i data-lucide="map"></i></div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-label">Zona de Cobertura</span>
+                            <span class="nbf-bento-value {{ !$profile->coverage_notes ? 'nbf-empty' : '' }}" style="font-weight:400; display:block; margin-top:2px;">
+                                {{ $profile->coverage_notes ?? 'Especifica hasta dónde puedes viajar para tocar.' }}
+                            </span>
                         </div>
-                        <span class="nbf-detail-value {{ !$profile->coverage_notes ? 'nbf-empty' : '' }}" style="font-weight:400;">
-                            {{ $profile->coverage_notes ?? 'Especifica hasta dónde puedes viajar para tocar.' }}
-                        </span>
                     </div>
                 </div>
             </div>
 
             <hr class="nbf-divider">
 
-            {{-- Services & Genres --}}
+            {{-- Services & Genres (Bento Grid) --}}
             <div class="nbf-section">
                 <div class="nbf-section-header">
-                    <div class="nbf-section-icon" style="background:rgba(245,158,11,.1);">
-                        <i data-lucide="music-2" style="width:16px;height:16px;color:#d97706;"></i>
+                    <div class="nbf-section-icon" style="background:linear-gradient(135deg, rgba(245,158,11,.15), rgba(217,119,6,.15));">
+                        <i data-lucide="music-2" style="width:18px;height:18px;color:#d97706;"></i>
                     </div>
                     <h2 class="nbf-section-title">Servicios Destacados</h2>
                 </div>
                 
-                <div style="margin-bottom:20px;">
-                    <h4 class="nbf-subsection-title" style="margin-bottom:10px;"><i data-lucide="users" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:6px;"></i> Agrupación</h4>
-                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
-                        @forelse($profile->groupTypes ?? [] as $group)
-                            <div class="nbf-genre-chip" style="background:linear-gradient(135deg,rgba(217,119,6,.1),rgba(245,158,11,.1)); border-color:rgba(217,119,6,.18); color:#b45309;">
-                                {{ $group->name }}
-                            </div>
-                        @empty
-                            <span class="nbf-empty" style="font-size:13px;">No especificado</span>
-                        @endforelse
+                <div class="nbf-bento-grid nbf-bento-grid-3">
+                    {{-- Agrupación Card --}}
+                    <div class="nbf-service-card">
+                        <div class="nbf-service-card-header">
+                            <div class="nbf-service-icon" style="background:rgba(217,119,6,.1); color:#b45309;"><i data-lucide="users"></i></div>
+                            <h4 class="nbf-service-title">Agrupación</h4>
+                        </div>
+                        <div class="nbf-service-chips">
+                            @forelse($profile->groupTypes ?? [] as $group)
+                                <div class="nbf-genre-chip" style="background:linear-gradient(135deg,rgba(217,119,6,.06),rgba(245,158,11,.08)); border-color:rgba(217,119,6,.18); color:#b45309;">
+                                    {{ $group->name }}
+                                </div>
+                            @empty
+                                <span class="nbf-empty" style="font-size:13px;">No especificado</span>
+                            @endforelse
+                        </div>
                     </div>
-                </div>
 
-                <div style="margin-bottom:20px;">
-                    <h4 class="nbf-subsection-title" style="margin-bottom:10px;"><i data-lucide="calendar-heart" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:6px;"></i> Tipos de Evento</h4>
-                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
-                        @forelse($profile->eventTypes ?? [] as $event)
-                            <div class="nbf-genre-chip" style="background:linear-gradient(135deg,rgba(22,163,74,.1),rgba(34,197,94,.1)); border-color:rgba(22,163,74,.18); color:#15803d;">
-                                {{ $event->name }}
-                            </div>
-                        @empty
-                            <span class="nbf-empty" style="font-size:13px;">No especificado</span>
-                        @endforelse
+                    {{-- Eventos Card --}}
+                    <div class="nbf-service-card">
+                        <div class="nbf-service-card-header">
+                            <div class="nbf-service-icon" style="background:rgba(22,163,74,.1); color:#15803d;"><i data-lucide="calendar-heart"></i></div>
+                            <h4 class="nbf-service-title">Tipos de Evento</h4>
+                        </div>
+                        <div class="nbf-service-chips">
+                            @forelse($profile->eventTypes ?? [] as $event)
+                                <div class="nbf-genre-chip" style="background:linear-gradient(135deg,rgba(22,163,74,.06),rgba(34,197,94,.08)); border-color:rgba(22,163,74,.18); color:#15803d;">
+                                    {{ $event->name }}
+                                </div>
+                            @empty
+                                <span class="nbf-empty" style="font-size:13px;">No especificado</span>
+                            @endforelse
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <h4 class="nbf-subsection-title" style="margin-bottom:10px;"><i data-lucide="music" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:6px;"></i> Géneros Musicales</h4>
-                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
-                        @forelse($profile->genres ?? [] as $genre)
-                            <div class="nbf-genre-chip">
-                                {{ $genre->name }}
-                            </div>
-                        @empty
-                            <div class="nbf-empty-genres">
-                                <i data-lucide="music-2" style="width:18px;height:18px;color:#cbd5e1;"></i>
-                                <span>Agrega tus géneros para ser encontrado más fácilmente</span>
-                                <button onclick="openEditModal()" class="nbf-add-genres-btn">+ Agregar géneros</button>
-                            </div>
-                        @endforelse
+                    {{-- Géneros Card --}}
+                    <div class="nbf-service-card bento-span-3">
+                        <div class="nbf-service-card-header">
+                            <div class="nbf-service-icon" style="background:rgba(47,147,245,.1); color:#2f93f5;"><i data-lucide="music"></i></div>
+                            <h4 class="nbf-service-title">Géneros Musicales</h4>
+                        </div>
+                        <div class="nbf-service-chips">
+                            @forelse($profile->genres ?? [] as $genre)
+                                <div class="nbf-genre-chip">
+                                    {{ $genre->name }}
+                                </div>
+                            @empty
+                                <div class="nbf-empty-genres">
+                                    <i data-lucide="music-2" style="width:18px;height:18px;color:#cbd5e1;"></i>
+                                    <span>Agrega tus géneros para ser encontrado más fácilmente</span>
+                                    <button onclick="openEditModal()" class="nbf-add-genres-btn">+ Agregar géneros</button>
+                                </div>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>
@@ -478,29 +498,72 @@
         .nbf-section-title { font-size:15px; font-weight:800; color:var(--pr-text); margin:0; }
         .nbf-subsection-title { font-size:11.5px; font-weight:700; color:var(--pr-muted); text-transform:uppercase; letter-spacing:.07em; margin:0 0 12px; display:flex; align-items:center; gap:6px; }
 
-        /* ── DETAIL CARD ── */
-        .nbf-detail-card {
+        /* ── BENTO GRID CARDS ── */
+        .nbf-bento-grid {
+            display: grid; gap: 16px; margin-bottom: 24px;
+        }
+        .nbf-bento-grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .nbf-bento-grid-3 { grid-template-columns: repeat(2, 1fr); }
+        
+        @media(max-width: 768px) {
+            .nbf-bento-grid-2, .nbf-bento-grid-3 { grid-template-columns: 1fr; }
+            .bento-span-2, .bento-span-3 { grid-column: span 1 !important; }
+        }
+
+        .bento-span-2 { grid-column: span 2; }
+        .bento-span-3 { grid-column: span 2; }
+
+        .nbf-bento-box {
             background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius:14px; overflow:hidden; margin-bottom:24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: transform 0.2s;
+            border-radius: 14px; padding: 18px 20px;
+            display: flex; gap: 14px; align-items: flex-start;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.02); transition: all 0.2s ease;
         }
-        .nbf-detail-row {
-            display:grid; grid-template-columns:200px 1fr;
-            align-items:center; gap:20px; padding:14px 20px;
-            border-bottom:1px solid rgba(255,255,255,0.4); transition:background .15s;
+        .nbf-bento-box:hover {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 24px rgba(108,63,197,0.06);
+            transform: translateY(-2px);
         }
-        .nbf-detail-row:hover { background: rgba(255,255,255, 0.7); }
-        .nbf-detail-row.is-vertical { grid-template-columns:1fr; align-items:flex-start; gap:8px; }
-        .nbf-detail-row:last-child { border-bottom:none; }
-        .nbf-detail-label-wrap { display:flex; align-items:center; gap:8px; }
-        .nbf-row-icon { width:14px; height:14px; color:var(--pr-muted); flex-shrink:0; }
-        .nbf-detail-label { font-size:13.5px; color:var(--pr-dim); font-weight:600; }
-        .nbf-detail-value { font-size:14px; color:var(--pr-text); font-weight:500; word-break:break-word; }
-        .nbf-empty { color:var(--pr-muted) !important; font-style:italic; }
-        @media(max-width:768px) {
-            .nbf-detail-row { grid-template-columns:1fr; gap:5px; }
+        
+        .nbf-bento-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: rgba(100, 116, 139, 0.08); color: var(--pr-dim);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            transition: all 0.2s ease;
         }
+        .nbf-bento-icon i { width: 18px; height: 18px; }
+        .nbf-bento-box:hover .nbf-bento-icon { background: rgba(108,63,197, 0.1); color: var(--pr-primary); }
+        
+        .nbf-bento-content { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+        .nbf-bento-label { font-size: 13px; color: var(--pr-dim); font-weight: 600; margin-bottom: 2px; }
+        .nbf-bento-value { font-size: 14.5px; color: var(--pr-text); font-weight: 600; word-break: break-word; }
+        .nbf-empty { color:var(--pr-muted) !important; font-style:italic; font-weight:400; }
+
+        /* ── SERVICE CARDS (BENTO) ── */
+        .nbf-service-card {
+            background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 14px; padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.02); transition: all 0.2s ease;
+            display: flex; flex-direction: column;
+        }
+        .nbf-service-card:hover {
+            background: rgba(255, 255, 255, 0.65);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+            border-color: rgba(255, 255, 255, 0.9);
+        }
+        .nbf-service-card-header {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+        }
+        .nbf-service-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nbf-service-icon i { width: 16px; height: 16px; }
+        .nbf-service-title { font-size: 14.5px; font-weight: 700; color: var(--pr-text); margin: 0; }
+        .nbf-service-chips { display: flex; flex-wrap: wrap; gap: 10px; }
 
         /* ── BADGES DE DISPONIBILIDAD Y TARIFA ── */
         .nbf-rate-badge { display:inline-flex; align-items:baseline; gap:4px; color:#15803d; font-size:17px; font-weight:800; }
