@@ -103,30 +103,39 @@ class HiringRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
- public function store(StoreHiringRequestRequest $request)
+public function store(StoreHiringRequestRequest $request)
     {
-        // 1. Recuperamos el UID de Firebase que inyectó el middleware
         $firebaseUid = $request->attributes->get('firebase_uid');
-
-        // 2. Buscamos al cliente en el modelo correcto (Client, no User)
         $cliente = \App\Models\Client::where('firebase_uid', $firebaseUid)->first();
 
-        // Verificamos que el cliente realmente exista en la BD antes de continuar
         if (!$cliente) {
-            return response()->json(['success' => false, 'message' => 'Cliente no encontrado. UID: ' . $firebaseUid], 404);
+            return response()->json(['success' => false, 'message' => 'Cliente no encontrado.'], 404);
         }
 
-        // 3. Guardar en la base de datos usando el ID correcto
+        // Se crea la solicitud en la base de datos
         $hiringRequest = HiringRequest::create(array_merge(
             $request->validated(),
-        [
-            'client_id' => $cliente->id, 
-            'status' => 'pending'
-        ]
+            [
+                'client_id' => $cliente->id, 
+                'status' => 'pending'
+            ]
         ));
 
-        // 4. Cargar relaciones
-        $hiringRequest->load(['client', 'musicianProfile']);
+        // Cargamos las relaciones (cliente, perfil del músico, y el usuario del músico para sacar su email)
+        $hiringRequest->load(['client', 'musicianProfile.user']);
+
+        // 🔥 LA MAGIA AQUÍ: Enviar el correo al músico
+        try {
+            $musicianEmail = $hiringRequest->musicianProfile->user->email;
+            $musicianName = $hiringRequest->musicianProfile->stage_name;
+            $clientName = $cliente->nombre . ' ' . $cliente->apellido;
+
+            \Illuminate\Support\Facades\Mail::to($musicianEmail)
+                ->send(new \App\Mail\NewHiringRequestEmail($musicianName, $clientName, $hiringRequest->event_date));
+        } catch (\Exception $e) {
+            \Log::error('No se pudo enviar el correo al músico: ' . $e->getMessage());
+            // Si el correo falla por alguna razón de red, no rompemos el proceso, la solicitud se guarda igual
+        }
 
         return $this->successResponse(
             new \App\Http\Resources\HiringRequestResource($hiringRequest),
