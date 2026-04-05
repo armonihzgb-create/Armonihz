@@ -112,21 +112,36 @@
                     {{-- Solicitudes de contratación recientes --}}
                     @foreach($recentRequests as $req)
                         <li>
-                            <span
-                                class="dot {{ $req->status === 'accepted' ? 'green' : ($req->status === 'rejected' ? 'red' : 'blue') }}"></span>
+                            <span class="dot {{ 
+                                $req->status === 'accepted'  ? 'green'  : 
+                                ($req->status === 'completed' ? 'green'  : 
+                                ($req->status === 'rejected'  ? 'red'    : 
+                                ($req->status === 'cancelled' ? 'red'    : 'blue'))) 
+                            }}"></span>
                             <div>
                                 @if($user->role === 'musico')
                                     <strong>
-                                        @if($req->status === 'pending') Nueva solicitud
-                                        @elseif($req->status === 'accepted') Solicitud aceptada
-                                        @else Solicitud rechazada
+                                        @if($req->status === 'pending')     Nueva solicitud
+                                        @elseif($req->status === 'accepted')   Solicitud aceptada
+                                        @elseif($req->status === 'completed')  Evento finalizado
+                                        @elseif($req->status === 'cancelled')  Solicitud cancelada
+                                        @elseif($req->status === 'rejected')   Solicitud rechazada
+                                        @else {{ ucfirst($req->status) }}
                                         @endif
                                     </strong>
                                     de {{ $req->client->name ?? 'Cliente' }}
                                     — <em style="font-size:12px; color:var(--text-dim);">{{ Str::limit($req->description, 40) }}</em>
                                 @else
                                     Solicitud a <strong>{{ $req->musicianProfile->stage_name ?? 'Músico' }}</strong>
-                                    — Estado: <strong>{{ ucfirst($req->status) }}</strong>
+                                    — Estado: <strong>
+                                        @if($req->status === 'pending')     Pendiente
+                                        @elseif($req->status === 'accepted')   Aceptada
+                                        @elseif($req->status === 'completed')  Finalizado
+                                        @elseif($req->status === 'cancelled')  Cancelado
+                                        @elseif($req->status === 'rejected')   Rechazada
+                                        @else {{ ucfirst($req->status) }}
+                                        @endif
+                                    </strong>
                                 @endif
                                 <span class="time">{{ $req->created_at->diffForHumans() }}</span>
                             </div>
