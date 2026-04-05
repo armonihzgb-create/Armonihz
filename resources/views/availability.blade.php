@@ -857,15 +857,25 @@
                             ? info.event.start.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
                             : '';
 
-                        // 🔥 NUEVO: Detectamos y mostramos la hora exacta
+                        // Función para formatear hora en 24h sin desfase de timezone
+                        function fmtTime(dateObj) {
+                            if (!dateObj) return '';
+                            const h = String(dateObj.getHours()).padStart(2, '0');
+                            const m = String(dateObj.getMinutes()).padStart(2, '0');
+                            return `${h}:${m}`;
+                        }
+
+                        // Reemplazar emojis de boda/anillo por micrófono
+                        const cleanTitle = info.event.title.replace(/💍/g, '🎤');
+
                         const hasTimes = !info.event.allDay && info.event.start;
                         const timeInfo = hasTimes
-                            ? `<div><strong>Hora:</strong> ${info.event.start.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })} a ${info.event.end ? info.event.end.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : ''}</div>`
+                            ? `<div><strong>Hora:</strong> ${fmtTime(info.event.start)} a ${info.event.end ? fmtTime(info.event.end) : ''}</div>`
                             : '';
 
                         // Simple styled alert using our delete modal repurposed as info
                         document.getElementById('deleteInfo').innerHTML = `
-                            <div><strong>Evento:</strong> ${info.event.title}</div>
+                            <div><strong>Evento:</strong> ${cleanTitle}</div>
                             ${startDay ? `<div><strong>Fecha:</strong> <span style="text-transform:capitalize">${startDay}</span></div>` : ''}
                             ${timeInfo}
                             <div style="margin-top:6px;color:#6c3fc5;">${desc}</div>
