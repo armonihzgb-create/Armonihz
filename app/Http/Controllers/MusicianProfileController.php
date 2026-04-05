@@ -16,10 +16,10 @@ class MusicianProfileController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+   public function index(Request $request)
     {
-        $query = MusicianProfile::with(['user:id,name', 'genres'])
-            // ->where('is_verified', true)
+        // 1. Optimizamos relaciones: Solo traemos los datos mínimos del usuario y de los géneros
+        $query = MusicianProfile::with(['user:id,name', 'genres:id,name'])
             ->withExists([
                 'promotions as has_active_promotion' => function ($query) {
                     $query->where('is_active', true)->where('valid_until', '>', now());
@@ -28,7 +28,6 @@ class MusicianProfileController extends Controller
             ->withAvg('reviews', 'rating')
             ->orderByDesc('has_active_promotion')
             ->orderByDesc('id');
-
 
         $query->when($request->filled('search'), function (Builder $q) use ($request) {
             $search = $request->input('search');
@@ -58,8 +57,23 @@ class MusicianProfileController extends Controller
             $q->where('location', 'like', '%' . $request->input('location') . '%');
         });
 
-      $page = $request->header('X-Page', 1); // Lee el Header que mandamos desde Android
-        $musicians = $query->paginate(10, ['*'], 'page', $page); // Fuerza a Laravel a usar esa página
+        $page = $request->header('X-Page', 1);
+
+        // 🔥 LA MAGIA DE LA OPTIMIZACIÓN: 
+        // Le decimos a Laravel exactamente qué columnas sacar de la base de datos
+        $columnas = [
+            'id', 
+            'user_id', 
+            'stage_name', 
+            'location', 
+            'hourly_rate', 
+            'rating_average',
+            'profile_picture', 
+            'is_verified'
+        ];
+
+        // Pasamos el arreglo de columnas como segundo parámetro al paginate
+        $musicians = $query->paginate(10, $columnas, 'page', $page);
 
         return $this->successResponse(
             MusicianProfileResource::collection($musicians)->response()->getData(true),
