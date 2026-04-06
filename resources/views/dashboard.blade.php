@@ -329,7 +329,7 @@
             {{-- Header --}}
             <div style="text-align:center; margin-bottom:22px;">
                 <div class="wm-icon-wrap">
-                    <i data-lucide="music-2" style="width:24px;height:24px;color:#6c3fc5;"></i>
+                    <img src="{{ asset('images/Armonihz_logo.png') }}" alt="Armonihz" style="width:28px; height:28px; object-fit:contain;">
                 </div>
                 <h2 style="margin:0 0 6px;font-size:20px;font-weight:800;color:#0f172a;letter-spacing:-.3px;">
                     ¡Bienvenido, {{ $user->musicianProfile->stage_name ?? $user->name }}!
