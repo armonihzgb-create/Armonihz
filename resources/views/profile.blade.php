@@ -174,56 +174,62 @@
         .bento-span-3 { grid-column: span 2; }
 
         .nbf-bento-box {
-            background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 14px; padding: 18px 20px;
-            display: flex; gap: 14px; align-items: flex-start;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.02); transition: all 0.2s ease;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 16px; padding: 20px 22px;
+            display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .nbf-bento-box:hover {
-            background: rgba(255, 255, 255, 0.7);
-            border-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 8px 24px rgba(108,63,197,0.06);
-            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(108,63,197,0.08), inset 0 1px 0 rgba(255,255,255,1);
+            transform: translateY(-3px);
+            border-color: rgba(108,63,197,0.2);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.7));
         }
+        .nbf-bento-header { display: flex; align-items: center; gap: 12px; }
         
         .nbf-bento-icon {
-            width: 38px; height: 38px; border-radius: 10px;
-            background: rgba(100, 116, 139, 0.08); color: var(--pr-dim);
+            width: 40px; height: 40px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-            transition: all 0.2s ease;
+            background: rgba(108,63,197, 0.08); color: var(--pr-primary);
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
         .nbf-bento-icon i { width: 18px; height: 18px; }
-        .nbf-bento-box:hover .nbf-bento-icon { background: rgba(108,63,197, 0.1); color: var(--pr-primary); }
+        .nbf-bento-box:hover .nbf-bento-icon { transform: scale(1.08); }
         
         .nbf-bento-content { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-        .nbf-bento-label { font-size: 13px; color: var(--pr-dim); font-weight: 600; margin-bottom: 2px; }
-        .nbf-bento-value { font-size: 14.5px; color: var(--pr-text); font-weight: 600; word-break: break-word; }
+        .nbf-bento-label { font-size: 14px; color: var(--pr-text); font-weight: 700; margin-bottom: 0; }
+        .nbf-bento-value { font-size: 14.5px; color: var(--pr-dim); font-weight: 400; line-height: 1.6; word-break: break-word; }
         .nbf-empty { color:var(--pr-muted) !important; font-style:italic; font-weight:400; }
 
         /* ── SERVICE CARDS (BENTO) ── */
         .nbf-service-card {
-            background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 14px; padding: 20px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.02); transition: all 0.2s ease;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 16px; padding: 20px 22px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; flex-direction: column;
         }
         .nbf-service-card:hover {
-            background: rgba(255, 255, 255, 0.65);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
-            border-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 12px 28px rgba(108,63,197,0.08), inset 0 1px 0 rgba(255,255,255,1);
+            transform: translateY(-3px);
+            border-color: rgba(108,63,197,0.2);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.7));
         }
-        .nbf-service-card-header {
-            display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
-        }
+        .nbf-service-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
         .nbf-service-icon {
-            width: 32px; height: 32px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
         }
-        .nbf-service-icon i { width: 16px; height: 16px; }
+        .nbf-service-icon i { width: 18px; height: 18px; }
         .nbf-service-title { font-size: 14.5px; font-weight: 700; color: var(--pr-text); margin: 0; }
-        .nbf-service-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+        .nbf-service-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 
         /* ── BADGES DE DISPONIBILIDAD Y TARIFA ── */
         .nbf-rate-badge { display:inline-flex; align-items:baseline; gap:4px; color:#15803d; font-size:17px; font-weight:800; }
@@ -567,20 +573,24 @@
 
                 <div class="nbf-bento-grid nbf-bento-grid-2">
                     <div class="nbf-bento-box bento-span-2">
-                        <div class="nbf-bento-icon"><i data-lucide="file-text"></i></div>
-                        <div class="nbf-bento-content">
+                        <div class="nbf-bento-header">
+                            <div class="nbf-bento-icon" style="background:rgba(47,147,245,0.1);color:#2f93f5;"><i data-lucide="book-open"></i></div>
                             <span class="nbf-bento-label">Biografía / Acerca de</span>
-                            <span class="nbf-bento-value" style="white-space:pre-wrap;font-weight:400;line-height:1.6;margin-top:4px;display:block;">@if(empty($profile->bio))<span class="nbf-empty">Escribe algo sobre tu trayectoria e instrumentos...</span>@else{!! nl2br(e(trim($profile->bio))) !!}@endif</span>
+                        </div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-value" style="white-space:pre-wrap;color:#334155;">@if(empty($profile->bio))<span class="nbf-empty">Escribe algo sobre tu trayectoria e instrumentos...</span>@else{!! nl2br(e(trim($profile->bio))) !!}@endif</span>
                         </div>
                     </div>
 
                     <div class="nbf-bento-box">
-                        <div class="nbf-bento-icon" style="color:#16a34a; background:rgba(22,163,74,0.1);"><i data-lucide="dollar-sign"></i></div>
-                        <div class="nbf-bento-content">
+                        <div class="nbf-bento-header">
+                            <div class="nbf-bento-icon" style="background:rgba(22,163,74,0.1);color:#16a34a;"><i data-lucide="wallet"></i></div>
                             <span class="nbf-bento-label">Tarifa Base</span>
+                        </div>
+                        <div class="nbf-bento-content">
                             <span class="nbf-bento-value">
                                 @if($profile->hourly_rate)
-                                    <span class="nbf-rate-badge">${{ number_format($profile->hourly_rate,0) }} <small>MXN / hr</small></span>
+                                    <span class="nbf-rate-badge">${{ number_format($profile->hourly_rate,0) }} <small style="color:#64748b;">MXN / hr</small></span>
                                 @else
                                     <span class="nbf-empty">Por acordar</span>
                                 @endif
@@ -589,20 +599,24 @@
                     </div>
 
                     <div class="nbf-bento-box">
-                        <div class="nbf-bento-icon" style="color:#16a34a; background:rgba(22,163,74,0.1);"><i data-lucide="activity"></i></div>
-                        <div class="nbf-bento-content">
+                        <div class="nbf-bento-header">
+                            <div class="nbf-bento-icon" style="background:rgba(108,63,197,0.1);color:#6c3fc5;"><i data-lucide="badge-check"></i></div>
                             <span class="nbf-bento-label">Estado</span>
-                            <span class="nbf-availability-badge available" style="margin-top:3px;">
+                        </div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-availability-badge available" style="margin-top:2px;">
                                 <span class="nbf-availability-dot"></span> Disponible
                             </span>
                         </div>
                     </div>
 
                     <div class="nbf-bento-box bento-span-2">
-                        <div class="nbf-bento-icon"><i data-lucide="map"></i></div>
-                        <div class="nbf-bento-content">
+                        <div class="nbf-bento-header">
+                            <div class="nbf-bento-icon" style="background:rgba(245,158,11,0.1);color:#d97706;"><i data-lucide="map-pin"></i></div>
                             <span class="nbf-bento-label">Zona de Cobertura</span>
-                            <span class="nbf-bento-value {{ !$profile->coverage_notes ? 'nbf-empty' : '' }}" style="font-weight:400; display:block; margin-top:2px;">
+                        </div>
+                        <div class="nbf-bento-content">
+                            <span class="nbf-bento-value {{ !$profile->coverage_notes ? 'nbf-empty' : '' }}" style="color:#334155;">
                                 {{ $profile->coverage_notes ?? 'Especifica hasta dónde puedes viajar para tocar.' }}
                             </span>
                         </div>
