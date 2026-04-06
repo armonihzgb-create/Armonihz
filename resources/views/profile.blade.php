@@ -909,31 +909,31 @@
                 <p style="font-size:13px;font-weight:600;color:var(--text-dim);margin:20px 0 12px;">Redes Sociales</p>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                     <div class="form-group">
-                        <label><i data-lucide="instagram" style="width:13px;vertical-align:middle;"></i> Instagram</label>
+                        <label><i class="fa-brands fa-instagram" style="font-size:14px;color:#E1306C;vertical-align:middle;margin-right:4px;"></i> Instagram</label>
                         <input type="text" name="instagram"
                                value="{{ old('instagram', $profile->instagram) }}"
                                placeholder="@tuusuario">
                     </div>
                     <div class="form-group">
-                        <label><i data-lucide="facebook" style="width:13px;vertical-align:middle;"></i> Facebook</label>
+                        <label><i class="fa-brands fa-facebook-f" style="font-size:14px;color:#1877F2;vertical-align:middle;margin-right:4px;"></i> Facebook</label>
                         <input type="text" name="facebook"
                                value="{{ old('facebook', $profile->facebook) }}"
                                placeholder="URL o nombre de página">
                     </div>
                     <div class="form-group">
-                        <label><i class="fa-brands fa-tiktok" style="width:13px;vertical-align:middle;"></i> TikTok</label>
+                        <label><i class="fa-brands fa-tiktok" style="font-size:14px;color:#000000;vertical-align:middle;margin-right:4px;"></i> TikTok</label>
                         <input type="text" name="tiktok"
                                value="{{ old('tiktok', $profile->tiktok) }}"
                                placeholder="@tuusuario o URL">
                     </div>
                     <div class="form-group">
-                        <label><i class="fa-brands fa-spotify" style="width:13px;vertical-align:middle;"></i> Spotify</label>
+                        <label><i class="fa-brands fa-spotify" style="font-size:14px;color:#1DB954;vertical-align:middle;margin-right:4px;"></i> Spotify</label>
                         <input type="text" name="spotify"
                                value="{{ old('spotify', $profile->spotify) }}"
                                placeholder="URL de tu perfil">
                     </div>
                     <div class="form-group" style="grid-column: 1 / -1;">
-                        <label><i data-lucide="youtube" style="width:13px;vertical-align:middle;"></i> YouTube</label>
+                        <label><i class="fa-brands fa-youtube" style="font-size:14px;color:#FF0000;vertical-align:middle;margin-right:4px;"></i> YouTube</label>
                         <input type="text" name="youtube"
                                value="{{ old('youtube', $profile->youtube) }}"
                                placeholder="URL de tu canal">
