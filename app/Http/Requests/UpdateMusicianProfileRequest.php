@@ -32,6 +32,8 @@ class UpdateMusicianProfileRequest extends FormRequest
             'instagram'       => 'nullable|string|max:255',
             'facebook'        => 'nullable|string|max:255',
             'youtube'         => 'nullable|string|max:255',
+            'tiktok'          => 'nullable|string|max:255',
+            'spotify'         => 'nullable|string|max:255',
             'coverage_notes'  => 'nullable|string|max:500',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
             'genres'          => 'nullable|array',

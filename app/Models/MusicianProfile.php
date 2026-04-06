@@ -48,6 +48,8 @@ class MusicianProfile extends Model
         'instagram',
         'facebook',
         'youtube',
+        'tiktok',
+        'spotify',
         'coverage_notes',
         'verification_status',
         'id_document_path',

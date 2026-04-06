@@ -527,6 +527,30 @@
                         </div>
                         @if($profile->youtube)<i data-lucide="arrow-up-right" style="width:13px;height:13px;color:#94a3b8;margin-left:auto;flex-shrink:0;"></i>@endif
                     </a>
+                    <a href="{{ $profile->tiktok ? (Str::startsWith($profile->tiktok,['http','https']) ? $profile->tiktok : 'https://'.$profile->tiktok) : '#' }}"
+                       target="{{ $profile->tiktok ? '_blank' : '_self' }}"
+                       class="nbf-social-card {{ $profile->tiktok ? 'active' : 'inactive' }}">
+                        <div class="nbf-social-icon" style="background:rgba(0,0,0,0.05);">
+                            <i class="fa-brands fa-tiktok" style="color:#000000;font-size:18px;"></i>
+                        </div>
+                        <div class="nbf-social-info">
+                            <span class="nbf-social-name">TikTok</span>
+                            <span class="nbf-social-handle">{{ $profile->tiktok ? 'Ver perfil' : 'No configurado' }}</span>
+                        </div>
+                        @if($profile->tiktok)<i data-lucide="arrow-up-right" style="width:13px;height:13px;color:#94a3b8;margin-left:auto;flex-shrink:0;"></i>@endif
+                    </a>
+                    <a href="{{ $profile->spotify ? (Str::startsWith($profile->spotify,['http','https']) ? $profile->spotify : 'https://'.$profile->spotify) : '#' }}"
+                       target="{{ $profile->spotify ? '_blank' : '_self' }}"
+                       class="nbf-social-card {{ $profile->spotify ? 'active' : 'inactive' }}">
+                        <div class="nbf-social-icon" style="background:rgba(29,185,84,0.1);">
+                            <i class="fa-brands fa-spotify" style="color:#1DB954;font-size:18px;"></i>
+                        </div>
+                        <div class="nbf-social-info">
+                            <span class="nbf-social-name">Spotify</span>
+                            <span class="nbf-social-handle">{{ $profile->spotify ? 'Escuchar' : 'No configurado' }}</span>
+                        </div>
+                        @if($profile->spotify)<i data-lucide="arrow-up-right" style="width:13px;height:13px;color:#94a3b8;margin-left:auto;flex-shrink:0;"></i>@endif
+                    </a>
                 </div>
             </div>
 
@@ -897,6 +921,18 @@
                                placeholder="URL o nombre de página">
                     </div>
                     <div class="form-group">
+                        <label><i class="fa-brands fa-tiktok" style="width:13px;vertical-align:middle;"></i> TikTok</label>
+                        <input type="text" name="tiktok"
+                               value="{{ old('tiktok', $profile->tiktok) }}"
+                               placeholder="@tuusuario o URL">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-brands fa-spotify" style="width:13px;vertical-align:middle;"></i> Spotify</label>
+                        <input type="text" name="spotify"
+                               value="{{ old('spotify', $profile->spotify) }}"
+                               placeholder="URL de tu perfil">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
                         <label><i data-lucide="youtube" style="width:13px;vertical-align:middle;"></i> YouTube</label>
                         <input type="text" name="youtube"
                                value="{{ old('youtube', $profile->youtube) }}"
@@ -1094,15 +1130,31 @@
                                 <span style="font-size:12px;color:#374151;font-weight:500;">Facebook</span>
                             </div>
                             @endif
+                            @if($profile->tiktok)
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                                <span style="width:28px;height:28px;background:#f3f4f6;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                                    <i class="fa-brands fa-tiktok" style="font-size:14px;color:#000000;"></i>
+                                </span>
+                                <span style="font-size:12px;color:#374151;font-weight:500;">TikTok</span>
+                            </div>
+                            @endif
                             @if($profile->youtube)
-                            <div style="display:flex;align-items:center;gap:8px;">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                                 <span style="width:28px;height:28px;background:#fef2f2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
                                     <i data-lucide="youtube" style="width:14px;height:14px;color:#dc2626;"></i>
                                 </span>
                                 <span style="font-size:12px;color:#374151;font-weight:500;">YouTube</span>
                             </div>
                             @endif
-                            @if(!$profile->phone && !$profile->instagram && !$profile->facebook && !$profile->youtube)
+                            @if($profile->spotify)
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="width:28px;height:28px;background:#f0fdf4;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                                    <i class="fa-brands fa-spotify" style="font-size:14px;color:#1DB954;"></i>
+                                </span>
+                                <span style="font-size:12px;color:#374151;font-weight:500;">Spotify</span>
+                            </div>
+                            @endif
+                            @if(!$profile->phone && !$profile->instagram && !$profile->facebook && !$profile->youtube && !$profile->tiktok && !$profile->spotify)
                                 <p style="font-size:12px;color:#9ca3af;font-style:italic;">Sin información de contacto.</p>
                             @endif
                         </div>

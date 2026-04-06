@@ -8,6 +8,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -541,7 +542,31 @@
                     </div>
                     @endif
 
-                    @if(!$profile->phone && !$profile->instagram && !$profile->facebook && !$profile->youtube)
+                    @if($profile->tiktok)
+                    <div class="contact-row">
+                        <i class="fa-brands fa-tiktok" style="font-size:16px;color:var(--purple);flex-shrink:0;"></i>
+                        <div>
+                            <span class="contact-label">TIKTOK</span>
+                            <span class="contact-value">
+                                <a href="{{ $profile->tiktok }}" target="_blank">Ver perfil</a>
+                            </span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($profile->spotify)
+                    <div class="contact-row">
+                        <i class="fa-brands fa-spotify" style="font-size:16px;color:var(--purple);flex-shrink:0;"></i>
+                        <div>
+                            <span class="contact-label">SPOTIFY</span>
+                            <span class="contact-value">
+                                <a href="{{ $profile->spotify }}" target="_blank">Ver perfil</a>
+                            </span>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(!$profile->phone && !$profile->instagram && !$profile->facebook && !$profile->youtube && !$profile->tiktok && !$profile->spotify)
                     <p style="font-size:13px;color:var(--dim);padding:8px 0;font-style:italic;">
                         Músico no ha agregado información de contacto.
                     </p>

@@ -83,6 +83,8 @@ class ProfileController extends Controller
             'instagram'      => $request->instagram,
             'facebook'       => $request->facebook,
             'youtube'        => $request->youtube,
+            'tiktok'         => $request->tiktok,
+            'spotify'        => $request->spotify,
             'coverage_notes' => $request->coverage_notes,
             'profile_picture'=> $picturePath,
         ]);
