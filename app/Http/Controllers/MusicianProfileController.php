@@ -217,4 +217,21 @@ class MusicianProfileController extends Controller
             'data' => $busyDates
         ]);
     }
+
+    /**
+     * Registra una vista al perfil proveniente de la app móvil
+     */
+    public function recordMobileView($id)
+    {
+        $profile = \App\Models\MusicianProfile::findOrFail($id);
+        
+        // Incrementa el contador de vistas. 
+        // Cambia 'mobile_views' por el nombre exacto de tu columna en la base de datos
+        $profile->increment('profile_views'); 
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Vista registrada correctamente'
+        ]);
+    }
 }
