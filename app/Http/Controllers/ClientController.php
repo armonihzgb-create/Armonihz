@@ -141,18 +141,31 @@ public function profile(Request $request)
         }
     }
 
-    public function deleteAccount(Request $request)
+  public function deleteAccount(Request $request)
     {
         $cliente = $this->getClient($request);
 
+        // 1. Eliminar foto de perfil del storage si existe
         if ($cliente->fotoPerfil && Storage::disk('public')->exists($cliente->fotoPerfil)) {
             Storage::disk('public')->delete($cliente->fotoPerfil);
         }
 
+        // 2. Guardamos el ID del User antes de que el cliente sea destruido
+        $userId = $cliente->user_id;
+
+        // 3. Eliminamos el registro de la tabla 'clients'
         $cliente->delete();
 
+        // 4. Buscamos y eliminamos el registro de la tabla 'users'
+        if ($userId) {
+            $user = User::find($userId);
+            if ($user) {
+                $user->delete();
+            }
+        }
+
         return response()->json([
-            'message' => 'Cuenta eliminada correctamente'
+            'message' => 'Cuenta eliminada completamente de la base de datos'
         ]);
     }
 
