@@ -69,7 +69,9 @@ class MusicianProfileController extends Controller
             'hourly_rate', 
             'rating_average',
             'profile_picture', 
-            'is_verified'
+            'is_verified',
+            'tiktok',
+            'spotify'
         ];
 
         // Pasamos el arreglo de columnas como segundo parámetro al paginate

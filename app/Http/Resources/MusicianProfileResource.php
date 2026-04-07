@@ -26,6 +26,8 @@ class MusicianProfileResource extends JsonResource
             'instagram' => $this->instagram,
             'facebook' => $this->facebook,
             'youtube' => $this->youtube,
+            'tiktok' => $this->tiktok,
+            'spotify' => $this->spotify,
             'coverage_notes' => $this->coverage_notes,
 
             'rating_average' => round($this->reviews_avg_rating ?? 0, 1),
