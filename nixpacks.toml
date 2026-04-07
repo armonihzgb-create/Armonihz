@@ -1,3 +1,6 @@
+[phases.setup]
+aptPkgs = ["...", "ffmpeg"]
+
 [phases.build]
 cmds = [
   "sed -i 's/http {/http {\\n    client_max_body_size 100M;/' /assets/nginx.template.conf",
