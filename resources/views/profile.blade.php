@@ -1028,7 +1028,7 @@
                 <div class="phone-screen">
 
                     {{-- Status bar --}}
-                    <div class="app-statusbar">
+                    <div class="app-statusbar" style="background: transparent; position: absolute; width: 100%; top: 0; z-index: 50;">
                         <span style="font-size:11px;font-weight:700;">9:41</span>
                         <div style="display:flex;gap:5px;align-items:center;">
                             <i data-lucide="signal" style="width:12px;height:12px;"></i>
@@ -1037,181 +1037,159 @@
                         </div>
                     </div>
 
-                    {{-- App topbar --}}
-                    <div class="app-topbar">
-                        <button style="background:none;border:none;color:#fff;padding:4px;cursor:pointer;">
-                            <i data-lucide="chevron-left" style="width:20px;height:20px;"></i>
-                        </button>
-                        <span style="font-size:14px;font-weight:700;color:#fff;">Perfil</span>
-                        <button style="background:none;border:none;color:#fff;padding:4px;cursor:pointer;">
-                            <i data-lucide="share-2" style="width:18px;height:18px;"></i>
-                        </button>
-                    </div>
+                    {{-- Contenido principal --}}
+                    <div class="app-body" style="background: linear-gradient(180deg, #1B0F36 0%, #090314 100%); position: relative; padding-bottom: 32px; height: 100%;">
+                        <style>
+                            .app-body::-webkit-scrollbar { display:none; }
+                            .glass-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+                            .stat-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; text-align: center; }
+                            .tab-btn { flex: 1; text-align: center; padding: 10px 0 8px; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.5); border-bottom: 2px solid transparent; transition: all 0.2s; }
+                            .tab-btn.active { color: #fff; border-bottom: 2px solid #8B5CF6; }
+                            .contact-row { display: flex; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; }
+                        </style>
 
-                    {{-- Contenido scrollable --}}
-                    <div class="app-body">
+                        {{-- Hero Image --}}
+                        <div style="height: 200px; position: relative;">
+                            <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center;"></div>
+                            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(27,15,54,0.1) 0%, rgba(27,15,54,1) 100%);"></div>
+                            
+                            {{-- App topbar --}}
+                            <div class="app-topbar" style="background: rgba(0,0,0,0.2); backdrop-filter: blur(8px); position: absolute; width: 100%; top: 30px; z-index: 20; border: none; display:flex; align-items:center;">
+                                <button style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
+                                    <i data-lucide="arrow-left" style="width:22px;height:22px;"></i>
+                                </button>
+                                <span style="font-size:16px;font-weight:700;color:#fff; flex:1; text-align:center;">Perfil del músico</span>
+                                <button style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
+                                    <i data-lucide="more-vertical" style="width:20px;height:20px;"></i>
+                                </button>
+                            </div>
+                        </div>
 
-                        {{-- Cover / Hero --}}
-                        <div class="app-hero">
-                            @if($profile && $profile->profile_picture)
-                                @if(Str::startsWith($profile->profile_picture, ['http://', 'https://']))
-                                    <img src="{{ $profile->profile_picture }}"
-                                         style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
+                        {{-- Avatar --}}
+                        <div style="display: flex; justify-content: center; margin-top: -70px; position: relative; z-index: 2;">
+                            <div style="width: 140px; height: 140px; border-radius: 50%; border: 4px solid #1B0F36; box-shadow: 0 16px 32px rgba(0,0,0,0.6); overflow: hidden; background: #2f93f5; display:flex; align-items:center; justify-content:center;">
+                                @if($profile && $profile->profile_picture)
+                                    <img src="{{ Str::startsWith($profile->profile_picture, ['http://', 'https://']) ? $profile->profile_picture : $profile->profilePictureUrl() }}" style="width:100%; height:100%; object-fit:cover;">
                                 @else
-                                    <img src="{{ $profile->profilePictureUrl() }}"
-                                         style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
+                                    <span style="font-size: 42px; font-weight: 800; color: #fff;">{{ strtoupper(substr($profile->stage_name ?? $user->name,0,2)) }}</span>
                                 @endif
-                            @else
-                                <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#6c3fc5,#2f93f5);color:#fff;font-size:26px;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid #fff;">
-                                    {{ strtoupper(substr($profile->stage_name ?? $user->name,0,2)) }}
+                            </div>
+                        </div>
+
+                        {{-- Profile Info Card --}}
+                        <div class="glass-card" style="margin: 8px 16px 0; padding: 82px 20px 24px; margin-top: -65px; position:relative; z-index: 1;">
+                            <div style="text-align: center; margin-bottom: 4px; display:flex; justify-content:center; align-items:center; gap:8px;">
+                                <h1 style="font-size: 24px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; line-height: 1.2;">{{ $profile->stage_name ?? $user->name }}</h1>
+                                <i data-lucide="star" style="width:18px;height:18px;fill:#8B5CF6;color:#8B5CF6;"></i>
+                            </div>
+
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 20px;">
+                                <i data-lucide="map-pin" style="width:14px;height:14px;color:#a8a2b5;"></i>
+                                <span style="font-size: 13px; color: #a8a2b5;">{{ $profile->location ?? 'Ubicación no especificada' }}</span>
+                            </div>
+
+                            {{-- 3 Stat Cards --}}
+                            <div style="display: flex; gap: 6px; margin-bottom: 24px;">
+                                <div class="glass-card stat-box" style="flex:1;">
+                                    <span style="font-size: 14px; font-weight: 800; color: #fff;">{{ $profile->hourly_rate ? '$'.number_format($profile->hourly_rate,0) : '$—' }}</span>
+                                    <span style="font-size: 11px; color: #a8a2b5; margin-top: 4px;">Por hora</span>
                                 </div>
-                            @endif
-                            <h2 style="margin:10px 0 2px;font-size:17px;font-weight:800;color:#fff;">
-                                {{ $profile->stage_name ?? $user->name }}
-                            </h2>
-                            <p style="font-size:12px;color:rgba(255,255,255,.75);margin:0;">
-                                @if($profile->location)
-                                    📍 {{ $profile->location }}
+                                <div class="glass-card stat-box" style="flex:1;">
+                                    <span style="font-size: 14px; font-weight: 800; color: #fff;">{{ $profile->coverage_notes ? 'Sí' : 'No' }}</span>
+                                    <span style="font-size: 11px; color: #a8a2b5; margin-top: 4px;">Notas</span>
+                                </div>
+                                <div class="glass-card stat-box" style="flex:1;">
+                                    <span style="font-size: 14px; font-weight: 800; color: #fff;">{{ number_format($profile->averageRating(), 1) }}</span>
+                                    <span style="font-size: 11px; color: #a8a2b5; margin-top: 4px;">Valoración</span>
+                                </div>
+                            </div>
+
+                            {{-- Tabs --}}
+                            <div style="display: flex; margin-bottom: 14px;">
+                                <div class="tab-btn active">Acerca de</div>
+                                <div class="tab-btn">Contacto</div>
+                            </div>
+                            <div style="height:1px; background: rgba(255,255,255,0.1); margin-bottom: 14px;"></div>
+
+                            {{-- Description --}}
+                            <div style="font-size: 13px; color: #d1cddb; line-height: 1.6;">
+                                @if($profile->bio)
+                                    {{ Str::limit($profile->bio, 140) }}
                                 @else
-                                    Músico profesional
+                                    Cargando detalles...
                                 @endif
-                            </p>
-                            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;">
-                                @foreach($profile->genres ?? [] as $g)
-                                    <span style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:999px;">{{ $g->name }}</span>
-                                @endforeach
+                            </div>
+
+                            {{-- Action buttons --}}
+                            <div style="display:flex; gap:10px; margin-top:20px; align-items:center;">
+                                <button style="flex:1; background: #8B5CF6; color:#fff; border: 1px solid rgba(139,92,246,0.3); border-radius: 24px; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px; height:44px;">
+                                    <i data-lucide="calendar" style="width:16px;height:16px;"></i> Solicitar contratación
+                                </button>
+                                <button style="width:44px;height:44px; border-radius:24px; border:1.5px solid #8B5CF6; background:transparent; color:#8B5CF6; display:flex; align-items:center; justify-content:center;">
+                                    <i data-lucide="heart" style="width:18px;height:18px;"></i>
+                                </button>
                             </div>
                         </div>
 
-                        {{-- Stats rápidos --}}
-                        <div style="display:flex;border-bottom:1px solid #f0f0f0;">
-                            <div style="flex:1;text-align:center;padding:12px 0;">
-                                <div style="font-size:16px;font-weight:800;color:#6c3fc5;">⭐ 5.0</div>
-                                <div style="font-size:10px;color:#9ca3af;margin-top:2px;">Calificación</div>
+                        {{-- Disponibilidad Card --}}
+                        <div class="glass-card" style="margin: 24px 16px 0; padding: 20px;">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                                <i data-lucide="calendar" style="width:18px;height:18px;color:#8B5CF6;"></i>
+                                <span style="font-size:15px;font-weight:700;color:#fff;">Disponibilidad</span>
                             </div>
-                            <div style="flex:1;text-align:center;padding:12px 0;border-left:1px solid #f0f0f0;border-right:1px solid #f0f0f0;">
-                                <div style="font-size:16px;font-weight:800;color:#6c3fc5;">{{ $profile->profile_views ?? 0 }}</div>
-                                <div style="font-size:10px;color:#9ca3af;margin-top:2px;">Vistas</div>
-                            </div>
-                            <div style="flex:1;text-align:center;padding:12px 0;">
-                                <div style="font-size:16px;font-weight:800;color:#6c3fc5;">
-                                    @if($profile->hourly_rate) ${{ number_format($profile->hourly_rate,0) }} @else — @endif
+                            <div style="font-size:12px;color:#a8a2b5;margin-bottom:16px;line-height:1.5;">Consulta las fechas libres del músico y elige el mejor momento para tu evento.</div>
+                            
+                            {{-- Fake Calendar Box --}}
+                            <div style="background: rgba(0,0,0,0.25); border-radius:12px; padding:16px; text-align:center;">
+                                <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
+                                    <i data-lucide="chevron-left" style="width:16px;height:16px;color:#a8a2b5;"></i>
+                                    <span style="font-size:13px;font-weight:700;color:#fff;">Abril 2026</span>
+                                    <i data-lucide="chevron-right" style="width:16px;height:16px;color:#a8a2b5;"></i>
                                 </div>
-                                <div style="font-size:10px;color:#9ca3af;margin-top:2px;">MXN/hr</div>
+                                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:11px;color:#a8a2b5;margin-bottom:8px;font-weight:600;">
+                                    <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+                                </div>
+                                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:12px;color:#fff;font-weight:600;">
+                                    <span style="opacity:0.3">30</span><span style="opacity:0.3">31</span><span>1</span><span>2</span><span>3</span><span style="background:#8B5CF6;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin:auto;">4</span><span>5</span>
+                                </div>
+                            </div>
+                            <div style="margin-top:16px;">
+                                <div style="font-size:14px;font-weight:700;color:#fff;">Selecciona un día</div>
+                                <div style="font-size:12px;color:#a8a2b5;margin-top:2px;">Toca una fecha en el calendario para ver los horarios ocupados.</div>
                             </div>
                         </div>
 
-                        {{-- Bio --}}
-                        @if($profile->bio)
-                        <div style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
-                            <h4 style="font-size:12px;font-weight:700;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Acerca de</h4>
-                            <p style="font-size:13px;color:#4b5563;line-height:1.6;">{{ $profile->bio }}</p>
-                        </div>
-                        @endif
-
-                        {{-- Zona de cobertura --}}
-                        @if($profile->coverage_notes)
-                        <div style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
-                            <h4 style="font-size:12px;font-weight:700;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Zona de Cobertura</h4>
-                            <p style="font-size:12px;color:#6b7280;line-height:1.6;">📍 {{ $profile->location }} — {{ $profile->coverage_notes }}</p>
-                        </div>
-                        @endif
-
-                        {{-- Contacto completo --}}
-                        <div style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
-                            <h4 style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Contacto</h4>
-                            @if($profile->phone)
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                                <span style="width:28px;height:28px;background:#f0fdf4;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                                    <i data-lucide="phone" style="width:14px;height:14px;color:#16a34a;"></i>
-                                </span>
-                                <span style="font-size:12px;color:#374151;font-weight:500;">{{ $profile->phone }}</span>
+                        {{-- Galeria Layout --}}
+                        <div class="glass-card" style="margin: 24px 16px 0; padding: 16px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                                <span style="font-size:16px; font-weight:700; color:#fff;">Galería</span>
+                                {{-- Pill tabs --}}
+                                <div style="background:rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius:20px; display:flex; padding:4px;">
+                                    <span style="background:#8B5CF6; color:#fff; font-size:11px; font-weight:700; padding:5px 14px; border-radius:16px;">Fotos</span>
+                                    <span style="color:#a8a2b5; font-size:11px; padding:5px 14px; font-weight:600;">Videos</span>
+                                </div>
                             </div>
-                            @endif
-                            @if($profile->instagram)
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                                <span style="width:28px;height:28px;background:#fdf4ff;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                                    <i data-lucide="instagram" style="width:14px;height:14px;color:#a855f7;"></i>
-                                </span>
-                                <span style="font-size:12px;color:#374151;font-weight:500;">{{ '@' . ltrim($profile->instagram,'@') }}</span>
-                            </div>
-                            @endif
-                            @if($profile->facebook)
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                                <span style="width:28px;height:28px;background:#eff6ff;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                                    <i data-lucide="facebook" style="width:14px;height:14px;color:#2563eb;"></i>
-                                </span>
-                                <span style="font-size:12px;color:#374151;font-weight:500;">Facebook</span>
-                            </div>
-                            @endif
-                            @if($profile->tiktok)
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                                <span style="width:28px;height:28px;background:#f3f4f6;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                                    <i class="fa-brands fa-tiktok" style="font-size:14px;color:#000000;"></i>
-                                </span>
-                                <span style="font-size:12px;color:#374151;font-weight:500;">TikTok</span>
-                            </div>
-                            @endif
-                            @if($profile->youtube)
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                                <span style="width:28px;height:28px;background:#fef2f2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                                    <i data-lucide="youtube" style="width:14px;height:14px;color:#dc2626;"></i>
-                                </span>
-                                <span style="font-size:12px;color:#374151;font-weight:500;">YouTube</span>
-                            </div>
-                            @endif
-                            @if($profile->spotify)
-                            <div style="display:flex;align-items:center;gap:8px;">
-                                <span style="width:28px;height:28px;background:#f0fdf4;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-                                    <i class="fa-brands fa-spotify" style="font-size:14px;color:#1DB954;"></i>
-                                </span>
-                                <span style="font-size:12px;color:#374151;font-weight:500;">Spotify</span>
-                            </div>
-                            @endif
-                            @if(!$profile->phone && !$profile->instagram && !$profile->facebook && !$profile->youtube && !$profile->tiktok && !$profile->spotify)
-                                <p style="font-size:12px;color:#9ca3af;font-style:italic;">Sin información de contacto.</p>
-                            @endif
-                        </div>
-
-                        {{-- Multimedia --}}
-                        @if(isset($media) && count($media) > 0)
-                        <div style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
-                            <h4 style="font-size:12px;font-weight:700;color:#374151;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Portafolio</h4>
-                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;">
-                                @foreach($media->take(6) as $m)
-                                    @if($m->type === 'photo')
-                                        <div style="aspect-ratio:1;border-radius:7px;overflow:hidden;position:relative;">
-                                            <img src="{{ $m->url() }}" alt="Foto" style="width:100%;height:100%;object-fit:cover;">
-                                            @if($m->is_featured)
-                                                <span style="position:absolute;top:2px;left:2px;background:rgba(245,158,11,.9);border-radius:4px;padding:2px 3px;display:flex;align-items:center;">
-                                                    <i data-lucide="star" style="width:8px;height:8px;fill:#fff;color:#fff;"></i>
-                                                </span>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <div style="aspect-ratio:1;border-radius:7px;overflow:hidden;background:#1a0b38;position:relative;display:flex;align-items:center;justify-content:center;">
-                                            <i data-lucide="play-circle" style="width:22px;height:22px;color:rgba(255,255,255,.8);"></i>
-                                            @if($m->is_featured)
-                                                <span style="position:absolute;top:2px;left:2px;background:rgba(245,158,11,.9);border-radius:4px;padding:2px 3px;display:flex;align-items:center;">
-                                                    <i data-lucide="star" style="width:8px;height:8px;fill:#fff;color:#fff;"></i>
-                                                </span>
-                                            @endif
-                                        </div>
-                                    @endif
-                                @endforeach
+                            
+                            <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;" class="hide-scroll">
+                                @if(isset($media) && count($media) > 0)
+                                    @foreach($media->take(3) as $m)
+                                        <img src="{{ $m->url() }}" style="width:110px; height:110px; border-radius:12px; object-fit:cover; flex-shrink:0;">
+                                    @endforeach
+                                @else
+                                    <div style="width:130px; height:180px; background:rgba(255,255,255,0.03); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <i data-lucide="image" style="width:28px;height:28px;color:#a8a2b5;"></i>
+                                    </div>
+                                    <div style="width:130px; height:180px; background:rgba(255,255,255,0.03); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                        <i data-lucide="image" style="width:28px;height:28px;color:#a8a2b5;"></i>
+                                    </div>
+                                @endif
                             </div>
                         </div>
-                        @endif
-
-                        {{-- Botón contratar (app) --}}
-                        <div style="padding:16px 16px 24px;">
-                            <button style="
-                                width:100%;padding:13px;
-                                background:linear-gradient(135deg,#6c3fc5,#2f93f5);
-                                color:#fff;border:none;border-radius:12px;
-                                font-size:14px;font-weight:700;cursor:pointer;
-                                box-shadow:0 4px 16px rgba(108,63,197,.35);
-                            ">Solicitar contratación</button>
+                        
+                        {{-- Reseñas --}}
+                        <div style="margin: 28px 16px 20px;">
+                            <h3 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 12px;">Reseñas</h3>
+                            <div style="font-size:12px;color:#a8a2b5;font-style:italic;">Este músico aún no tiene reseñas. ¡Sé el primero en contratarlo!</div>
                         </div>
 
                     </div>{{-- /app-body --}}
