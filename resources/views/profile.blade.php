@@ -1180,10 +1180,10 @@
                             </div>
                             
                             <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;" class="hide-scroll">
-                                @php $photos = isset($media) ? $media->where('type', 'photo') : collect(); @endphp
+                                @php $photos = isset($media) ? collect($media)->where('type', 'photo')->values() : collect(); @endphp
                                 @if($photos->count() > 0)
-                                    @foreach($photos->take(2) as $m)
-                                        <img src="{{ $m->url() }}" style="width:120px; height:140px; border-radius:16px; object-fit:cover; flex-shrink:0;">
+                                    @foreach($photos->take(2) as $index => $m)
+                                        <img src="{{ $m->url() }}" style="width:{{ $index === 0 ? '120px' : '70px' }}; height:140px; border-radius:16px; object-fit:cover; flex-shrink:0;">
                                     @endforeach
                                     @if($photos->count() == 1)
                                         <img src="https://images.unsplash.com/photo-1520483601560-389dff434fdf?auto=format&fit=crop&w=300&q=80" style="width:70px; height:140px; border-radius:16px; object-fit:cover;">
