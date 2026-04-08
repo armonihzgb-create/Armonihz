@@ -112,6 +112,30 @@ public function store(StoreHiringRequestRequest $request)
             return response()->json(['success' => false, 'message' => 'Cliente no encontrado.'], 404);
         }
 
+        // 🔥 CORRECCIÓN: VALIDACIÓN DE TRASLAPE EN LA BASE DE DATOS
+        $musicianId = $request->input('musician_profile_id');
+        $startTime = $request->input('event_date');
+        $endTime = $request->input('end_time');
+
+        $hasOverlap = HiringRequest::where('musician_profile_id', $musicianId)
+            ->where(function ($query) use ($startTime, $endTime) {
+                // Fórmula de traslape: (InicioNuevo < FinExistente) Y (FinNuevo > InicioExistente)
+                $query->where('event_date', '<', $endTime)
+                      ->where('end_time', '>', $startTime);
+            })
+            // Solo validamos contra eventos que estén pendientes o ya aceptados.
+            // Ignoramos los cancelados o rechazados porque esos liberan el horario.
+            ->whereIn('status', ['pending', 'accepted'])
+            ->exists();
+
+        if ($hasOverlap) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El músico ya tiene un evento o solicitud pendiente que choca con este horario.'
+            ], 422); // 422 Unprocessable Entity
+        }
+        // 🔥 FIN DE LA CORRECCIÓN
+
         // Se crea la solicitud en la base de datos
         $hiringRequest = HiringRequest::create(array_merge(
             $request->validated(),
@@ -121,10 +145,10 @@ public function store(StoreHiringRequestRequest $request)
             ]
         ));
 
-        // Cargamos las relaciones (cliente, perfil del músico, y el usuario del músico para sacar su email)
+        // Cargamos las relaciones
         $hiringRequest->load(['client', 'musicianProfile.user']);
 
-        // 🔥 LA MAGIA AQUÍ: Enviar el correo al músico
+        // Enviar el correo al músico
         try {
             $musicianEmail = $hiringRequest->musicianProfile->user->email;
             $musicianName = $hiringRequest->musicianProfile->stage_name;
@@ -134,7 +158,6 @@ public function store(StoreHiringRequestRequest $request)
                 ->send(new \App\Mail\NewHiringRequestEmail($musicianName, $clientName, $hiringRequest->event_date));
         } catch (\Exception $e) {
             \Log::error('No se pudo enviar el correo al músico: ' . $e->getMessage());
-            // Si el correo falla por alguna razón de red, no rompemos el proceso, la solicitud se guarda igual
         }
 
         return $this->successResponse(
