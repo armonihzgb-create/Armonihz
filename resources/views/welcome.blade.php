@@ -164,7 +164,9 @@
         .phone-home-indicator::after { content: ''; width: 80px; height: 4px; background: #d1d5db; border-radius: 2px; }
         
         /* -- DOWNLOAD BUTTONS -- */
-        .download-container { margin-top: 40px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .download-container { margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .app-icon-circle { width: 60px; height: 60px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(108,63,197,.3); flex-shrink: 0; }
+        .app-icon-circle img { width: 40px; height: auto; border-radius: 8px; }
         .download-btn { display: inline-flex; align-items: center; gap: 12px; padding: 12px 24px; background: #fff; color: #000; border-radius: 12px; text-decoration: none; transition: all .3s; font-weight: 700; border: 1px solid rgba(255,255,255,.1); }
         .download-btn:hover { background: #f0f0f0; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,.15); }
         .download-btn i { font-size: 24px; color: #3ddc84; } /* Android green */
@@ -411,6 +413,9 @@
                     </div>
                     
                     <div class="download-container">
+                        <div class="app-icon-circle">
+                            <img src="{{ asset('images/Armonihz_logo.png') }}" alt="Armonihz App">
+                        </div>
                         <a href="{{ asset('storage/apps/Armonihz.apk') }}" class="download-btn">
                             <i class="fa-brands fa-android"></i>
                             <div class="btn-text">
