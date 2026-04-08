@@ -1055,13 +1055,13 @@
                             
                             {{-- App topbar --}}
                             <div class="app-topbar" style="background: transparent; position: absolute; width: 100%; top: 30px; z-index: 20; border: none; display:flex; align-items:center;">
-                                <button style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
+                                <div style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
                                     <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
-                                </button>
+                                </div>
                                 <span style="font-size:15px;font-weight:600;color:#fff; flex:1; text-align:center;">Perfil del músico</span>
-                                <button style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
+                                <div style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
                                     <i data-lucide="more-vertical" style="width:18px;height:18px;"></i>
-                                </button>
+                                </div>
                             </div>
                         </div>
 
@@ -1125,12 +1125,12 @@
 
                             {{-- Action buttons --}}
                             <div style="display:flex; gap:10px; margin-top:16px; align-items:center;">
-                                <button style="flex:1; background: #8B5CF6; color:#fff; border: none; border-radius: 24px; font-weight:600; font-size:12px; display:flex; align-items:center; justify-content:center; gap:8px; height:38px;">
+                                <div style="flex:1; background: #8B5CF6 !important; color:#fff !important; border: none !important; border-radius: 24px; font-weight:600; font-size:12px; display:flex; align-items:center; justify-content:center; gap:8px; height:38px;">
                                     <i data-lucide="calendar" style="width:14px;height:14px;"></i> Solicitar contratación
-                                </button>
-                                <button style="width:38px;height:38px; border-radius:50%; border:1px solid #4A4B56; background:transparent; color:#8A8B94; display:flex; align-items:center; justify-content:center;">
-                                    <i data-lucide="heart" style="width:16px;height:16px;"></i>
-                                </button>
+                                </div>
+                                <div style="width:38px;height:38px; border-radius:50%; border:1px solid #4A4B56 !important; background:transparent !important; color:#8A8B94 !important; display:flex; align-items:center; justify-content:center;">
+                                    <i data-lucide="heart" style="width:16px;height:16px; fill:none;"></i>
+                                </div>
                             </div>
                         </div>
 
