@@ -180,8 +180,8 @@ public function syncClient(Request $request)
         $nombreCompleto = trim($request->name ?? '');
         $partes = explode(' ', $nombreCompleto, 2);
 
-        $nombre   = !empty($request->nombre)   ? $request->nombre   : ($partes[0] ?? '');
-        $apellido = !empty($request->apellido) ? $request->apellido : ($partes[1] ?? '');
+       $nombre   = $request->has('nombre')   ? $request->input('nombre')   : ($partes[0] ?? '');
+        $apellido = $request->has('apellido') ? $request->input('apellido') : ($partes[1] ?? '');
         
         // Extraemos la URL de la foto de Google que manda la app
         $googlePhotoUrl = $request->photoUrl ?? $request->picture ?? null;
