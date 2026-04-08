@@ -1028,7 +1028,7 @@
                 <div class="phone-screen">
 
                     {{-- Status bar --}}
-                    <div class="app-statusbar" style="background: transparent; position: absolute; width: 100%; top: 0; z-index: 50;">
+                    <div class="app-statusbar" style="background: transparent; position: absolute; left: 0; right: 0; top: 0; z-index: 50; box-sizing: border-box;">
                         <span style="font-size:11px;font-weight:700;">9:41</span>
                         <div style="display:flex;gap:5px;align-items:center;">
                             <i data-lucide="signal" style="width:12px;height:12px;"></i>
@@ -1054,7 +1054,7 @@
                             <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15,16,22,0.1) 0%, rgba(15,16,22,1) 100%);"></div>
                             
                             {{-- App topbar --}}
-                            <div class="app-topbar" style="background: transparent; position: absolute; width: 100%; top: 30px; z-index: 20; border: none; display:flex; align-items:center;">
+                            <div class="app-topbar" style="background: transparent; position: absolute; left: 0; right: 0; top: 30px; z-index: 20; border: none; display:flex; align-items:center; box-sizing: border-box;">
                                 <div style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
                                     <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
                                 </div>
@@ -1241,6 +1241,7 @@
 
     <style>
         /* ─── PHONE FRAME ─────────────────────────────────────── */
+        .phone-frame * { box-sizing: border-box; }
         .phone-frame {
             width: 290px;
             background: #1a1a2e;
