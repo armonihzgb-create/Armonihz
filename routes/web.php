@@ -14,6 +14,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/app/descargar', function () {
+    $apkPath = storage_path('app/public/apps/Armonihz.apk');
+    if (!file_exists($apkPath)) {
+        return response('El archivo Armonihz.apk no se encuentra en el servidor (Easypanel). Por favor, sube físicamente el archivo a: ' . $apkPath, 404);
+    }
+    return response()->download($apkPath, 'Armonihz.apk', [
+        'Content-Type' => 'application/vnd.android.package-archive',
+    ]);
+})->name('app.download');
+
 Route::get('/test', function () {
     return view('test');
 });

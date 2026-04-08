@@ -416,7 +416,7 @@
                         <div class="app-icon-circle">
                             <img src="{{ asset('images/Armonihz_logo.png') }}" alt="Armonihz App">
                         </div>
-                        <a href="{{ asset('storage/apps/Armonihz.apk') }}" class="download-btn">
+                        <a href="{{ route('app.download') }}" class="download-btn">
                             <i class="fa-brands fa-android"></i>
                             <div class="btn-text">
                                 <span class="btn-small">Descargar para</span>
