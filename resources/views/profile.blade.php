@@ -1042,7 +1042,7 @@
                         <style>
                             .app-body::-webkit-scrollbar { display:none; }
                             .solid-card { background: #1C1D26; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-                            .stat-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; text-align: center; background: #262732; border-radius: 16px; }
+                            .stat-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 6px; text-align: center; background: #262732; border-radius: 16px; min-width: 0; word-break: break-word; }
                             .tab-btn { flex: 1; text-align: center; padding: 12px 0 10px; font-size: 13px; font-weight: 500; color: #8A8B94; border-bottom: 2px solid transparent; transition: all 0.2s; }
                             .tab-btn.active { color: #fff; border-bottom: 2px solid #8B5CF6; }
                             .contact-row { display: flex; align-items: center; background: #262732; border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; }
