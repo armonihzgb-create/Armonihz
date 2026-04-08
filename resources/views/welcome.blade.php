@@ -162,6 +162,15 @@
         .app-body::-webkit-scrollbar { display: none; }
         .phone-home-indicator { height: 20px; background: #f9f9f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .phone-home-indicator::after { content: ''; width: 80px; height: 4px; background: #d1d5db; border-radius: 2px; }
+        
+        /* -- DOWNLOAD BUTTONS -- */
+        .download-container { margin-top: 40px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .download-btn { display: inline-flex; align-items: center; gap: 12px; padding: 12px 24px; background: #fff; color: #000; border-radius: 12px; text-decoration: none; transition: all .3s; font-weight: 700; border: 1px solid rgba(255,255,255,.1); }
+        .download-btn:hover { background: #f0f0f0; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,.15); }
+        .download-btn i { font-size: 24px; color: #3ddc84; } /* Android green */
+        .download-btn .btn-text { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+        .download-btn .btn-small { font-size: 10px; font-weight: 500; text-transform: uppercase; color: #666; }
+        .download-btn .btn-large { font-size: 16px; }
 
         /* -- TESTIMONIALS -- */
         .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
@@ -399,6 +408,16 @@
                         <div class="app-feat"><i class="fa-solid fa-check-circle"></i> Las solicitudes de contratación llegan a tu dashboard</div>
                         <div class="app-feat"><i class="fa-solid fa-check-circle"></i> La disponibilidad que configuras en la web se sincroniza en la app</div>
                         <div class="app-feat"><i class="fa-solid fa-check-circle"></i> Mayor exposición con promociones dentro de la app</div>
+                    </div>
+                    
+                    <div class="download-container">
+                        <a href="{{ asset('apps/armonihz.apk') }}" class="download-btn">
+                            <i class="fa-brands fa-android"></i>
+                            <div class="btn-text">
+                                <span class="btn-small">Descargar para</span>
+                                <span class="btn-large">Android APK</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
                 <div class="phone-frame" style="transform: scale(0.95); transform-origin: center right; margin-right: 0; margin-left: auto;">
