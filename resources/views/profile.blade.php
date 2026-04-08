@@ -1020,7 +1020,24 @@
             {{-- Marco del teléfono --}}
             <div class="phone-frame">
                 {{-- Notch --}}
-                <div                     {{-- Contenido principal --}}
+                <div class="phone-notch">
+                    <div class="phone-camera"></div>
+                </div>
+
+                {{-- Pantalla --}}
+                <div class="phone-screen">
+
+                    {{-- Status bar --}}
+                    <div class="app-statusbar" style="background: transparent; position: absolute; width: 100%; top: 0; z-index: 50;">
+                        <span style="font-size:11px;font-weight:700;">9:41</span>
+                        <div style="display:flex;gap:5px;align-items:center;">
+                            <i data-lucide="signal" style="width:12px;height:12px;"></i>
+                            <i data-lucide="wifi" style="width:12px;height:12px;"></i>
+                            <i data-lucide="battery-full" style="width:12px;height:12px;"></i>
+                        </div>
+                    </div>
+
+                    {{-- Contenido principal --}}
                     <div class="app-body" style="background: #0F1016; position: relative; padding-bottom: 32px; height: 100%;">
                         <style>
                             .app-body::-webkit-scrollbar { display:none; }
