@@ -125,13 +125,13 @@ public function store(StoreHiringRequestRequest $request)
             })
             // Solo validamos contra eventos que estén pendientes o ya aceptados.
             // Ignoramos los cancelados o rechazados porque esos liberan el horario.
-            ->whereIn('status', ['pending', 'accepted'])
+            ->where('status', 'accepted')
             ->exists();
 
         if ($hasOverlap) {
             return response()->json([
                 'success' => false,
-                'message' => 'El músico ya tiene un evento o solicitud pendiente que choca con este horario.'
+                'message' => 'El músico ya tiene un evento confirmado en este horario. Por favor, elige otra hora.'
             ], 422); // 422 Unprocessable Entity
         }
         // 🔥 FIN DE LA CORRECCIÓN
