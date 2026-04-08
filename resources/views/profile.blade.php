@@ -1180,7 +1180,16 @@
                             </div>
                             
                             <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;" class="hide-scroll">
-                                @php $photos = isset($media) ? collect($media)->where('type', 'photo')->values() : collect(); @endphp
+                                @php 
+                                    $photos = isset($media) ? collect($media)->filter(function($item) {
+                                        $ext = strtolower(pathinfo($item->path, PATHINFO_EXTENSION));
+                                        return in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) || $item->type === 'photo';
+                                    })->filter(function($item) {
+                                        // Doble check para que NUNCA pase un mp4 o mov
+                                        $ext = strtolower(pathinfo($item->path, PATHINFO_EXTENSION));
+                                        return !in_array($ext, ['mp4', 'mov']);
+                                    })->values() : collect(); 
+                                @endphp
                                 @if($photos->count() > 0)
                                     @foreach($photos->take(2) as $index => $m)
                                         <img src="{{ $m->url() }}" style="width:{{ $index === 0 ? '120px' : '70px' }}; height:140px; border-radius:16px; object-fit:cover; flex-shrink:0;">
