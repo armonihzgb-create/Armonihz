@@ -1215,19 +1215,6 @@
                             </div>
                         </div>
 
-                    </div>{{-- /app-body --}}gba(255,255,255,0.03); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                        <i data-lucide="image" style="width:28px;height:28px;color:#a8a2b5;"></i>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                        
-                        {{-- Reseñas --}}
-                        <div style="margin: 28px 16px 20px;">
-                            <h3 style="font-size:17px;font-weight:700;color:#fff;margin:0 0 12px;">Reseñas</h3>
-                            <div style="font-size:12px;color:#a8a2b5;font-style:italic;">Este músico aún no tiene reseñas. ¡Sé el primero en contratarlo!</div>
-                        </div>
-
                     </div>{{-- /app-body --}}
 
                     {{-- Home indicator --}}
