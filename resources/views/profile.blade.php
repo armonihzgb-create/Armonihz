@@ -1020,166 +1020,185 @@
             {{-- Marco del teléfono --}}
             <div class="phone-frame">
                 {{-- Notch --}}
-                <div class="phone-notch">
-                    <div class="phone-camera"></div>
-                </div>
-
-                {{-- Pantalla --}}
-                <div class="phone-screen">
-
-                    {{-- Status bar --}}
-                    <div class="app-statusbar" style="background: transparent; position: absolute; width: 100%; top: 0; z-index: 50;">
-                        <span style="font-size:11px;font-weight:700;">9:41</span>
-                        <div style="display:flex;gap:5px;align-items:center;">
-                            <i data-lucide="signal" style="width:12px;height:12px;"></i>
-                            <i data-lucide="wifi" style="width:12px;height:12px;"></i>
-                            <i data-lucide="battery-full" style="width:12px;height:12px;"></i>
-                        </div>
-                    </div>
-
-                    {{-- Contenido principal --}}
-                    <div class="app-body" style="background: linear-gradient(180deg, #1B0F36 0%, #090314 100%); position: relative; padding-bottom: 32px; height: 100%;">
+                <div                     {{-- Contenido principal --}}
+                    <div class="app-body" style="background: #0F1016; position: relative; padding-bottom: 32px; height: 100%;">
                         <style>
                             .app-body::-webkit-scrollbar { display:none; }
-                            .glass-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
-                            .stat-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; text-align: center; }
-                            .tab-btn { flex: 1; text-align: center; padding: 10px 0 8px; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.5); border-bottom: 2px solid transparent; transition: all 0.2s; }
+                            .solid-card { background: #1C1D26; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+                            .stat-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; text-align: center; background: #262732; border-radius: 16px; }
+                            .tab-btn { flex: 1; text-align: center; padding: 12px 0 10px; font-size: 13px; font-weight: 500; color: #8A8B94; border-bottom: 2px solid transparent; transition: all 0.2s; }
                             .tab-btn.active { color: #fff; border-bottom: 2px solid #8B5CF6; }
-                            .contact-row { display: flex; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; }
+                            .contact-row { display: flex; align-items: center; background: #262732; border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; }
                         </style>
 
                         {{-- Hero Image --}}
-                        <div style="height: 200px; position: relative;">
-                            <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center;"></div>
-                            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(27,15,54,0.1) 0%, rgba(27,15,54,1) 100%);"></div>
+                        <div style="height: 180px; position: relative;">
+                            <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'); background-size: cover; background-position: center; filter: grayscale(100%);"></div>
+                            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15,16,22,0.1) 0%, rgba(15,16,22,1) 100%);"></div>
                             
                             {{-- App topbar --}}
-                            <div class="app-topbar" style="background: rgba(0,0,0,0.2); backdrop-filter: blur(8px); position: absolute; width: 100%; top: 30px; z-index: 20; border: none; display:flex; align-items:center;">
+                            <div class="app-topbar" style="background: transparent; position: absolute; width: 100%; top: 30px; z-index: 20; border: none; display:flex; align-items:center;">
                                 <button style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
-                                    <i data-lucide="arrow-left" style="width:22px;height:22px;"></i>
+                                    <i data-lucide="arrow-left" style="width:20px;height:20px;"></i>
                                 </button>
-                                <span style="font-size:16px;font-weight:700;color:#fff; flex:1; text-align:center;">Perfil del músico</span>
+                                <span style="font-size:15px;font-weight:600;color:#fff; flex:1; text-align:center;">Perfil del músico</span>
                                 <button style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
-                                    <i data-lucide="more-vertical" style="width:20px;height:20px;"></i>
+                                    <i data-lucide="more-vertical" style="width:18px;height:18px;"></i>
                                 </button>
                             </div>
                         </div>
 
                         {{-- Avatar --}}
-                        <div style="display: flex; justify-content: center; margin-top: -70px; position: relative; z-index: 2;">
-                            <div style="width: 140px; height: 140px; border-radius: 50%; border: 4px solid #1B0F36; box-shadow: 0 16px 32px rgba(0,0,0,0.6); overflow: hidden; background: #2f93f5; display:flex; align-items:center; justify-content:center;">
+                        <div style="display: flex; justify-content: center; margin-top: -65px; position: relative; z-index: 2;">
+                            <div style="width: 110px; height: 110px; border-radius: 50%; border: 3px solid #8B5CF6; box-shadow: 0 0 15px rgba(139,92,246,0.5); overflow: hidden; background: #1C1D26; display:flex; align-items:center; justify-content:center;">
                                 @if($profile && $profile->profile_picture)
-                                    <img src="{{ Str::startsWith($profile->profile_picture, ['http://', 'https://']) ? $profile->profile_picture : $profile->profilePictureUrl() }}" style="width:100%; height:100%; object-fit:cover;">
+                                    <img src="{{ Str::startsWith($profile->profile_picture, ['http://', 'https://']) ? $profile->profile_picture : $profile->profilePictureUrl() }}" style="width:100%; height:100%; object-fit:cover; filter: grayscale(100%);">
                                 @else
-                                    <span style="font-size: 42px; font-weight: 800; color: #fff;">{{ strtoupper(substr($profile->stage_name ?? $user->name,0,2)) }}</span>
+                                    <span style="font-size: 32px; font-weight: 800; color: #fff;">{{ strtoupper(substr($profile->stage_name ?? $user->name,0,2)) }}</span>
                                 @endif
                             </div>
                         </div>
 
                         {{-- Profile Info Card --}}
-                        <div class="glass-card" style="margin: 8px 16px 0; padding: 82px 20px 24px; margin-top: -65px; position:relative; z-index: 1;">
-                            <div style="text-align: center; margin-bottom: 4px; display:flex; justify-content:center; align-items:center; gap:8px;">
-                                <h1 style="font-size: 24px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.5px; line-height: 1.2;">{{ $profile->stage_name ?? $user->name }}</h1>
-                                <i data-lucide="star" style="width:18px;height:18px;fill:#8B5CF6;color:#8B5CF6;"></i>
+                        <div class="solid-card" style="margin: 0 12px; padding: 65px 16px 20px; margin-top: -55px; position:relative; z-index: 1;">
+                            <div style="text-align: center; margin-bottom: 2px; display:flex; justify-content:center; align-items:center; gap:6px;">
+                                <h1 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; letter-spacing: -0.5px;">{{ $profile->stage_name ?? $user->name }}</h1>
+                                <i data-lucide="star" style="width:16px;height:16px;fill:#8B5CF6;color:#8B5CF6;"></i>
                             </div>
 
-                            <div style="display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 20px;">
-                                <i data-lucide="map-pin" style="width:14px;height:14px;color:#a8a2b5;"></i>
-                                <span style="font-size: 13px; color: #a8a2b5;">{{ $profile->location ?? 'Ubicación no especificada' }}</span>
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 4px; margin-bottom: 16px;">
+                                <i data-lucide="map-pin" style="width:12px;height:12px;color:#8A8B94;"></i>
+                                <span style="font-size: 11px; color: #8A8B94;">{{ $profile->location ?? 'Ubicación no especificada' }}</span>
                             </div>
 
                             {{-- 3 Stat Cards --}}
-                            <div style="display: flex; gap: 6px; margin-bottom: 24px;">
-                                <div class="glass-card stat-box" style="flex:1;">
-                                    <span style="font-size: 14px; font-weight: 800; color: #fff;">{{ $profile->hourly_rate ? '$'.number_format($profile->hourly_rate,0) : '$—' }}</span>
-                                    <span style="font-size: 11px; color: #a8a2b5; margin-top: 4px;">Por hora</span>
+                            <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                                <div class="stat-box" style="flex:1;">
+                                    <span style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2;">{{ $profile->hourly_rate ? '$'.number_format($profile->hourly_rate,2) : '$—' }}<br>MXN / hora</span>
+                                    <span style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Por hora</span>
                                 </div>
-                                <div class="glass-card stat-box" style="flex:1;">
-                                    <span style="font-size: 14px; font-weight: 800; color: #fff;">{{ $profile->coverage_notes ? 'Sí' : 'No' }}</span>
-                                    <span style="font-size: 11px; color: #a8a2b5; margin-top: 4px;">Notas</span>
+                                <div class="stat-box" style="flex:1;">
+                                    <span style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2;">{{ $profile->coverage_notes ? 'Pago extra por traslado.' : 'Sin notas' }}</span>
+                                    <span style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Notas</span>
                                 </div>
-                                <div class="glass-card stat-box" style="flex:1;">
-                                    <span style="font-size: 14px; font-weight: 800; color: #fff;">{{ number_format($profile->averageRating(), 1) }}</span>
-                                    <span style="font-size: 11px; color: #a8a2b5; margin-top: 4px;">Valoración</span>
+                                <div class="stat-box" style="flex:1;">
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <span style="font-size: 13px; font-weight: 700; color: #fff;">{{ number_format($profile->averageRating(), 1) }}</span>
+                                        <i data-lucide="star" style="width:12px;height:12px;fill:#EAB308;color:#EAB308;"></i>
+                                    </div>
+                                    <span style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Valoración</span>
                                 </div>
                             </div>
 
                             {{-- Tabs --}}
-                            <div style="display: flex; margin-bottom: 14px;">
+                            <div style="display: flex;">
                                 <div class="tab-btn active">Acerca de</div>
                                 <div class="tab-btn">Contacto</div>
                             </div>
-                            <div style="height:1px; background: rgba(255,255,255,0.1); margin-bottom: 14px;"></div>
+                            <div style="height:1px; background: #262732; margin-bottom: 12px;"></div>
 
                             {{-- Description --}}
-                            <div style="font-size: 13px; color: #d1cddb; line-height: 1.6;">
+                            <div style="font-size: 11px; color: #A0A1AB; line-height: 1.5; padding: 0 4px;">
                                 @if($profile->bio)
                                     {{ Str::limit($profile->bio, 140) }}
                                 @else
-                                    Cargando detalles...
+                                    Es una de las figuras más importantes de los corridos tumbados, un género que mezcla la música regional mexicana con elementos de trap y hip hop.
                                 @endif
                             </div>
 
                             {{-- Action buttons --}}
-                            <div style="display:flex; gap:10px; margin-top:20px; align-items:center;">
-                                <button style="flex:1; background: #8B5CF6; color:#fff; border: 1px solid rgba(139,92,246,0.3); border-radius: 24px; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px; height:44px;">
-                                    <i data-lucide="calendar" style="width:16px;height:16px;"></i> Solicitar contratación
+                            <div style="display:flex; gap:10px; margin-top:16px; align-items:center;">
+                                <button style="flex:1; background: #8B5CF6; color:#fff; border: none; border-radius: 24px; font-weight:600; font-size:12px; display:flex; align-items:center; justify-content:center; gap:8px; height:38px;">
+                                    <i data-lucide="calendar" style="width:14px;height:14px;"></i> Solicitar contratación
                                 </button>
-                                <button style="width:44px;height:44px; border-radius:24px; border:1.5px solid #8B5CF6; background:transparent; color:#8B5CF6; display:flex; align-items:center; justify-content:center;">
-                                    <i data-lucide="heart" style="width:18px;height:18px;"></i>
+                                <button style="width:38px;height:38px; border-radius:50%; border:1px solid #4A4B56; background:transparent; color:#8A8B94; display:flex; align-items:center; justify-content:center;">
+                                    <i data-lucide="heart" style="width:16px;height:16px;"></i>
                                 </button>
                             </div>
                         </div>
 
                         {{-- Disponibilidad Card --}}
-                        <div class="glass-card" style="margin: 24px 16px 0; padding: 20px;">
-                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                                <i data-lucide="calendar" style="width:18px;height:18px;color:#8B5CF6;"></i>
-                                <span style="font-size:15px;font-weight:700;color:#fff;">Disponibilidad</span>
+                        <div class="solid-card" style="margin: 16px 12px 0; padding: 16px;">
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                                <i data-lucide="calendar" style="width:16px;height:16px;color:#8B5CF6;"></i>
+                                <span style="font-size:14px;font-weight:600;color:#fff;">Disponibilidad</span>
                             </div>
-                            <div style="font-size:12px;color:#a8a2b5;margin-bottom:16px;line-height:1.5;">Consulta las fechas libres del músico y elige el mejor momento para tu evento.</div>
+                            <div style="font-size:10px;color:#8A8B94;margin-bottom:12px;line-height:1.4;">Consulta las fechas libres del músico y elige el mejor momento para tu evento.</div>
                             
                             {{-- Fake Calendar Box --}}
-                            <div style="background: rgba(0,0,0,0.25); border-radius:12px; padding:16px; text-align:center;">
-                                <div style="display:flex;justify-content:space-between;margin-bottom:16px;">
-                                    <i data-lucide="chevron-left" style="width:16px;height:16px;color:#a8a2b5;"></i>
-                                    <span style="font-size:13px;font-weight:700;color:#fff;">Abril 2026</span>
-                                    <i data-lucide="chevron-right" style="width:16px;height:16px;color:#a8a2b5;"></i>
+                            <div style="background: #1C1D26; border-radius:12px;">
+                                <div style="display:flex;justify-content:space-between;margin-bottom:12px;background:#8B5CF6;border-radius:12px 12px 0 0;padding:12px 16px;align-items:center;">
+                                    <i data-lucide="chevron-left" style="width:16px;height:16px;color:#fff;"></i>
+                                    <span style="font-size:13px;font-weight:600;color:#fff;">Abril 2026</span>
+                                    <i data-lucide="chevron-right" style="width:16px;height:16px;color:#fff;"></i>
                                 </div>
-                                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:11px;color:#a8a2b5;margin-bottom:8px;font-weight:600;">
-                                    <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
-                                </div>
-                                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:12px;color:#fff;font-weight:600;">
-                                    <span style="opacity:0.3">30</span><span style="opacity:0.3">31</span><span>1</span><span>2</span><span>3</span><span style="background:#8B5CF6;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin:auto;">4</span><span>5</span>
+                                <div style="padding: 0 12px 12px;">
+                                    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:10px;color:#8A8B94;margin-bottom:8px;font-weight:500;text-align:center;">
+                                        <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
+                                    </div>
+                                    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:10px;color:#A0A1AB;font-weight:500;text-align:center;row-gap:8px;">
+                                        <span style="opacity:0.3">29</span><span style="opacity:0.3">30</span><span style="opacity:0.3">31</span><span>1</span><span>2</span><span>3</span><span>4</span>
+                                        <span>5</span><span>6</span><span>7</span><span style="background:#8B5CF6;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;width:20px;height:20px;margin:auto;">8</span><span>9</span><span>10</span><span>11</span>
+                                        <span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span>
+                                        <span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span>
+                                        <span>26</span><span>27</span><span>28</span><span>29</span><span>30</span><span style="opacity:0.3">1</span><span style="opacity:0.3">2</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div style="margin-top:16px;">
-                                <div style="font-size:14px;font-weight:700;color:#fff;">Selecciona un día</div>
-                                <div style="font-size:12px;color:#a8a2b5;margin-top:2px;">Toca una fecha en el calendario para ver los horarios ocupados.</div>
+                            <div style="margin-top:12px;">
+                                <div style="font-size:12px;font-weight:600;color:#fff;">Selecciona un día</div>
+                                <div style="font-size:10px;color:#8A8B94;margin-top:2px;">Toca una fecha en el calendario para ver los horarios ocupados.</div>
                             </div>
                         </div>
 
                         {{-- Galeria Layout --}}
-                        <div class="glass-card" style="margin: 24px 16px 0; padding: 16px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                                <span style="font-size:16px; font-weight:700; color:#fff;">Galería</span>
+                        <div class="solid-card" style="margin: 16px 12px 0; padding: 16px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <span style="font-size:14px; font-weight:600; color:#fff;">Galeria</span>
                                 {{-- Pill tabs --}}
-                                <div style="background:rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius:20px; display:flex; padding:4px;">
-                                    <span style="background:#8B5CF6; color:#fff; font-size:11px; font-weight:700; padding:5px 14px; border-radius:16px;">Fotos</span>
-                                    <span style="color:#a8a2b5; font-size:11px; padding:5px 14px; font-weight:600;">Videos</span>
+                                <div style="background:#262732; border-radius:20px; display:flex; padding:2px;">
+                                    <span style="background:#8B5CF6; color:#fff; font-size:10px; font-weight:600; padding:4px 12px; border-radius:16px;">Fotos</span>
+                                    <span style="color:#8A8B94; font-size:10px; padding:4px 12px; font-weight:500;">Videos</span>
                                 </div>
                             </div>
                             
                             <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;" class="hide-scroll">
                                 @if(isset($media) && count($media) > 0)
-                                    @foreach($media->take(3) as $m)
-                                        <img src="{{ $m->url() }}" style="width:110px; height:110px; border-radius:12px; object-fit:cover; flex-shrink:0;">
+                                    @foreach($media->take(2) as $m)
+                                        <img src="{{ $m->url() }}" style="width:120px; height:140px; border-radius:16px; object-fit:cover; flex-shrink:0;">
                                     @endforeach
                                 @else
-                                    <div style="width:130px; height:180px; background:rgba(255,255,255,0.03); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                        <i data-lucide="image" style="width:28px;height:28px;color:#a8a2b5;"></i>
+                                    <img src="https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=300&q=80" style="width:120px; height:140px; border-radius:16px; object-fit:cover; filter: grayscale(100%);">
+                                    <img src="https://images.unsplash.com/photo-1520483601560-389dff434fdf?auto=format&fit=crop&w=300&q=80" style="width:70px; height:140px; border-radius:16px; object-fit:cover;">
+                                @endif
+                            </div>
+                        </div>
+                        
+                        {{-- Reseñas --}}
+                        <div style="margin: 16px 12px 20px;">
+                            <h3 style="font-size:14px;font-weight:600;color:#fff;margin:0 0 12px;">Reseñas</h3>
+                            <div class="solid-card" style="padding:12px;">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                                    <div style="display:flex; gap:8px; align-items:center;">
+                                        <img src="https://ui-avatars.com/api/?name=Cristhian+Meza&background=F59E0B&color=fff" style="width:28px;height:28px;border-radius:50%;">
+                                        <div>
+                                            <div style="font-size:12px;font-weight:600;color:#fff;">Cristhian Meza</div>
+                                            <div style="font-size:10px;color:#8A8B94;">05 abr. 2026</div>
+                                        </div>
                                     </div>
-                                    <div style="width:130px; height:180px; background:rgba(255,255,255,0.03); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <div style="display:flex; gap:2px;">
+                                        <i data-lucide="star" style="width:10px;height:10px;fill:#EAB308;color:#EAB308;"></i>
+                                        <i data-lucide="star" style="width:10px;height:10px;fill:#EAB308;color:#EAB308;"></i>
+                                        <i data-lucide="star" style="width:10px;height:10px;fill:#EAB308;color:#EAB308;"></i>
+                                        <i data-lucide="star" style="width:10px;height:10px;fill:#EAB308;color:#EAB308;"></i>
+                                        <i data-lucide="star" style="width:10px;height:10px;fill:#EAB308;color:#EAB308;"></i>
+                                    </div>
+                                </div>
+                                <div style="font-size:11px;color:#A0A1AB;">Genial!</div>
+                            </div>
+                        </div>
+
+                    </div>{{-- /app-body --}}gba(255,255,255,0.03); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                                         <i data-lucide="image" style="width:28px;height:28px;color:#a8a2b5;"></i>
                                     </div>
                                 @endif
