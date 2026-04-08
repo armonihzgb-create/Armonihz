@@ -411,7 +411,7 @@
                     </div>
                     
                     <div class="download-container">
-                        <a href="{{ asset('storage/apps/armonihz.apk') }}" class="download-btn">
+                        <a href="{{ asset('storage/apps/Armonihz.apk') }}" class="download-btn">
                             <i class="fa-brands fa-android"></i>
                             <div class="btn-text">
                                 <span class="btn-small">Descargar para</span>
