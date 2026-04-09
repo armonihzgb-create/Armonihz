@@ -283,43 +283,131 @@
                 </div>
             </div>
 
-            <!-- Profile card mockup -->
-            <div>
-                <div class="profile-mockup">
-                    <div class="pm-header">
-                        <div class="pm-avatar">JR</div>
-                        <div>
-                            <div class="pm-name">Jesús Ramos</div>
-                            <div class="pm-genre">🎸 Rock · Pop · Baladas</div>
-                            <div class="pm-badge"><i class="fa-solid fa-circle" style="font-size:6px;"></i> Disponible</div>
+            <!-- Dashboard UI mockup -->
+            <div style="position:relative; flex-shrink:0;">
+                <!-- Browser chrome -->
+                <div style="background:#1e1e2e; border-radius:16px; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 30px 80px rgba(0,0,0,0.6); width:420px; overflow:hidden; font-family:'Inter',sans-serif;">
+                    <!-- Browser top bar -->
+                    <div style="background:#2a2a3e; padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;display:inline-block;"></span>
+                        <span style="width:10px;height:10px;border-radius:50%;background:#febc2e;display:inline-block;"></span>
+                        <span style="width:10px;height:10px;border-radius:50%;background:#28c840;display:inline-block;"></span>
+                        <div style="flex:1; background:#1e1e2e; border-radius:6px; padding:4px 12px; margin:0 8px; font-size:11px; color:rgba(255,255,255,0.3); text-align:center;">armonihz.com/profile</div>
+                    </div>
+                    <!-- App layout -->
+                    <div style="display:flex; height:380px; overflow:hidden;">
+                        <!-- Sidebar -->
+                        <div style="width:140px; background:#17172a; padding:14px 10px; flex-shrink:0; border-right:1px solid rgba(255,255,255,0.05); overflow:hidden;">
+                            <!-- Brand -->
+                            <div style="display:flex; align-items:center; gap:6px; margin-bottom:18px; padding: 0 4px;">
+                                <div style="width:22px;height:22px;background:linear-gradient(135deg,#8B5CF6,#6c3fc5);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                                    <i class="fa-solid fa-music" style="font-size:9px;color:#fff;"></i>
+                                </div>
+                                <span style="font-size:12px;font-weight:800;color:#fff;">Armonihz</span>
+                            </div>
+                            <!-- Nav -->
+                            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.8px;padding:0 4px;margin-bottom:6px;">GENERAL</div>
+                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                                <i class="fa-solid fa-gauge" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
+                                <span style="font-size:10px;color:rgba(255,255,255,0.4);">Dashboard</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;background:rgba(139,92,246,0.15);margin-bottom:2px;border:1px solid rgba(139,92,246,0.2);">
+                                <i class="fa-solid fa-user" style="font-size:10px;color:#8B5CF6;"></i>
+                                <span style="font-size:10px;color:#8B5CF6;font-weight:600;">Perfil</span>
+                            </div>
+                            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.8px;padding:0 4px;margin:10px 0 6px;">OPORTUNIDADES</div>
+                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                                <i class="fa-solid fa-crosshairs" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
+                                <span style="font-size:10px;color:rgba(255,255,255,0.4);">Castings</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                                <i class="fa-solid fa-eye" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
+                                <span style="font-size:10px;color:rgba(255,255,255,0.4);">Promocionar</span>
+                            </div>
+                            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.8px;padding:0 4px;margin:10px 0 6px;">GESTIÓN</div>
+                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                                <i class="fa-solid fa-photo-film" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
+                                <span style="font-size:10px;color:rgba(255,255,255,0.4);">Multimedia</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                                <i class="fa-solid fa-calendar" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
+                                <span style="font-size:10px;color:rgba(255,255,255,0.4);">Disponibilidad</span>
+                            </div>
+                        </div>
+                        <!-- Main content -->
+                        <div style="flex:1; overflow-y:auto; background:#0f0f1a; scrollbar-width:none;">
+                            <!-- Concert hero banner -->
+                            <div style="height:110px; position:relative; overflow:hidden;">
+                                <div style="position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80');background-size:cover;background-position:center;filter:grayscale(100%) brightness(0.6);"></div>
+                                <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(15,15,26,1) 100%);"></div>
+                                <!-- Top-right buttons -->
+                                <div style="position:absolute;top:8px;right:10px;display:flex;gap:6px;">
+                                    <div style="background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:4px 8px;font-size:9px;color:#fff;display:flex;gap:4px;align-items:center;">
+                                        <i class="fa-solid fa-pen" style="font-size:8px;"></i> Editar
+                                    </div>
+                                    <div style="background:rgba(139,92,246,0.8);backdrop-filter:blur(8px);border-radius:8px;padding:4px 8px;font-size:9px;color:#fff;display:flex;gap:4px;align-items:center;">
+                                        <i class="fa-regular fa-eye" style="font-size:8px;"></i> Vista Previa
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Avatar + Name row -->
+                            <div style="padding:0 14px; margin-top:-30px; position:relative; z-index:2;">
+                                <div style="display:flex; align-items:flex-end; gap:10px; margin-bottom:8px;">
+                                    <div style="width:52px;height:52px;border-radius:50%;border:3px solid #8B5CF6;background:#262732;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 12px rgba(139,92,246,0.4);">
+                                        <i class="fa-solid fa-user" style="font-size:20px;color:rgba(255,255,255,0.3);"></i>
+                                    </div>
+                                    <div style="padding-bottom:2px;">
+                                        <div style="font-size:15px;font-weight:800;color:#fff;line-height:1;">Peso Pluma</div>
+                                        <div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:3px;">
+                                            <span>1 evento</span> <span style="margin:0 4px;">·</span>
+                                            <span>116 vistas</span> <span style="margin:0 4px;">·</span>
+                                            <span style="color:#f59e0b;">⭐ 5.0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Completion bar -->
+                                <div style="background:#1C1D26;border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                                    <i class="fa-solid fa-circle-check" style="font-size:12px;color:#22c55e;"></i>
+                                    <span style="font-size:9px;color:rgba(255,255,255,0.6);flex:1;">Tu perfil está listo para recibir solicitudes</span>
+                                    <span style="font-size:10px;font-weight:700;color:#8B5CF6;">100%</span>
+                                </div>
+                                <div style="height:4px;background:#1C1D26;border-radius:2px;margin-bottom:12px;overflow:hidden;">
+                                    <div style="height:100%;width:100%;background:linear-gradient(90deg,#8B5CF6,#6c3fc5);border-radius:2px;"></div>
+                                </div>
+                                <!-- Personal data section header -->
+                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                                    <div style="width:18px;height:18px;background:rgba(59,130,246,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                                        <i class="fa-solid fa-user-circle" style="font-size:9px;color:#3b82f6;"></i>
+                                    </div>
+                                    <span style="font-size:10px;font-weight:700;color:#fff;">Datos Personales</span>
+                                </div>
+                                <!-- Mini stat row -->
+                                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+                                    <div style="background:#1C1D26;border-radius:10px;padding:8px 6px;text-align:center;">
+                                        <div style="font-size:12px;font-weight:700;color:#fff;">$3,200</div>
+                                        <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">MXN/hr</div>
+                                    </div>
+                                    <div style="background:#1C1D26;border-radius:10px;padding:8px 6px;text-align:center;">
+                                        <div style="font-size:12px;font-weight:700;color:#fff;">148</div>
+                                        <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">Eventos</div>
+                                    </div>
+                                    <div style="background:#1C1D26;border-radius:10px;padding:8px 6px;text-align:center;">
+                                        <div style="font-size:12px;font-weight:700;color:#f59e0b;">⭐ 5.0</div>
+                                        <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">Rating</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="pm-stats">
-                        <div class="pm-stat"><div class="v">⭐ 5.0</div><div class="l">Calificación</div></div>
-                        <div class="pm-stat"><div class="v">148</div><div class="l">Eventos</div></div>
-                        <div class="pm-stat"><div class="v">$3,200</div><div class="l">MXN/hr</div></div>
+                </div>
+                <!-- Floating notification -->
+                <div style="position:absolute;bottom:-12px;right:-16px;background:linear-gradient(135deg,#8B5CF6,#6c3fc5);border-radius:14px;padding:10px 14px;box-shadow:0 8px 24px rgba(139,92,246,0.45);display:flex;align-items:center;gap:8px;min-width:180px;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fa-solid fa-envelope" style="font-size:11px;color:#fff;"></i>
                     </div>
-                    <div class="pm-chips">
-                        <span class="pm-chip">Guitarra</span>
-                        <span class="pm-chip">Voz</span>
-                        <span class="pm-chip">Piano</span>
-                        <span class="pm-chip">Eventos privados</span>
-                    </div>
-                    <div class="pm-calendar">
-                        <div class="pm-calendar-title"><i class="fa-solid fa-calendar-check" style="margin-right:5px;"></i> Disponibilidad — Marzo</div>
-                        <div class="pm-days">
-                            @foreach(['L','M','M','J','V','S','D'] as $d)
-                            <div class="pm-day" style="background:transparent;color:rgba(248,246,255,.4);font-size:9px;font-weight:700;">{{ $d }}</div>
-                            @endforeach
-                            @php $days = [
-                                ['',''],['',''],['busy',''],['',''],['available',''],['available',''],['available',''],
-                                ['available',''],['busy',''],['busy',''],['today',''],['available',''],['available',''],['busy',''],
-                                ['available',''],['available',''],['available',''],['busy',''],['busy',''],['available',''],['available',''],
-                            ]; @endphp
-                            @foreach($days as $d)
-                            <div class="pm-day {{ $d[0] }}">{{ $loop->index + 1 }}</div>
-                            @endforeach
-                        </div>
+                    <div>
+                        <div style="font-size:9px;font-weight:700;color:#fff;">Nueva solicitud recibida</div>
+                        <div style="font-size:8px;color:rgba(255,255,255,0.7);">Boda · 14 mayo · CDMX</div>
                     </div>
                 </div>
             </div>
