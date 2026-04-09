@@ -863,69 +863,57 @@
             font-size: 16px;
         }
 
-        /* -- TESTIMONIALS -- */
-        .testi-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 56px;
+        /* -- FAQ -- */
+        .faq-container {
+            max-width: 800px;
+            margin: 56px auto 0;
         }
 
-        .testi-card {
+        .faq-item {
             background: rgba(255, 255, 255, .04);
             backdrop-filter: blur(12px);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 26px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
             transition: all .3s;
         }
 
-        .testi-card:hover {
+        .faq-item:hover {
             border-color: rgba(108, 63, 197, .35);
             background: rgba(255, 255, 255, .07);
         }
 
-        .testi-stars {
-            color: #f59e0b;
-            font-size: 13px;
-            margin-bottom: 14px;
-        }
-
-        .testi-text {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.75;
-            font-style: italic;
-            margin-bottom: 18px;
-        }
-
-        .testi-author {
+        .faq-question {
+            padding: 20px 24px;
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .testi-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 800;
-            color: #fff;
-            flex-shrink: 0;
-        }
-
-        .testi-name {
-            font-size: 14px;
+            justify-content: space-between;
+            color: var(--text);
             font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
         }
 
-        .testi-role {
-            font-size: 11px;
+        .faq-answer {
+            padding: 0 24px 20px;
             color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .faq-icon {
+            transition: transform .3s;
+            color: var(--purple-light);
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
         }
 
         /* -- CTA -- */
@@ -1602,47 +1590,51 @@
         </div>
     </section>
 
-    <!-- TESTIMONIALS -->
+    <!-- FAQ -->
     <section style="background:rgba(255,255,255,.015);">
         <div class="section-inner">
-            <div class="section-eyebrow"><i class="fa-solid fa-heart"></i> Músicos</div>
-            <h2 class="section-title">Lo que dicen los músicos</h2>
-            <p class="section-sub">Únete a los pioneros que están revolucionando las contrataciones en vivo.</p>
-            <div class="testi-grid">
-                <div class="testi-card">
-                    <div class="testi-stars">★★★★★</div>
-                    <p class="testi-text">"Armonihz cambió mi carrera por completo. Antes tenía 3 o 4 eventos al mes.
-                        Hoy tengo la agenda llena y puedo elegir mis contratos."</p>
-                    <div class="testi-author">
-                        <div class="testi-avatar" style="background:linear-gradient(135deg,#6c3fc5,#2f93f5);">JR</div>
-                        <div>
-                            <div class="testi-name">Jesús Ramos</div>
-                            <div class="testi-role">Guitarrista · Guadalajara</div>
-                        </div>
+            <div class="section-eyebrow"><i class="fa-solid fa-circle-question"></i> FAQ</div>
+            <h2 class="section-title">Preguntas Frecuentes</h2>
+            <p class="section-sub">Todo lo que necesitas saber antes de empezar en Armonihz.</p>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Es realmente gratis para los músicos?</span>
+                        <i class="fa-solid fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Sí, crear tu perfil artístico, subir tu material multimedia y aplicar a los castings publicados es totalmente gratuito. Nuestro objetivo es que no tengas barreras para mostrar tu talento.
                     </div>
                 </div>
-                <div class="testi-card">
-                    <div class="testi-stars">★★★★★</div>
-                    <p class="testi-text">"La sección de castings es increíble. Apliqué a una convocatoria a través de
-                        la plataforma y conseguí un contrato de 6 meses con una productora."</p>
-                    <div class="testi-author">
-                        <div class="testi-avatar" style="background:linear-gradient(135deg,#16a34a,#0ea5e9);">AM</div>
-                        <div>
-                            <div class="testi-name">Ana Martínez</div>
-                            <div class="testi-role">Violinista · CDMX</div>
-                        </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Cómo me encuentran los clientes?</span>
+                        <i class="fa-solid fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Una vez que completas tu perfil, este se vuelve visible en la app móvil de clientes de Armonihz. Los clientes filtran por género, ubicación y calificación para encontrarte y enviarte solicitudes de contratación.
                     </div>
                 </div>
-                <div class="testi-card">
-                    <div class="testi-stars">★★★★★</div>
-                    <p class="testi-text">"Subí mis videos al perfil y en la primera semana ya tenía mensajes de
-                        clientes interesados. La plataforma es muy fácil de usar y el soporte es excelente."</p>
-                    <div class="testi-author">
-                        <div class="testi-avatar" style="background:linear-gradient(135deg,#d97706,#dc2626);">LS</div>
-                        <div>
-                            <div class="testi-name">Luis Soria</div>
-                            <div class="testi-role">Pianista · Monterrey</div>
-                        </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Tengo que descargar la app para gestionar mi perfil?</span>
+                        <i class="fa-solid fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Como músico, puedes gestionar toda tu presencia (agenda, multimedia, solicitudes) cómodamente desde este panel web. La app móvil es la herramienta principal que usan los clientes para descubrirte.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Cómo funciona el sistema de reputación?</span>
+                        <i class="fa-solid fa-plus faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        Después de cada evento realizado, los clientes pueden dejar una reseña y calificación. Un perfil con buenas valoraciones tiene muchas más probabilidades de aparecer en los primeros resultados y conseguir nuevos contratos.
                     </div>
                 </div>
             </div>
@@ -1696,6 +1688,22 @@
             a.addEventListener('click', e => {
                 const t = document.querySelector(a.getAttribute('href'));
                 if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            });
+        });
+
+        // FAQ Toggle Logic
+        document.querySelectorAll('.faq-question').forEach(q => {
+            q.addEventListener('click', () => {
+                const item = q.parentElement;
+                const wasActive = item.classList.contains('active');
+                
+                // Close all other items
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                
+                // Toggle current if not already active
+                if (!wasActive) {
+                    item.classList.add('active');
+                }
             });
         });
     </script>
