@@ -90,6 +90,7 @@ public function profile(Request $request)
         'apellido' => $cliente->apellido ?? '',
         'email'    => $cliente->email,
         'telefono' => $cliente->telefono,
+        'terminos_aceptados' => (bool) $cliente->terminos_aceptados,
         'photoUrl' => $cliente->fotoPerfil
             ? url('file/' . $cliente->fotoPerfil)
             : null
@@ -177,15 +178,13 @@ public function syncClient(Request $request)
             return response()->json(['message' => 'Token de Firebase no detectado'], 401);
         }
 
-        // Solo usamos el name completo para la tabla 'users' (autenticación)
         $nombreCompleto = trim($request->name ?? '');
+        $partes = explode(' ', $nombreCompleto, 2);
 
-        // 🔥 LA SOLUCIÓN: Simplemente tomamos lo que manda Android.
-        // Si Android manda "", Laravel lo convertirá a null automáticamente.
-        // Ya NO intentamos adivinar el nombre usando explode().
-        $nombre   = $request->nombre;
-        $apellido = $request->apellido;
+        $nombre   = !empty($request->nombre)   ? $request->nombre   : ($partes[0] ?? '');
+        $apellido = !empty($request->apellido) ? $request->apellido : ($partes[1] ?? '');
         
+        // Extraemos la URL de la foto de Google que manda la app
         $googlePhotoUrl = $request->photoUrl ?? $request->picture ?? null;
 
         $user = User::where('email', $request->email)->first();
@@ -193,12 +192,13 @@ public function syncClient(Request $request)
         if (!$user) {
             $user = User::create([
                 'email'        => $request->email,
-                'name'         => $nombreCompleto, // Aquí SÍ va el nombre de Google
+                'name'         => $nombreCompleto,
                 'firebase_uid' => $firebaseUid,
                 'role'         => 'cliente',
                 'password'     => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(16)),
             ]);
         } else {
+            // Actualizamos name solo si está vacío o si se quedó como 'Usuario'
             $nuevoName = (empty($user->name) || $user->name === 'Usuario') ? $nombreCompleto : $user->name;
             $user->update([
                 'name'         => $nuevoName,
@@ -216,17 +216,18 @@ public function syncClient(Request $request)
                 $changed = true;
             }
 
-            // Actualizamos SOLO si Android realmente mandó texto
-            if (!empty($nombre) && (empty($cliente->nombre) || $cliente->nombre === 'Usuario')) {
+            // 🔥 LA MAGIA AQUÍ: Si dice 'Usuario', lo sobreescribimos con el nombre real
+            if (empty($cliente->nombre) || $cliente->nombre === 'Usuario') {
                 $cliente->nombre = $nombre;
                 $changed = true;
             }
 
-            if (!empty($apellido) && empty($cliente->apellido)) {
+            if (empty($cliente->apellido)) {
                 $cliente->apellido = $apellido;
                 $changed = true;
             }
 
+            // Guardamos la foto de Google como respaldo si no la tiene
             if (empty($cliente->google_picture) && $googlePhotoUrl) {
                 $cliente->google_picture = $googlePhotoUrl;
                 $changed = true;
@@ -237,19 +238,18 @@ public function syncClient(Request $request)
             }
 
         } else {
-            // Si es un usuario nuevo, guardará null en nombre y apellido
             Client::create([
                 'firebase_uid'   => $firebaseUid,
                 'user_id'        => $user->id,
-                'nombre'         => $nombre,     
-                'apellido'       => $apellido,   
+                'nombre'         => $nombre,
+                'apellido'       => $apellido,
                 'email'          => $request->email,
                 'google_picture' => $googlePhotoUrl
             ]);
         }
 
-      return response()->json([
-            'message' => 'CLIENTE SINCRONIZADO VERSION NUEVA', // 🔥 Cambia el mensaje
+        return response()->json([
+            'message' => 'Cliente sincronizado correctamente',
             'user_id' => $user->id
         ]);
     }
@@ -340,6 +340,7 @@ public function syncClient(Request $request)
     $cliente->nombre   = trim($request->nombre);
     $cliente->apellido = trim($request->apellido);
     $cliente->telefono = $request->telefono;
+    $cliente->terminos_aceptados = true;
     $cliente->save();
 
     // ✅ Sincronizar en tabla users con nombre completo
