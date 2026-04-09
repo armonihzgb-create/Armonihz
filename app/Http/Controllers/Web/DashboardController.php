@@ -203,6 +203,34 @@ class DashboardController extends Controller
                         'label'   => 'Subir multimedia',
                     ];
                 }
+
+                // Verification status tip — injected at the START of tips so it is always the first one seen
+                $verificationStatus = $profile->verification_status ?? 'unverified';
+                if ($verificationStatus === 'unverified') {
+                    array_unshift($welcomeTips, [
+                        'icon'    => 'shield',
+                        'color'   => '#f59e0b',
+                        'message' => 'Tu perfil <strong>no es visible</strong> en la app móvil. Sube tu documento de identidad para iniciar la verificación.',
+                        'action'  => route('id_verification.notice'),
+                        'label'   => 'Verificar identidad',
+                    ]);
+                } elseif ($verificationStatus === 'pending') {
+                    array_unshift($welcomeTips, [
+                        'icon'    => 'clock',
+                        'color'   => '#3b82f6',
+                        'message' => 'Tu documento está <strong>en revisión</strong>. Tu perfil será visible en la app móvil una vez que un administrador lo apruebe.',
+                        'action'  => null,
+                        'label'   => null,
+                    ]);
+                } elseif ($verificationStatus === 'rejected') {
+                    array_unshift($welcomeTips, [
+                        'icon'    => 'alert-circle',
+                        'color'   => '#ef4444',
+                        'message' => 'Tu verificación fue <strong>rechazada</strong>. ' . (e($profile->rejection_reason) ?: 'Revisa el motivo y vuelve a subir tu documento.'),
+                        'action'  => route('id_verification.notice'),
+                        'label'   => 'Subir nuevo documento',
+                    ]);
+                }
             }
         }
 

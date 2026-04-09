@@ -19,7 +19,9 @@ class MusicianProfileController extends Controller
    public function index(Request $request)
     {
         // 1. Optimizamos relaciones: Solo traemos los datos mínimos del usuario y de los géneros
-        $query = MusicianProfile::with(['user:id,name', 'genres:id,name'])
+        // Only APPROVED musicians are visible in the mobile app.
+        $query = MusicianProfile::approved()
+            ->with(['user:id,name', 'genres:id,name'])
             ->withExists([
                 'promotions as has_active_promotion' => function ($query) {
                     $query->where('is_active', true)->where('valid_until', '>', now());
@@ -85,6 +87,8 @@ class MusicianProfileController extends Controller
 
     /**
      * Display the specified resource.
+     * Only approved profiles are publicly accessible.
+     * The profile owner (authenticated via Sanctum) can always see their own profile.
      */
     public function show(Request $request, string $id)
     {
@@ -96,6 +100,21 @@ class MusicianProfileController extends Controller
                 $query->where('is_active', true);
             }
         ])->findOrFail($id);
+
+        // Gate: block non-approved profiles unless the requester is the owner
+        if ($profile->verification_status !== MusicianProfile::STATUS_APPROVED) {
+            // Check if the requesting user is the profile owner (Sanctum auth)
+            $sanctumUser = $request->user('sanctum');
+            $isOwner = $sanctumUser && $sanctumUser->id === $profile->user_id;
+
+            if (!$isOwner) {
+                return $this->errorResponse(
+                    'Este perfil no está disponible porque aún no ha sido verificado.',
+                    null,
+                    404
+                );
+            }
+        }
 
         $isFavorite = false;
 
