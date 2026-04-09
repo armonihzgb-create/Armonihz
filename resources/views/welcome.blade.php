@@ -1807,9 +1807,9 @@
         </a>
         <p class="footer-copy">© 2026 Armonihz. Todos los derechos reservados.</p>
         <div class="footer-links">
-            <a href="#">Privacidad</a>
-            <a href="#">Términos</a>
-            <a href="#">Ayuda</a>
+            <a href="{{ route('legal.privacidad') }}">Privacidad</a>
+            <a href="{{ route('legal.terminos') }}">Términos</a>
+            <a href="{{ route('legal.ayuda') }}">Ayuda</a>
         </div>
     </footer>
 

@@ -594,7 +594,12 @@
     </div>
 
     <footer class="footer">
-        Perfil en <a href="{{ url('/') }}">Armonihz</a> · La plataforma que conecta músicos con eventos
+        <div>Perfil en <a href="{{ url('/') }}">Armonihz</a> · La plataforma que conecta músicos con eventos</div>
+        <div style="margin-top: 10px; font-size: 11px; opacity: 0.7;">
+            <a href="{{ route('legal.privacidad') }}" style="margin: 0 8px;">Privacidad</a> ·
+            <a href="{{ route('legal.terminos') }}" style="margin: 0 8px;">Términos</a> ·
+            <a href="{{ route('legal.ayuda') }}" style="margin: 0 8px;">Ayuda</a>
+        </div>
     </footer>
 
     <script>lucide.createIcons();</script>

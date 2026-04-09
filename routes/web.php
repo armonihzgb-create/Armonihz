@@ -12,7 +12,7 @@ use App\Http\Controllers\Web\MultimediaController;
 // --- PUBLIC ROUTES ---
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Route::get('/app/descargar', function () {
     $apkPath = public_path('downloads/Armonihz.apk');
@@ -82,6 +82,11 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class , 'verifyEmail'])
 
 // --- PUBLIC MUSICIAN PROFILE ---
 Route::get('/musico/{id}', [ProfileController::class , 'showPublic'])->name('profile.public');
+
+// --- LEGAL PAGES (public, no auth required) ---
+Route::get('/privacidad', fn() => view('legal.privacidad'))->name('legal.privacidad');
+Route::get('/terminos',   fn() => view('legal.terminos'))->name('legal.terminos');
+Route::get('/ayuda',      fn() => view('legal.ayuda'))->name('legal.ayuda');
 
 // --- AUTHENTICATED ROUTES ---
 Route::middleware(['auth', 'verified'])->group(function () {

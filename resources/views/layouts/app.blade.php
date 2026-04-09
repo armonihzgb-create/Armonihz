@@ -22,9 +22,9 @@
                     <p>© 2026 <strong>Armonihz</strong>. Todos los derechos reservados.</p>
                 </div>
                 <div class="footer-right">
-                    <a href="#">Privacidad</a>
-                    <a href="#">Términos</a>
-                    <a href="#">Ayuda</a>
+                    <a href="{{ route('legal.privacidad') }}">Privacidad</a>
+                    <a href="{{ route('legal.terminos') }}">Términos</a>
+                    <a href="{{ route('legal.ayuda') }}">Ayuda</a>
                 </div>
             </div>
         </footer>

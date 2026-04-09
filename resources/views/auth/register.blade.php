@@ -148,7 +148,7 @@
                     <div class="checkbox-wrapper">
                         <input type="checkbox" id="terms" required style="width: auto; margin-top: 0; accent-color:var(--accent-blue);">
                         <label for="terms" style="margin: 0; font-weight: 400; font-size: 13px; color: var(--text-dim);">
-                            Acepto los <a href="#" class="link">Términos y Condiciones</a> y la Política de Privacidad.
+                            Acepto los <a href="{{ route('legal.terminos') }}" class="link">Términos y Condiciones</a> y la <a href="{{ route('legal.privacidad') }}" class="link">Política de Privacidad</a>.
                         </label>
                     </div>
 
