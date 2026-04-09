@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Armonihz — La plataforma para músicos profesionales</title>
-    <meta name="description" content="Crea tu perfil artístico, gestiona tu agenda, aplica a castings y consigue más contratos. Armonihz es la plataforma que los músicos necesitan para crecer.">
+    <meta name="description"
+        content="Crea tu perfil artístico, gestiona tu agenda, aplica a castings y consigue más contratos. Armonihz es la plataforma que los músicos necesitan para crecer.">
     <link rel="icon" type="image/png" href="{{ asset('images/Armonihz_logo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
             --purple: #6c3fc5;
@@ -21,204 +30,1038 @@
             --dark: #09090b;
             --dark-2: #18181b;
             --text: #f8f6ff;
-            --text-muted: rgba(248,246,255,.62);
-            --border: rgba(255,255,255,.1);
+            --text-muted: rgba(248, 246, 255, .62);
+            --border: rgba(255, 255, 255, .1);
         }
 
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; background: var(--dark); color: var(--text); overflow-x: hidden; }
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+        }
 
         /* -- NAVBAR -- */
         .nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-            display: flex; align-items: center; justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             padding: 16px 6%;
-            background: rgba(15,10,30,.8); backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border); transition: background .3s;
+            background: rgba(15, 10, 30, .8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            transition: background .3s;
         }
-        .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
-        .nav-brand img { width: 32px; border-radius: 8px; filter: brightness(0) invert(1); }
-        .nav-brand span { font-size: 20px; font-weight: 800; letter-spacing: -.5px; }
-        .nav-links { display: flex; align-items: center; gap: 6px; }
-        .nav-link { padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--text-muted); transition: all .2s; }
-        .nav-link:hover { color: var(--text); background: rgba(255,255,255,.07); }
-        .nav-cta { padding: 9px 22px; border-radius: 8px; border: none; background: var(--purple); color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; transition: all .2s; box-shadow: 0 4px 18px rgba(108,63,197,.4); }
-        .nav-cta:hover { background: var(--purple-light); transform: translateY(-1px); }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .nav-brand img {
+            width: 32px;
+            border-radius: 8px;
+            filter: brightness(0) invert(1);
+        }
+
+        .nav-brand span {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text-muted);
+            transition: all .2s;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, .07);
+        }
+
+        .nav-cta {
+            padding: 9px 22px;
+            border-radius: 8px;
+            border: none;
+            background: var(--purple);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all .2s;
+            box-shadow: 0 4px 18px rgba(108, 63, 197, .4);
+        }
+
+        .nav-cta:hover {
+            background: var(--purple-light);
+            transform: translateY(-1px);
+        }
 
         /* -- HERO -- */
         .hero {
-            min-height: 100vh; display: flex; align-items: center;
-            padding: 130px 6% 90px; position: relative; overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 130px 6% 90px;
+            position: relative;
+            overflow: hidden;
         }
+
         .hero-bg {
-            position: absolute; inset: 0; z-index: 0;
+            position: absolute;
+            inset: 0;
+            z-index: 0;
             background:
-                radial-gradient(ellipse 70% 60% at 60% 0%, rgba(108,63,197,.45) 0%, transparent 60%),
-                radial-gradient(ellipse 50% 40% at 10% 80%, rgba(47,147,245,.18) 0%, transparent 60%);
+                radial-gradient(ellipse 70% 60% at 60% 0%, rgba(108, 63, 197, .45) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 10% 80%, rgba(47, 147, 245, .18) 0%, transparent 60%);
         }
+
         .hero-grid {
-            position: absolute; inset: 0; z-index: 0;
-            background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, .03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, .03) 1px, transparent 1px);
             background-size: 60px 60px;
         }
+
         .hero-inner {
-            max-width: 1100px; margin: 0 auto; position: relative; z-index: 1;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
         }
+
         .hero-badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(108,63,197,.15); border: 1px solid rgba(108,63,197,.4);
-            color: #c4b5fd; font-size: 12px; font-weight: 700; letter-spacing: .04em;
-            text-transform: uppercase; padding: 5px 14px; border-radius: 999px; margin-bottom: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(108, 63, 197, .15);
+            border: 1px solid rgba(108, 63, 197, .4);
+            color: #c4b5fd;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 999px;
+            margin-bottom: 24px;
         }
-        h1.hero-title { font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 900; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 20px; }
-        .hero-title .accent { background: linear-gradient(135deg, #c084fc, #60b0fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-sub { font-size: 17px; color: var(--text-muted); line-height: 1.75; margin-bottom: 36px; }
-        .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-        .btn-primary { display: inline-flex; align-items: center; gap: 9px; padding: 14px 28px; border-radius: 12px; background: var(--purple); color: #fff; font-size: 15px; font-weight: 700; text-decoration: none; box-shadow: 0 8px 28px rgba(108,63,197,.45); transition: all .25s; }
-        .btn-primary:hover { background: var(--purple-light); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(108,63,197,.55); }
-        .btn-secondary { display: inline-flex; align-items: center; gap: 9px; padding: 14px 28px; border-radius: 12px; background: rgba(255,255,255,.07); color: var(--text); border: 1px solid var(--border); font-size: 15px; font-weight: 600; text-decoration: none; transition: all .25s; }
-        .btn-secondary:hover { background: rgba(255,255,255,.12); transform: translateY(-2px); }
-        .hero-trust { display: flex; align-items: center; gap: 10px; margin-top: 28px; font-size: 13px; color: var(--text-muted); }
-        .hero-avatars { display: flex; }
-        .hero-avatars span { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--dark); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-left: -10px; }
-        .hero-avatars span:first-child { margin-left: 0; }
+
+        h1.hero-title {
+            font-size: clamp(2.4rem, 5vw, 3.6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+        }
+
+        .hero-title .accent {
+            background: linear-gradient(135deg, #c084fc, #60b0fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-sub {
+            font-size: 17px;
+            color: var(--text-muted);
+            line-height: 1.75;
+            margin-bottom: 36px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            background: var(--purple);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 8px 28px rgba(108, 63, 197, .45);
+            transition: all .25s;
+        }
+
+        .btn-primary:hover {
+            background: var(--purple-light);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 36px rgba(108, 63, 197, .55);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .07);
+            color: var(--text);
+            border: 1px solid var(--border);
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .25s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, .12);
+            transform: translateY(-2px);
+        }
+
+        .hero-trust {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 28px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .hero-avatars {
+            display: flex;
+        }
+
+        .hero-avatars span {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--dark);
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: -10px;
+        }
+
+        .hero-avatars span:first-child {
+            margin-left: 0;
+        }
 
         /* Profile card mockup */
         .profile-mockup {
-            background: rgba(255,255,255,.05); border: 1px solid var(--border); backdrop-filter: blur(16px);
-            border-radius: 24px; padding: 28px; position: relative; overflow: hidden;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
         }
-        .profile-mockup::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--purple), transparent); }
-        .pm-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-        .pm-avatar { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, var(--purple), var(--blue)); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #fff; flex-shrink: 0; }
-        .pm-name { font-size: 17px; font-weight: 800; }
-        .pm-genre { font-size: 12px; color: #a78bfa; font-weight: 600; margin-top: 2px; }
-        .pm-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(22,163,74,.15); border: 1px solid rgba(22,163,74,.4); color: #86efac; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-top: 4px; }
-        .pm-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .pm-stat { background: rgba(255,255,255,.05); border-radius: 12px; padding: 12px 8px; text-align: center; }
-        .pm-stat .v { font-size: 18px; font-weight: 900; color: #c4b5fd; }
-        .pm-stat .l { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-        .pm-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
-        .pm-chip { padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; background: rgba(108,63,197,.15); color: #c4b5fd; border: 1px solid rgba(108,63,197,.3); }
-        .pm-calendar { background: rgba(255,255,255,.04); border-radius: 14px; padding: 14px; }
-        .pm-calendar-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
-        .pm-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-        .pm-day { width: 100%; aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; background: rgba(255,255,255,.04); color: var(--text-muted); }
-        .pm-day.busy { background: rgba(220,38,38,.25); color: #fca5a5; }
-        .pm-day.available { background: rgba(22,163,74,.2); color: #86efac; }
-        .pm-day.today { background: var(--purple); color: #fff; }
+
+        .profile-mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--purple), transparent);
+        }
+
+        .pm-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .pm-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .pm-name {
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .pm-genre {
+            font-size: 12px;
+            color: #a78bfa;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .pm-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(22, 163, 74, .15);
+            border: 1px solid rgba(22, 163, 74, .4);
+            color: #86efac;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 999px;
+            margin-top: 4px;
+        }
+
+        .pm-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .pm-stat {
+            background: rgba(255, 255, 255, .05);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .pm-stat .v {
+            font-size: 18px;
+            font-weight: 900;
+            color: #c4b5fd;
+        }
+
+        .pm-stat .l {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .pm-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 20px;
+        }
+
+        .pm-chip {
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(108, 63, 197, .15);
+            color: #c4b5fd;
+            border: 1px solid rgba(108, 63, 197, .3);
+        }
+
+        .pm-calendar {
+            background: rgba(255, 255, 255, .04);
+            border-radius: 14px;
+            padding: 14px;
+        }
+
+        .pm-calendar-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 10px;
+        }
+
+        .pm-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .pm-day {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, .04);
+            color: var(--text-muted);
+        }
+
+        .pm-day.busy {
+            background: rgba(220, 38, 38, .25);
+            color: #fca5a5;
+        }
+
+        .pm-day.available {
+            background: rgba(22, 163, 74, .2);
+            color: #86efac;
+        }
+
+        .pm-day.today {
+            background: var(--purple);
+            color: #fff;
+        }
 
         /* -- SECTION -- */
-        section { padding: 130px 6%; }
-        .section-inner { max-width: 1100px; margin: 0 auto; }
-        .section-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: #a78bfa; text-transform: uppercase; background: rgba(108,63,197,.12); border: 1px solid rgba(108,63,197,.3); padding: 4px 13px; border-radius: 999px; margin-bottom: 16px; }
-        .section-title { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 12px; }
-        .section-sub { font-size: 17px; color: var(--text-muted); line-height: 1.7; max-width: 540px; }
+        section {
+            padding: 130px 6%;
+        }
+
+        .section-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            color: #a78bfa;
+            text-transform: uppercase;
+            background: rgba(108, 63, 197, .12);
+            border: 1px solid rgba(108, 63, 197, .3);
+            padding: 4px 13px;
+            border-radius: 999px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .section-sub {
+            font-size: 17px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 540px;
+        }
 
         /* -- FEATURES GRID -- */
-        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
-        .feat-card { background: rgba(255,255,255,.04); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 28px; transition: all .3s; position: relative; overflow: hidden; }
-        .feat-card::before { content: ''; position: absolute; top: -1px; left: -1px; right: -1px; height: 2px; background: linear-gradient(90deg, var(--purple), var(--blue)); border-radius: 20px 20px 0 0; opacity: 0; transition: opacity .3s; }
-        .feat-card:hover { background: rgba(255,255,255,.07); border-color: rgba(108,63,197,.35); transform: translateY(-4px); }
-        .feat-card:hover::before { opacity: 1; }
-        .feat-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 18px; }
-        .feat-icon.purple { background: rgba(108,63,197,.2); color: #c4b5fd; }
-        .feat-icon.blue   { background: rgba(47,147,245,.2); color: #93c5fd; }
-        .feat-icon.green  { background: rgba(22,163,74,.2); color: #86efac; }
-        .feat-icon.amber  { background: rgba(245,158,11,.2); color: #fcd34d; }
-        .feat-icon.rose   { background: rgba(244,63,94,.18); color: #fda4af; }
-        .feat-icon.teal   { background: rgba(20,184,166,.18); color: #99f6e4; }
-        .feat-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-        .feat-card p { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 56px;
+        }
+
+        .feat-card {
+            background: rgba(255, 255, 255, .04);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all .3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feat-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--blue));
+            border-radius: 20px 20px 0 0;
+            opacity: 0;
+            transition: opacity .3s;
+        }
+
+        .feat-card:hover {
+            background: rgba(255, 255, 255, .07);
+            border-color: rgba(108, 63, 197, .35);
+            transform: translateY(-4px);
+        }
+
+        .feat-card:hover::before {
+            opacity: 1;
+        }
+
+        .feat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 18px;
+        }
+
+        .feat-icon.purple {
+            background: rgba(108, 63, 197, .2);
+            color: #c4b5fd;
+        }
+
+        .feat-icon.blue {
+            background: rgba(47, 147, 245, .2);
+            color: #93c5fd;
+        }
+
+        .feat-icon.green {
+            background: rgba(22, 163, 74, .2);
+            color: #86efac;
+        }
+
+        .feat-icon.amber {
+            background: rgba(245, 158, 11, .2);
+            color: #fcd34d;
+        }
+
+        .feat-icon.rose {
+            background: rgba(244, 63, 94, .18);
+            color: #fda4af;
+        }
+
+        .feat-icon.teal {
+            background: rgba(20, 184, 166, .18);
+            color: #99f6e4;
+        }
+
+        .feat-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feat-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
 
         /* -- HOW IT WORKS -- */
-        .how { background: rgba(255,255,255,.015); }
-        .how-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 60px; position: relative; }
-        .how-steps::before { content: ''; position: absolute; top: 28px; left: 10%; right: 10%; height: 2px; background: linear-gradient(90deg, var(--purple), var(--blue)); z-index: 0; }
-        .how-step { text-align: center; padding: 0 16px; position: relative; z-index: 1; }
-        .how-num { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--blue)); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: #fff; margin: 0 auto 20px; box-shadow: 0 0 0 6px var(--dark), 0 0 0 8px rgba(108,63,197,.25); }
-        .how-step h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-        .how-step p { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+        .how {
+            background: rgba(255, 255, 255, .015);
+        }
+
+        .how-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .how-steps::before {
+            content: '';
+            position: absolute;
+            top: 28px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--blue));
+            z-index: 0;
+        }
+
+        .how-step {
+            text-align: center;
+            padding: 0 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .how-num {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            color: #fff;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 0 6px var(--dark), 0 0 0 8px rgba(108, 63, 197, .25);
+        }
+
+        .how-step h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .how-step p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
 
         /* -- APP TEASER -- */
-        .app-teaser { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-top: 20px; }
-        .app-text .section-title { margin-top: 16px; }
-        .app-features { margin-top: 28px; display: flex; flex-direction: column; gap: 16px; }
-        .app-feat { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
-        .app-feat i { color: #a78bfa; font-size: 15px; width: 20px; text-align: center; }
+        .app-teaser {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .app-text .section-title {
+            margin-top: 16px;
+        }
+
+        .app-features {
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .app-feat {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .app-feat i {
+            color: #a78bfa;
+            font-size: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
         /* ─── PHONE FRAME MOCKUP ─────────────────────────────────────── */
-        .phone-frame * { box-sizing: border-box; }
-        .phone-frame { width: 290px; background: #1a1a2e; border-radius: 36px; padding: 12px 10px; box-shadow: 0 0 0 2px #333, 0 0 0 4px #555, 0 20px 60px rgba(0,0,0,.6); position: relative; margin: auto; }
-        .phone-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; background: #1a1a2e; border-radius: 0 0 14px 14px; z-index: 10; display: flex; align-items: center; justify-content: center; }
-        .phone-camera { width: 8px; height: 8px; border-radius: 50%; background: #333; border: 1px solid #555; margin-left: 50px; }
-        .phone-screen { background: #fff; border-radius: 26px; overflow: hidden; height: 540px; display: flex; flex-direction: column; position: relative; }
-        .app-statusbar { background: #1a0b38; color: #fff; padding: 12px 20px 6px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .app-topbar { background: linear-gradient(135deg,#1a0b38,#0d2452); color: #fff; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .app-hero { position: relative; padding: 20px 16px 24px; text-align: center; flex-shrink: 0; overflow: hidden; z-index: 0; }
-        .app-hero::before { content: ''; position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center; filter: grayscale(100%); z-index: -2; }
-        .app-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.75)); z-index: -1; }
-        .app-body { flex: 1; overflow-y: auto; background: #fff; scrollbar-width: none; }
-        .app-body::-webkit-scrollbar { display: none; }
-        .phone-home-indicator { height: 20px; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position:absolute; bottom:6px; left:50%; transform:translateX(-50%); z-index:50;}
-        .phone-home-indicator::after { content: ''; width: 100px; height: 4px; background: #ccc; border-radius: 2px; }
-        
+        .phone-frame * {
+            box-sizing: border-box;
+        }
+
+        .phone-frame {
+            width: 290px;
+            background: #1a1a2e;
+            border-radius: 36px;
+            padding: 12px 10px;
+            box-shadow: 0 0 0 2px #333, 0 0 0 4px #555, 0 20px 60px rgba(0, 0, 0, .6);
+            position: relative;
+            margin: auto;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 20px;
+            background: #1a1a2e;
+            border-radius: 0 0 14px 14px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phone-camera {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            border: 1px solid #555;
+            margin-left: 50px;
+        }
+
+        .phone-screen {
+            background: #fff;
+            border-radius: 26px;
+            overflow: hidden;
+            height: 540px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .app-statusbar {
+            background: #1a0b38;
+            color: #fff;
+            padding: 12px 20px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .app-topbar {
+            background: linear-gradient(135deg, #1a0b38, #0d2452);
+            color: #fff;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .app-hero {
+            position: relative;
+            padding: 20px 16px 24px;
+            text-align: center;
+            flex-shrink: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .app-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%);
+            z-index: -2;
+        }
+
+        .app-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.75));
+            z-index: -1;
+        }
+
+        .app-body {
+            flex: 1;
+            overflow-y: auto;
+            background: #fff;
+            scrollbar-width: none;
+        }
+
+        .app-body::-webkit-scrollbar {
+            display: none;
+        }
+
+        .phone-home-indicator {
+            height: 20px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+        }
+
+        .phone-home-indicator::after {
+            content: '';
+            width: 100px;
+            height: 4px;
+            background: #ccc;
+            border-radius: 2px;
+        }
+
         /* -- DOWNLOAD BUTTONS -- */
-        .download-container { margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-        .app-icon-circle { width: 60px; height: 60px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(108,63,197,.3); flex-shrink: 0; }
-        .app-icon-circle img { width: 40px; height: auto; border-radius: 8px; }
-        .download-btn { display: inline-flex; align-items: center; gap: 12px; padding: 12px 24px; background: #fff; color: #000; border-radius: 12px; text-decoration: none; transition: all .3s; font-weight: 700; border: 1px solid rgba(255,255,255,.1); }
-        .download-btn:hover { background: #f0f0f0; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,.15); }
-        .download-btn i { font-size: 24px; color: #3ddc84; } /* Android green */
-        .download-btn .btn-text { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
-        .download-btn .btn-small { font-size: 10px; font-weight: 500; text-transform: uppercase; color: #666; }
-        .download-btn .btn-large { font-size: 16px; }
+        .download-container {
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .app-icon-circle {
+            width: 60px;
+            height: 60px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(108, 63, 197, .3);
+            flex-shrink: 0;
+        }
+
+        .app-icon-circle img {
+            width: 40px;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            background: #fff;
+            color: #000;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all .3s;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .download-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, .15);
+        }
+
+        .download-btn i {
+            font-size: 24px;
+            color: #3ddc84;
+        }
+
+        /* Android green */
+        .download-btn .btn-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            text-align: left;
+        }
+
+        .download-btn .btn-small {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        .download-btn .btn-large {
+            font-size: 16px;
+        }
 
         /* -- TESTIMONIALS -- */
-        .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
-        .testi-card { background: rgba(255,255,255,.04); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 26px; transition: all .3s; }
-        .testi-card:hover { border-color: rgba(108,63,197,.35); background: rgba(255,255,255,.07); }
-        .testi-stars { color: #f59e0b; font-size: 13px; margin-bottom: 14px; }
-        .testi-text { font-size: 14px; color: var(--text-muted); line-height: 1.75; font-style: italic; margin-bottom: 18px; }
-        .testi-author { display: flex; align-items: center; gap: 12px; }
-        .testi-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
-        .testi-name { font-size: 14px; font-weight: 700; }
-        .testi-role { font-size: 11px; color: var(--text-muted); }
+        .testi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 56px;
+        }
+
+        .testi-card {
+            background: rgba(255, 255, 255, .04);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 26px;
+            transition: all .3s;
+        }
+
+        .testi-card:hover {
+            border-color: rgba(108, 63, 197, .35);
+            background: rgba(255, 255, 255, .07);
+        }
+
+        .testi-stars {
+            color: #f59e0b;
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .testi-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.75;
+            font-style: italic;
+            margin-bottom: 18px;
+        }
+
+        .testi-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testi-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .testi-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .testi-role {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
 
         /* -- CTA -- */
-        .cta-section { padding: 100px 6%; text-align: center; background: linear-gradient(135deg, rgba(108,63,197,.15) 0%, rgba(47,147,245,.08) 100%); border-top: 1px solid var(--border); }
-        .cta-section h2 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 16px; }
-        .cta-section p { font-size: 17px; color: var(--text-muted); max-width: 500px; margin: 0 auto 36px; line-height: 1.7; }
-        .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-        .cta-note { margin-top: 16px; font-size: 12px; color: var(--text-muted); }
+        .cta-section {
+            padding: 100px 6%;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(108, 63, 197, .15) 0%, rgba(47, 147, 245, .08) 100%);
+            border-top: 1px solid var(--border);
+        }
+
+        .cta-section h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            font-size: 17px;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 36px;
+            line-height: 1.7;
+        }
+
+        .cta-btns {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-note {
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
 
         /* -- FOOTER -- */
-        footer { padding: 36px 6%; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-        .footer-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
-        .footer-brand img { width: 26px; border-radius: 6px; filter: brightness(0) invert(1); }
-        .footer-brand span { font-size: 16px; font-weight: 800; }
-        .footer-copy { font-size: 13px; color: var(--text-muted); }
-        .footer-links { display: flex; gap: 20px; }
-        .footer-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color .2s; }
-        .footer-links a:hover { color: var(--text); }
+        footer {
+            padding: 36px 6%;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .footer-brand img {
+            width: 26px;
+            border-radius: 6px;
+            filter: brightness(0) invert(1);
+        }
+
+        .footer-brand span {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .footer-copy {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color .2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text);
+        }
 
         /* -- RESPONSIVE -- */
         @media (max-width: 900px) {
-            .hero-inner { grid-template-columns: 1fr; gap: 50px; }
-            .features-grid { grid-template-columns: 1fr 1fr; }
-            .how-steps { grid-template-columns: 1fr 1fr; gap: 40px; }
-            .how-steps::before { display: none; }
-            .app-teaser { grid-template-columns: 1fr; gap: 40px; }
-            .testi-grid { grid-template-columns: 1fr; }
+            .hero-inner {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .how-steps {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+
+            .how-steps::before {
+                display: none;
+            }
+
+            .app-teaser {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .testi-grid {
+                grid-template-columns: 1fr;
+            }
         }
+
         @media (max-width: 600px) {
-            .nav-links .nav-link { display: none; }
-            .features-grid { grid-template-columns: 1fr; }
-            footer { flex-direction: column; align-items: flex-start; }
+            .nav-links .nav-link {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- NAVBAR -->
@@ -256,7 +1099,8 @@
                     en <span class="accent">un solo lugar</span>
                 </h1>
                 <p class="hero-sub">
-                    Armonihz es la plataforma donde los músicos crean su perfil profesional, gestionan su agenda, aplican a castings y son descubiertos por miles de clientes a través de la app móvil.
+                    Armonihz es la plataforma donde los músicos crean su perfil profesional, gestionan su agenda,
+                    aplican a castings y son descubiertos por miles de clientes a través de la app móvil.
                 </p>
                 <div class="hero-btns">
                     @if(Route::has('register'))
@@ -286,50 +1130,70 @@
             <!-- Dashboard UI mockup -->
             <div style="position:relative; flex-shrink:0;">
                 <!-- Browser chrome -->
-                <div style="background:#1e1e2e; border-radius:16px; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 30px 80px rgba(0,0,0,0.6); width:420px; overflow:hidden; font-family:'Inter',sans-serif;">
+                <div
+                    style="background:#1e1e2e; border-radius:16px; box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 30px 80px rgba(0,0,0,0.6); width:480px; overflow:hidden; font-family:'Inter',sans-serif;">
                     <!-- Browser top bar -->
-                    <div style="background:#2a2a3e; padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <span style="width:10px;height:10px;border-radius:50%;background:#ff5f57;display:inline-block;"></span>
-                        <span style="width:10px;height:10px;border-radius:50%;background:#febc2e;display:inline-block;"></span>
-                        <span style="width:10px;height:10px;border-radius:50%;background:#28c840;display:inline-block;"></span>
-                        <div style="flex:1; background:#1e1e2e; border-radius:6px; padding:4px 12px; margin:0 8px; font-size:11px; color:rgba(255,255,255,0.3); text-align:center;">armonihz.com/profile</div>
+                    <div
+                        style="background:#2a2a3e; padding:10px 16px; display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span
+                            style="width:10px;height:10px;border-radius:50%;background:#ff5f57;display:inline-block;"></span>
+                        <span
+                            style="width:10px;height:10px;border-radius:50%;background:#febc2e;display:inline-block;"></span>
+                        <span
+                            style="width:10px;height:10px;border-radius:50%;background:#28c840;display:inline-block;"></span>
+                        <div
+                            style="flex:1; background:#1e1e2e; border-radius:6px; padding:4px 12px; margin:0 8px; font-size:11px; color:rgba(255,255,255,0.3); text-align:center;">
+                            armonihz.com/profile</div>
                     </div>
                     <!-- App layout -->
                     <div style="display:flex; height:380px; overflow:hidden;">
                         <!-- Sidebar -->
-                        <div style="width:140px; background:#17172a; padding:14px 10px; flex-shrink:0; border-right:1px solid rgba(255,255,255,0.05); overflow:hidden;">
+                        <div
+                            style="width:140px; background:#17172a; padding:14px 10px; flex-shrink:0; border-right:1px solid rgba(255,255,255,0.05); overflow:hidden;">
                             <!-- Brand -->
                             <div style="display:flex; align-items:center; gap:6px; margin-bottom:18px; padding: 0 4px;">
-                                <div style="width:22px;height:22px;background:linear-gradient(135deg,#8B5CF6,#6c3fc5);border-radius:6px;display:flex;align-items:center;justify-content:center;">
-                                    <i class="fa-solid fa-music" style="font-size:9px;color:#fff;"></i>
-                                </div>
+                                <img src="{{ asset('images/Armonihz_logo.png') }}" style="width:22px;height:22px;border-radius:5px;object-fit:contain;" alt="Armonihz">
                                 <span style="font-size:12px;font-weight:800;color:#fff;">Armonihz</span>
                             </div>
                             <!-- Nav -->
-                            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.8px;padding:0 4px;margin-bottom:6px;">GENERAL</div>
-                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                            <div
+                                style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.8px;padding:0 4px;margin-bottom:6px;">
+                                GENERAL</div>
+                            <div
+                                style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
                                 <i class="fa-solid fa-gauge" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
                                 <span style="font-size:10px;color:rgba(255,255,255,0.4);">Dashboard</span>
                             </div>
-                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;background:rgba(139,92,246,0.15);margin-bottom:2px;border:1px solid rgba(139,92,246,0.2);">
+                            <div
+                                style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;background:rgba(139,92,246,0.15);margin-bottom:2px;border:1px solid rgba(139,92,246,0.2);">
                                 <i class="fa-solid fa-user" style="font-size:10px;color:#8B5CF6;"></i>
                                 <span style="font-size:10px;color:#8B5CF6;font-weight:600;">Perfil</span>
                             </div>
-                            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.8px;padding:0 4px;margin:10px 0 6px;">OPORTUNIDADES</div>
-                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
-                                <i class="fa-solid fa-crosshairs" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
+                            <div
+                                style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.8px;padding:0 4px;margin:10px 0 6px;">
+                                OPORTUNIDADES</div>
+                            <div
+                                style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                                <i class="fa-solid fa-crosshairs"
+                                    style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
                                 <span style="font-size:10px;color:rgba(255,255,255,0.4);">Castings</span>
                             </div>
-                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                            <div
+                                style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
                                 <i class="fa-solid fa-eye" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
                                 <span style="font-size:10px;color:rgba(255,255,255,0.4);">Promocionar</span>
                             </div>
-                            <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.8px;padding:0 4px;margin:10px 0 6px;">GESTIÓN</div>
-                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
-                                <i class="fa-solid fa-photo-film" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
+                            <div
+                                style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:.8px;padding:0 4px;margin:10px 0 6px;">
+                                GESTIÓN</div>
+                            <div
+                                style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                                <i class="fa-solid fa-photo-film"
+                                    style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
                                 <span style="font-size:10px;color:rgba(255,255,255,0.4);">Multimedia</span>
                             </div>
-                            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
+                            <div
+                                style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;margin-bottom:2px;">
                                 <i class="fa-solid fa-calendar" style="font-size:10px;color:rgba(255,255,255,0.4);"></i>
                                 <span style="font-size:10px;color:rgba(255,255,255,0.4);">Disponibilidad</span>
                             </div>
@@ -338,14 +1202,20 @@
                         <div style="flex:1; overflow-y:auto; background:#0f0f1a; scrollbar-width:none;">
                             <!-- Concert hero banner -->
                             <div style="height:110px; position:relative; overflow:hidden;">
-                                <div style="position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80');background-size:cover;background-position:center;filter:grayscale(100%) brightness(0.6);"></div>
-                                <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(15,15,26,1) 100%);"></div>
+                                <div
+                                    style="position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80');background-size:cover;background-position:center;filter:grayscale(100%) brightness(0.6);">
+                                </div>
+                                <div
+                                    style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(15,15,26,1) 100%);">
+                                </div>
                                 <!-- Top-right buttons -->
                                 <div style="position:absolute;top:8px;right:10px;display:flex;gap:6px;">
-                                    <div style="background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:4px 8px;font-size:9px;color:#fff;display:flex;gap:4px;align-items:center;">
+                                    <div
+                                        style="background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:4px 8px;font-size:9px;color:#fff;display:flex;gap:4px;align-items:center;">
                                         <i class="fa-solid fa-pen" style="font-size:8px;"></i> Editar
                                     </div>
-                                    <div style="background:rgba(139,92,246,0.8);backdrop-filter:blur(8px);border-radius:8px;padding:4px 8px;font-size:9px;color:#fff;display:flex;gap:4px;align-items:center;">
+                                    <div
+                                        style="background:rgba(139,92,246,0.8);backdrop-filter:blur(8px);border-radius:8px;padding:4px 8px;font-size:9px;color:#fff;display:flex;gap:4px;align-items:center;">
                                         <i class="fa-regular fa-eye" style="font-size:8px;"></i> Vista Previa
                                     </div>
                                 </div>
@@ -353,11 +1223,14 @@
                             <!-- Avatar + Name row -->
                             <div style="padding:0 14px; margin-top:-30px; position:relative; z-index:2;">
                                 <div style="display:flex; align-items:flex-end; gap:10px; margin-bottom:8px;">
-                                    <div style="width:52px;height:52px;border-radius:50%;border:3px solid #8B5CF6;background:#262732;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 12px rgba(139,92,246,0.4);">
-                                        <i class="fa-solid fa-user" style="font-size:20px;color:rgba(255,255,255,0.3);"></i>
+                                    <div
+                                        style="width:52px;height:52px;border-radius:50%;border:3px solid #8B5CF6;background:#262732;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 12px rgba(139,92,246,0.4);">
+                                        <i class="fa-solid fa-user"
+                                            style="font-size:20px;color:rgba(255,255,255,0.3);"></i>
                                     </div>
                                     <div style="padding-bottom:2px;">
-                                        <div style="font-size:15px;font-weight:800;color:#fff;line-height:1;">Peso Pluma</div>
+                                        <div style="font-size:15px;font-weight:800;color:#fff;line-height:1;">Ana
+                                            Martínez</div>
                                         <div style="font-size:9px;color:rgba(255,255,255,0.4);margin-top:3px;">
                                             <span>1 evento</span> <span style="margin:0 4px;">·</span>
                                             <span>116 vistas</span> <span style="margin:0 4px;">·</span>
@@ -366,34 +1239,46 @@
                                     </div>
                                 </div>
                                 <!-- Completion bar -->
-                                <div style="background:#1C1D26;border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                                <div
+                                    style="background:#1C1D26;border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;margin-bottom:10px;">
                                     <i class="fa-solid fa-circle-check" style="font-size:12px;color:#22c55e;"></i>
-                                    <span style="font-size:9px;color:rgba(255,255,255,0.6);flex:1;">Tu perfil está listo para recibir solicitudes</span>
+                                    <span style="font-size:9px;color:rgba(255,255,255,0.6);flex:1;">Tu perfil está listo
+                                        para recibir solicitudes</span>
                                     <span style="font-size:10px;font-weight:700;color:#8B5CF6;">100%</span>
                                 </div>
-                                <div style="height:4px;background:#1C1D26;border-radius:2px;margin-bottom:12px;overflow:hidden;">
-                                    <div style="height:100%;width:100%;background:linear-gradient(90deg,#8B5CF6,#6c3fc5);border-radius:2px;"></div>
+                                <div
+                                    style="height:4px;background:#1C1D26;border-radius:2px;margin-bottom:12px;overflow:hidden;">
+                                    <div
+                                        style="height:100%;width:100%;background:linear-gradient(90deg,#8B5CF6,#6c3fc5);border-radius:2px;">
+                                    </div>
                                 </div>
                                 <!-- Personal data section header -->
                                 <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-                                    <div style="width:18px;height:18px;background:rgba(59,130,246,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                                    <div
+                                        style="width:18px;height:18px;background:rgba(59,130,246,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;">
                                         <i class="fa-solid fa-user-circle" style="font-size:9px;color:#3b82f6;"></i>
                                     </div>
                                     <span style="font-size:10px;font-weight:700;color:#fff;">Datos Personales</span>
                                 </div>
                                 <!-- Mini stat row -->
                                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-                                    <div style="background:#1C1D26;border-radius:10px;padding:8px 6px;text-align:center;">
+                                    <div
+                                        style="background:#1C1D26;border-radius:10px;padding:8px 6px;text-align:center;">
                                         <div style="font-size:12px;font-weight:700;color:#fff;">$3,200</div>
-                                        <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">MXN/hr</div>
+                                        <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">MXN/hr
+                                        </div>
                                     </div>
-                                    <div style="background:#1C1D26;border-radius:10px;padding:8px 6px;text-align:center;">
+                                    <div
+                                        style="background:#1C1D26;border-radius:10px;padding:8px 6px;text-align:center;">
                                         <div style="font-size:12px;font-weight:700;color:#fff;">148</div>
-                                        <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">Eventos</div>
+                                        <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">Eventos
+                                        </div>
                                     </div>
-                                    <div style="background:#1C1D26;border-radius:10px;padding:8px 6px;text-align:center;">
+                                    <div
+                                        style="background:#1C1D26;border-radius:10px;padding:8px 6px;text-align:center;">
                                         <div style="font-size:12px;font-weight:700;color:#f59e0b;">⭐ 5.0</div>
-                                        <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">Rating</div>
+                                        <div style="font-size:8px;color:rgba(255,255,255,0.4);margin-top:1px;">Rating
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -401,8 +1286,10 @@
                     </div>
                 </div>
                 <!-- Floating notification -->
-                <div style="position:absolute;bottom:-12px;right:-16px;background:linear-gradient(135deg,#8B5CF6,#6c3fc5);border-radius:14px;padding:10px 14px;box-shadow:0 8px 24px rgba(139,92,246,0.45);display:flex;align-items:center;gap:8px;min-width:180px;">
-                    <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div
+                    style="position:absolute;bottom:-12px;right:-16px;background:linear-gradient(135deg,#8B5CF6,#6c3fc5);border-radius:14px;padding:10px 14px;box-shadow:0 8px 24px rgba(139,92,246,0.45);display:flex;align-items:center;gap:8px;min-width:180px;">
+                    <div
+                        style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <i class="fa-solid fa-envelope" style="font-size:11px;color:#fff;"></i>
                     </div>
                     <div>
@@ -419,37 +1306,44 @@
         <div class="section-inner">
             <div class="section-eyebrow"><i class="fa-solid fa-star"></i> Herramientas</div>
             <h2 class="section-title">Todo lo que necesitas para crecer</h2>
-            <p class="section-sub">Una sola plataforma con todas las herramientas que un músico profesional necesita.</p>
+            <p class="section-sub">Una sola plataforma con todas las herramientas que un músico profesional necesita.
+            </p>
             <div class="features-grid">
                 <div class="feat-card">
                     <div class="feat-icon purple"><i class="fa-solid fa-id-card"></i></div>
                     <h3>Perfil artístico profesional</h3>
-                    <p>Crea tu bio, sube fotos y videos de actuaciones. Tu perfil es tu carta de presentación ante miles de clientes.</p>
+                    <p>Crea tu bio, sube fotos y videos de actuaciones. Tu perfil es tu carta de presentación ante miles
+                        de clientes.</p>
                 </div>
                 <div class="feat-card">
                     <div class="feat-icon blue"><i class="fa-solid fa-calendar-days"></i></div>
                     <h3>Gestión de disponibilidad</h3>
-                    <p>Bloquea días completos o rangos de horas en tu agenda. Los clientes ven tu disponibilidad en tiempo real desde la app.</p>
+                    <p>Bloquea días completos o rangos de horas en tu agenda. Los clientes ven tu disponibilidad en
+                        tiempo real desde la app.</p>
                 </div>
                 <div class="feat-card">
                     <div class="feat-icon green"><i class="fa-solid fa-microphone-lines"></i></div>
                     <h3>Castings y audiciones</h3>
-                    <p>Aplica a castings activos publicados por productoras y organizadores de eventos. Nuevas oportunidades cada semana.</p>
+                    <p>Aplica a castings activos publicados por productoras y organizadores de eventos. Nuevas
+                        oportunidades cada semana.</p>
                 </div>
                 <div class="feat-card">
                     <div class="feat-icon amber"><i class="fa-solid fa-file-invoice"></i></div>
                     <h3>Gestión de solicitudes</h3>
-                    <p>Recibe, revisa y acepta solicitudes de contratación directamente desde tu dashboard. Todo en un solo lugar.</p>
+                    <p>Recibe, revisa y acepta solicitudes de contratación directamente desde tu dashboard. Todo en un
+                        solo lugar.</p>
                 </div>
                 <div class="feat-card">
                     <div class="feat-icon rose"><i class="fa-solid fa-star"></i></div>
                     <h3>Reseñas y reputación</h3>
-                    <p>Construye tu reputación con las reseñas de clientes satisfechos. Una buena calificación genera más contratos.</p>
+                    <p>Construye tu reputación con las reseñas de clientes satisfechos. Una buena calificación genera
+                        más contratos.</p>
                 </div>
                 <div class="feat-card">
                     <div class="feat-icon teal"><i class="fa-solid fa-bullhorn"></i></div>
                     <h3>Promoción de perfil</h3>
-                    <p>Amplifica tu alcance con campañas de promoción. Aparece en los primeros resultados que los clientes ven en la app.</p>
+                    <p>Amplifica tu alcance con campañas de promoción. Aparece en los primeros resultados que los
+                        clientes ven en la app.</p>
                 </div>
             </div>
         </div>
@@ -493,19 +1387,25 @@
                 <div class="app-text">
                     <div class="section-eyebrow"><i class="fa-solid fa-mobile-alt"></i> App Móvil</div>
                     <h2 class="section-title">Sé visible donde los clientes te buscan</h2>
-                    <p class="section-sub">Los clientes que buscan músicos para sus eventos usan la app móvil de Armonihz. Tu perfil, actualizado desde la web, aparece directamente en la app.</p>
+                    <p class="section-sub">Los clientes que buscan músicos para sus eventos usan la app móvil de
+                        Armonihz. Tu perfil, actualizado desde la web, aparece directamente en la app.</p>
                     <div class="app-features">
-                        <div class="app-feat"><i class="fa-solid fa-check-circle"></i> Tu perfil visible para miles de usuarios de la app</div>
-                        <div class="app-feat"><i class="fa-solid fa-check-circle"></i> Las solicitudes de contratación llegan a tu dashboard</div>
-                        <div class="app-feat"><i class="fa-solid fa-check-circle"></i> La disponibilidad que configuras en la web se sincroniza en la app</div>
-                        <div class="app-feat"><i class="fa-solid fa-check-circle"></i> Mayor exposición con promociones dentro de la app</div>
+                        <div class="app-feat"><i class="fa-solid fa-check-circle"></i> Tu perfil visible para miles de
+                            usuarios de la app</div>
+                        <div class="app-feat"><i class="fa-solid fa-check-circle"></i> Las solicitudes de contratación
+                            llegan a tu dashboard</div>
+                        <div class="app-feat"><i class="fa-solid fa-check-circle"></i> La disponibilidad que configuras
+                            en la web se sincroniza en la app</div>
+                        <div class="app-feat"><i class="fa-solid fa-check-circle"></i> Mayor exposición con promociones
+                            dentro de la app</div>
                     </div>
-                    
+
                     <div class="download-container">
                         <div class="app-icon-circle">
                             <img src="{{ asset('images/Armonihz_logo.png') }}" alt="Armonihz App">
                         </div>
-                        <a href="{{ route('app.download') }}?v={{ filemtime(public_path('downloads/Armonihz.apk')) }}" class="download-btn">
+                        <a href="{{ route('app.download') }}?v={{ filemtime(public_path('downloads/Armonihz.apk')) }}"
+                            class="download-btn">
                             <i class="fa-brands fa-android"></i>
                             <div class="btn-text">
                                 <span class="btn-small">Descargar para</span>
@@ -514,12 +1414,14 @@
                         </a>
                     </div>
                 </div>
-                <div class="phone-frame" style="transform: scale(0.95); transform-origin: center right; margin-right: 0; margin-left: auto;">
+                <div class="phone-frame"
+                    style="transform: scale(0.95); transform-origin: center right; margin-right: 0; margin-left: auto;">
                     <div class="phone-notch">
                         <div class="phone-camera"></div>
                     </div>
                     <div class="phone-screen">
-                        <div class="app-statusbar" style="background: transparent; position: absolute; left: 0; right: 0; top: 0; z-index: 50; box-sizing: border-box;">
+                        <div class="app-statusbar"
+                            style="background: transparent; position: absolute; left: 0; right: 0; top: 0; z-index: 50; box-sizing: border-box;">
                             <span style="font-size:11px;font-weight:700;">9:41</span>
                             <div style="display:flex;gap:5px;align-items:center;">
                                 <i class="fa-solid fa-signal" style="font-size:10px;"></i>
@@ -527,47 +1429,95 @@
                                 <i class="fa-solid fa-battery-full" style="font-size:10px;"></i>
                             </div>
                         </div>
-                        
-                        <div class="app-body" style="background: #0F1016; position: relative; padding-bottom: 32px; height: 100%;">
+
+                        <div class="app-body"
+                            style="background: #0F1016; position: relative; padding-bottom: 32px; height: 100%;">
                             <style>
-                                .solid-card { background: #1C1D26; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); box-sizing: border-box; }
-                                .stat-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 6px; text-align: center; background: #262732; border-radius: 16px; min-width: 0; word-break: break-word; }
-                                .tab-btn { flex: 1; text-align: center; padding: 12px 0 10px; font-size: 13px; font-weight: 500; color: #8A8B94; border-bottom: 2px solid transparent; transition: all 0.2s; }
-                                .tab-btn.active { color: #fff; border-bottom: 2px solid #8B5CF6; }
+                                .solid-card {
+                                    background: #1C1D26;
+                                    border-radius: 20px;
+                                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                                    box-sizing: border-box;
+                                }
+
+                                .stat-box {
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    justify-content: center;
+                                    padding: 12px 6px;
+                                    text-align: center;
+                                    background: #262732;
+                                    border-radius: 16px;
+                                    min-width: 0;
+                                    word-break: break-word;
+                                }
+
+                                .tab-btn {
+                                    flex: 1;
+                                    text-align: center;
+                                    padding: 12px 0 10px;
+                                    font-size: 13px;
+                                    font-weight: 500;
+                                    color: #8A8B94;
+                                    border-bottom: 2px solid transparent;
+                                    transition: all 0.2s;
+                                }
+
+                                .tab-btn.active {
+                                    color: #fff;
+                                    border-bottom: 2px solid #8B5CF6;
+                                }
                             </style>
 
                             {{-- Hero Image --}}
                             <div style="height: 180px; position: relative;">
-                                <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'); background-size: cover; background-position: center; filter: grayscale(100%);"></div>
-                                <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15,16,22,0.1) 0%, rgba(15,16,22,1) 100%);"></div>
-                                
+                                <div
+                                    style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'); background-size: cover; background-position: center; filter: grayscale(100%);">
+                                </div>
+                                <div
+                                    style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15,16,22,0.1) 0%, rgba(15,16,22,1) 100%);">
+                                </div>
+
                                 {{-- App topbar --}}
-                                <div class="app-topbar" style="background: transparent; position: absolute; left: 0; right: 0; top: 30px; z-index: 20; border: none; display:flex; align-items:center; box-sizing: border-box;">
-                                    <div style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
+                                <div class="app-topbar"
+                                    style="background: transparent; position: absolute; left: 0; right: 0; top: 30px; z-index: 20; border: none; display:flex; align-items:center; box-sizing: border-box;">
+                                    <div
+                                        style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
                                         <i class="fa-solid fa-arrow-left" style="font-size:16px;"></i>
                                     </div>
-                                    <span style="font-size:15px;font-weight:600;color:#fff; flex:1; text-align:center;">Perfil del músico</span>
-                                    <div style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
+                                    <span
+                                        style="font-size:15px;font-weight:600;color:#fff; flex:1; text-align:center;">Perfil
+                                        del músico</span>
+                                    <div
+                                        style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
                                         <i class="fa-solid fa-ellipsis-vertical" style="font-size:16px;"></i>
                                     </div>
                                 </div>
                             </div>
 
                             {{-- Avatar --}}
-                            <div style="display: flex; justify-content: center; margin-top: -65px; position: relative; z-index: 2;">
-                                <div style="width: 110px; height: 110px; border-radius: 50%; border: 3px solid #8B5CF6; box-shadow: 0 0 15px rgba(139,92,246,0.5); overflow: hidden; background: #1C1D26; display:flex; align-items:center; justify-content:center;">
+                            <div
+                                style="display: flex; justify-content: center; margin-top: -65px; position: relative; z-index: 2;">
+                                <div
+                                    style="width: 110px; height: 110px; border-radius: 50%; border: 3px solid #8B5CF6; box-shadow: 0 0 15px rgba(139,92,246,0.5); overflow: hidden; background: #1C1D26; display:flex; align-items:center; justify-content:center;">
                                     <span style="font-size: 32px; font-weight: 800; color: #fff;">AM</span>
                                 </div>
                             </div>
 
                             {{-- Profile Info Card --}}
-                            <div class="solid-card" style="margin: 0 12px; padding: 65px 16px 20px; margin-top: -55px; position:relative; z-index: 1;">
-                                <div style="text-align: center; margin-bottom: 2px; display:flex; justify-content:center; align-items:center; gap:6px;">
-                                    <h1 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; letter-spacing: -0.5px;">Ana Martínez</h1>
+                            <div class="solid-card"
+                                style="margin: 0 12px; padding: 65px 16px 20px; margin-top: -55px; position:relative; z-index: 1;">
+                                <div
+                                    style="text-align: center; margin-bottom: 2px; display:flex; justify-content:center; align-items:center; gap:6px;">
+                                    <h1
+                                        style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; letter-spacing: -0.5px;">
+                                        Ana Martínez</h1>
                                     <i class="fa-solid fa-star" style="font-size:12px;color:#8B5CF6;"></i>
                                 </div>
 
-                                <div style="display: flex; justify-content: center; align-items: center; gap: 4px; margin-bottom: 16px;">
+                                <div
+                                    style="display: flex; justify-content: center; align-items: center; gap: 4px; margin-bottom: 16px;">
                                     <i class="fa-solid fa-map-marker-alt" style="font-size:10px;color:#8A8B94;"></i>
                                     <span style="font-size: 11px; color: #8A8B94;">Monterrey, N.L.</span>
                                 </div>
@@ -575,11 +1525,15 @@
                                 {{-- 3 Stat Cards --}}
                                 <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                                     <div class="stat-box" style="flex:1;">
-                                        <span style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2;">$1,800.00<br>MXN / hora</span>
+                                        <span
+                                            style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2;">$1,800.00<br>MXN
+                                            / hora</span>
                                         <span style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Por hora</span>
                                     </div>
                                     <div class="stat-box" style="flex:1;">
-                                        <span style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2;">Pago extra por traslado.</span>
+                                        <span
+                                            style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2;">Pago
+                                            extra por traslado.</span>
                                         <span style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Notas</span>
                                     </div>
                                     <div class="stat-box" style="flex:1;">
@@ -587,7 +1541,8 @@
                                             <span style="font-size: 13px; font-weight: 700; color: #fff;">4.9</span>
                                             <i class="fa-solid fa-star" style="font-size:10px;color:#EAB308;"></i>
                                         </div>
-                                        <span style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Valoración</span>
+                                        <span
+                                            style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Valoración</span>
                                     </div>
                                 </div>
 
@@ -600,32 +1555,42 @@
 
                                 {{-- Description --}}
                                 <div style="font-size: 11px; color: #A0A1AB; line-height: 1.5; padding: 0 4px;">
-                                    Violinista clásica con 10 años de experiencia en bodas, XV años y eventos corporativos. Trabajo con pistas o grupos.
+                                    Violinista clásica con 10 años de experiencia en bodas, XV años y eventos
+                                    corporativos. Trabajo con pistas o grupos.
                                 </div>
 
                                 {{-- Action buttons --}}
                                 <div style="display:flex; gap:10px; margin-top:16px; align-items:center;">
-                                    <div style="flex:1; background: #8B5CF6 !important; color:#fff !important; border: none !important; border-radius: 24px; font-weight:600; font-size:12px; display:flex; align-items:center; justify-content:center; gap:8px; height:38px;">
-                                        <i class="fa-solid fa-calendar" style="font-size:12px;"></i> Solicitar contratación
+                                    <div
+                                        style="flex:1; background: #8B5CF6 !important; color:#fff !important; border: none !important; border-radius: 24px; font-weight:600; font-size:12px; display:flex; align-items:center; justify-content:center; gap:8px; height:38px;">
+                                        <i class="fa-solid fa-calendar" style="font-size:12px;"></i> Solicitar
+                                        contratación
                                     </div>
-                                    <div style="width:38px;height:38px; border-radius:50%; border:1px solid #4A4B56 !important; background:transparent !important; color:#8A8B94 !important; display:flex; align-items:center; justify-content:center;">
+                                    <div
+                                        style="width:38px;height:38px; border-radius:50%; border:1px solid #4A4B56 !important; background:transparent !important; color:#8A8B94 !important; display:flex; align-items:center; justify-content:center;">
                                         <i class="fa-regular fa-heart" style="font-size:14px;"></i>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {{-- Galeria Layout Mock --}}
                             <div class="solid-card" style="margin: 16px 12px 0; padding: 16px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <div
+                                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                                     <span style="font-size:14px; font-weight:600; color:#fff;">Galeria</span>
                                     <div style="background:#262732; border-radius:20px; display:flex; padding:2px;">
-                                        <span style="background:#8B5CF6; color:#fff; font-size:10px; font-weight:600; padding:4px 12px; border-radius:16px;">Fotos</span>
-                                        <span style="color:#8A8B94; font-size:10px; padding:4px 12px; font-weight:500;">Videos</span>
+                                        <span
+                                            style="background:#8B5CF6; color:#fff; font-size:10px; font-weight:600; padding:4px 12px; border-radius:16px;">Fotos</span>
+                                        <span
+                                            style="color:#8A8B94; font-size:10px; padding:4px 12px; font-weight:500;">Videos</span>
                                     </div>
                                 </div>
-                                <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;" class="hide-scroll">
-                                    <img src="https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=300&q=80" style="width:120px; height:140px; border-radius:16px; object-fit:cover; filter: grayscale(100%);">
-                                    <img src="https://images.unsplash.com/photo-1520483601560-389dff434fdf?auto=format&fit=crop&w=300&q=80" style="width:70px; height:140px; border-radius:16px; object-fit:cover;">
+                                <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;"
+                                    class="hide-scroll">
+                                    <img src="https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=300&q=80"
+                                        style="width:120px; height:140px; border-radius:16px; object-fit:cover; filter: grayscale(100%);">
+                                    <img src="https://images.unsplash.com/photo-1520483601560-389dff434fdf?auto=format&fit=crop&w=300&q=80"
+                                        style="width:70px; height:140px; border-radius:16px; object-fit:cover;">
                                 </div>
                             </div>
                         </div>
@@ -646,7 +1611,8 @@
             <div class="testi-grid">
                 <div class="testi-card">
                     <div class="testi-stars">★★★★★</div>
-                    <p class="testi-text">"Armonihz cambió mi carrera por completo. Antes tenía 3 o 4 eventos al mes. Hoy tengo la agenda llena y puedo elegir mis contratos."</p>
+                    <p class="testi-text">"Armonihz cambió mi carrera por completo. Antes tenía 3 o 4 eventos al mes.
+                        Hoy tengo la agenda llena y puedo elegir mis contratos."</p>
                     <div class="testi-author">
                         <div class="testi-avatar" style="background:linear-gradient(135deg,#6c3fc5,#2f93f5);">JR</div>
                         <div>
@@ -657,7 +1623,8 @@
                 </div>
                 <div class="testi-card">
                     <div class="testi-stars">★★★★★</div>
-                    <p class="testi-text">"La sección de castings es increíble. Apliqué a una convocatoria a través de la plataforma y conseguí un contrato de 6 meses con una productora."</p>
+                    <p class="testi-text">"La sección de castings es increíble. Apliqué a una convocatoria a través de
+                        la plataforma y conseguí un contrato de 6 meses con una productora."</p>
                     <div class="testi-author">
                         <div class="testi-avatar" style="background:linear-gradient(135deg,#16a34a,#0ea5e9);">AM</div>
                         <div>
@@ -668,7 +1635,8 @@
                 </div>
                 <div class="testi-card">
                     <div class="testi-stars">★★★★★</div>
-                    <p class="testi-text">"Subí mis videos al perfil y en la primera semana ya tenía mensajes de clientes interesados. La plataforma es muy fácil de usar y el soporte es excelente."</p>
+                    <p class="testi-text">"Subí mis videos al perfil y en la primera semana ya tenía mensajes de
+                        clientes interesados. La plataforma es muy fácil de usar y el soporte es excelente."</p>
                     <div class="testi-author">
                         <div class="testi-avatar" style="background:linear-gradient(135deg,#d97706,#dc2626);">LS</div>
                         <div>
@@ -701,7 +1669,8 @@
             @endif
         </div>
         <br><br>
-        <p class="cta-note"><i class="fa-solid fa-shield-halved" style="margin-right:4px;"></i> Gratis para siempre · Sin tarjeta de crédito · Cancela cuando quieras</p>
+        <p class="cta-note"><i class="fa-solid fa-shield-halved" style="margin-right:4px;"></i> Gratis para siempre ·
+            Sin tarjeta de crédito · Cancela cuando quieras</p>
     </section>
 
     <!-- FOOTER -->
@@ -731,4 +1700,5 @@
         });
     </script>
 </body>
+
 </html>
