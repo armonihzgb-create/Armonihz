@@ -248,8 +248,8 @@ public function syncClient(Request $request)
             ]);
         }
 
-        return response()->json([
-            'message' => 'Cliente sincronizado correctamente',
+      return response()->json([
+            'message' => 'CLIENTE SINCRONIZADO VERSION NUEVA', // 🔥 Cambia el mensaje
             'user_id' => $user->id
         ]);
     }
