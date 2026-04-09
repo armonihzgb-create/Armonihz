@@ -32,22 +32,26 @@ return new class extends Migration
     public function up(): void
     {
         // ── TABLA DE AUDITORÍA: hiring_requests_audit ──────────────────────────
-        Schema::create('hiring_requests_audit', function (Blueprint $table) {
-            $table->id();
+        // Verificamos si la tabla ya fue creada en un intento previo que falló a la mitad
+        if (!Schema::hasTable('hiring_requests_audit')) {
+            Schema::create('hiring_requests_audit', function (Blueprint $table) {
+                $table->id();
 
-            // Referencia a la solicitud de contratación afectada
-            $table->unsignedBigInteger('hiring_request_id')
-                  ->comment('ID de la solicitud de contratación auditada');
+                // Referencia a la solicitud de contratación afectada
+                $table->unsignedBigInteger('hiring_request_id')
+                      ->comment('ID de la solicitud de contratación auditada');
 
-            // Estado anterior y nuevo (no usamos FK para preservar historial aunque se borre la solicitud)
-            $table->string('old_status', 50)->nullable()->comment('Estado anterior a la modificación');
-            $table->string('new_status', 50)->comment('Estado nuevo después de la modificación');
+                // Estado anterior y nuevo (no usamos FK para preservar historial aunque se borre la solicitud)
+                $table->string('old_status', 50)->nullable()->comment('Estado anterior a la modificación');
+                $table->string('new_status', 50)->comment('Estado nuevo después de la modificación');
 
-            // Timestamp del cambio (registrado por el trigger, no por Laravel)
-            $table->timestamp('changed_at')->useCurrent();
+                // Timestamp del cambio (registrado por el trigger, no por Laravel)
+                $table->timestamp('changed_at')->useCurrent();
 
-            $table->index('hiring_request_id', 'idx_audit_hiring_request');
-        });
+                $table->index('hiring_request_id', 'idx_audit_hiring_request');
+            });
+        }
+
 
         // ── TRIGGER 1: AFTER UPDATE en hiring_requests ─────────────────────────
         DB::unprepared("
