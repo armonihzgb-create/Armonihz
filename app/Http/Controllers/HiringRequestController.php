@@ -193,25 +193,31 @@ public function store(StoreHiringRequestRequest $request)
      * NOTE: This action is called by musicians via the web portal (Sanctum auth),
      * NOT by Firebase clients. The musician's User model is resolved by $request->user().
      */
-    public function updateStatus(UpdateHiringRequestStatusRequest $request, string $id)
-    {
-        $hiringRequest = HiringRequest::with(['client', 'musicianProfile'])->findOrFail($id);
-        $musicianUser  = $request->user(); // User model (Sanctum / web session)
+  public function updateStatus(UpdateHiringRequestStatusRequest $request, string $id)
+{
+    $hiringRequest = HiringRequest::with(['client', 'musicianProfile'])->findOrFail($id);
+    $musicianUser  = $request->user(); 
 
-        if (!$musicianUser || $hiringRequest->musicianProfile->user_id !== $musicianUser->id) {
-            return $this->errorResponse('Forbidden: You do not own this request destination.', null, 403);
-        }
-
-        if ($hiringRequest->status !== 'pending') {
-            return $this->errorResponse('Bad Request: Only pending requests can have their status changed.', null, 400);
-        }
-
-        $hiringRequest->update([
-            'status' => $request->validated()['status']
-        ]);
-
-        return $this->successResponse(new HiringRequestResource($hiringRequest), 'Status updated successfully');
+    if (!$musicianUser || $hiringRequest->musicianProfile->user_id !== $musicianUser->id) {
+        return $this->errorResponse('Forbidden: You do not own this request destination.', null, 403);
     }
+
+    if ($hiringRequest->status !== 'pending') {
+        return $this->errorResponse('Bad Request: Only pending requests can have their status changed.', null, 400);
+    }
+
+    // Obtenemos todos los datos validados del FormRequest
+    $validated = $request->validated();
+
+    // Actualizamos inyectando los campos de la contraoferta si existen
+    $hiringRequest->update([
+        'status'           => $validated['status'],
+        'counter_offer'    => $validated['counter_offer'] ?? null,
+        'musician_message' => $validated['musician_message'] ?? null,
+    ]);
+
+    return $this->successResponse(new HiringRequestResource($hiringRequest), 'Status updated successfully');
+}
 
     public function respondToCounterOffer(Request $request, $id)
     {

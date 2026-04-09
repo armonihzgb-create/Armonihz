@@ -22,7 +22,25 @@ class UpdateHiringRequestStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|in:accepted,rejected',
+            // 1. Agregamos todos los estados posibles
+            'status' => 'required|in:accepted,rejected,counter_offer,completed',
+            
+            // 2. Permitimos la contraoferta y exigimos que sea un número SI el estado es counter_offer
+            'counter_offer' => 'nullable|numeric|required_if:status,counter_offer',
+            
+            // 3. Permitimos el mensaje del músico
+            'musician_message' => 'nullable|string'
+        ];
+    }
+
+    /**
+     * (Opcional) Mensajes de error personalizados en español
+     */
+    public function messages(): array
+    {
+        return [
+            'counter_offer.required_if' => 'Debes proponer un precio para enviar una contraoferta.',
+            'counter_offer.numeric' => 'El precio debe ser un valor numérico.'
         ];
     }
 }
