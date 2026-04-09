@@ -149,10 +149,11 @@
         .app-feat { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-muted); }
         .app-feat i { color: #a78bfa; font-size: 15px; width: 20px; text-align: center; }
         /* ─── PHONE FRAME MOCKUP ─────────────────────────────────────── */
+        .phone-frame * { box-sizing: border-box; }
         .phone-frame { width: 290px; background: #1a1a2e; border-radius: 36px; padding: 12px 10px; box-shadow: 0 0 0 2px #333, 0 0 0 4px #555, 0 20px 60px rgba(0,0,0,.6); position: relative; margin: auto; }
         .phone-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; background: #1a1a2e; border-radius: 0 0 14px 14px; z-index: 10; display: flex; align-items: center; justify-content: center; }
         .phone-camera { width: 8px; height: 8px; border-radius: 50%; background: #333; border: 1px solid #555; margin-left: 50px; }
-        .phone-screen { background: #fff; border-radius: 26px; overflow: hidden; height: 500px; display: flex; flex-direction: column; position: relative; }
+        .phone-screen { background: #fff; border-radius: 26px; overflow: hidden; height: 540px; display: flex; flex-direction: column; position: relative; }
         .app-statusbar { background: #1a0b38; color: #fff; padding: 12px 20px 6px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .app-topbar { background: linear-gradient(135deg,#1a0b38,#0d2452); color: #fff; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .app-hero { position: relative; padding: 20px 16px 24px; text-align: center; flex-shrink: 0; overflow: hidden; z-index: 0; }
@@ -160,8 +161,8 @@
         .app-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.75)); z-index: -1; }
         .app-body { flex: 1; overflow-y: auto; background: #fff; scrollbar-width: none; }
         .app-body::-webkit-scrollbar { display: none; }
-        .phone-home-indicator { height: 20px; background: #f9f9f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .phone-home-indicator::after { content: ''; width: 80px; height: 4px; background: #d1d5db; border-radius: 2px; }
+        .phone-home-indicator { height: 20px; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position:absolute; bottom:6px; left:50%; transform:translateX(-50%); z-index:50;}
+        .phone-home-indicator::after { content: ''; width: 100px; height: 4px; background: #ccc; border-radius: 2px; }
         
         /* -- DOWNLOAD BUTTONS -- */
         .download-container { margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
@@ -430,7 +431,7 @@
                         <div class="phone-camera"></div>
                     </div>
                     <div class="phone-screen">
-                        <div class="app-statusbar">
+                        <div class="app-statusbar" style="background: transparent; position: absolute; left: 0; right: 0; top: 0; z-index: 50; box-sizing: border-box;">
                             <span style="font-size:11px;font-weight:700;">9:41</span>
                             <div style="display:flex;gap:5px;align-items:center;">
                                 <i class="fa-solid fa-signal" style="font-size:10px;"></i>
@@ -438,49 +439,109 @@
                                 <i class="fa-solid fa-battery-full" style="font-size:10px;"></i>
                             </div>
                         </div>
-                        <div class="app-topbar">
-                            <button style="background:none;border:none;color:#fff;padding:4px;cursor:pointer;">
-                                <i class="fa-solid fa-chevron-left" style="font-size:16px;"></i>
-                            </button>
-                            <span style="font-size:14px;font-weight:700;color:#fff;">Perfil</span>
-                            <button style="background:none;border:none;color:#fff;padding:4px;cursor:pointer;">
-                                <i class="fa-solid fa-share-nodes" style="font-size:16px;"></i>
-                            </button>
+                        
+                        <div class="app-body" style="background: #0F1016; position: relative; padding-bottom: 32px; height: 100%;">
+                            <style>
+                                .solid-card { background: #1C1D26; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); box-sizing: border-box; }
+                                .stat-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 6px; text-align: center; background: #262732; border-radius: 16px; min-width: 0; word-break: break-word; }
+                                .tab-btn { flex: 1; text-align: center; padding: 12px 0 10px; font-size: 13px; font-weight: 500; color: #8A8B94; border-bottom: 2px solid transparent; transition: all 0.2s; }
+                                .tab-btn.active { color: #fff; border-bottom: 2px solid #8B5CF6; }
+                            </style>
+
+                            {{-- Hero Image --}}
+                            <div style="height: 180px; position: relative;">
+                                <div style="position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'); background-size: cover; background-position: center; filter: grayscale(100%);"></div>
+                                <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15,16,22,0.1) 0%, rgba(15,16,22,1) 100%);"></div>
+                                
+                                {{-- App topbar --}}
+                                <div class="app-topbar" style="background: transparent; position: absolute; left: 0; right: 0; top: 30px; z-index: 20; border: none; display:flex; align-items:center; box-sizing: border-box;">
+                                    <div style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
+                                        <i class="fa-solid fa-arrow-left" style="font-size:16px;"></i>
+                                    </div>
+                                    <span style="font-size:15px;font-weight:600;color:#fff; flex:1; text-align:center;">Perfil del músico</span>
+                                    <div style="background:none;border:none;color:#fff;padding:8px;cursor:auto;display:flex;align-items:center;">
+                                        <i class="fa-solid fa-ellipsis-vertical" style="font-size:16px;"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Avatar --}}
+                            <div style="display: flex; justify-content: center; margin-top: -65px; position: relative; z-index: 2;">
+                                <div style="width: 110px; height: 110px; border-radius: 50%; border: 3px solid #8B5CF6; box-shadow: 0 0 15px rgba(139,92,246,0.5); overflow: hidden; background: #1C1D26; display:flex; align-items:center; justify-content:center;">
+                                    <span style="font-size: 32px; font-weight: 800; color: #fff;">AM</span>
+                                </div>
+                            </div>
+
+                            {{-- Profile Info Card --}}
+                            <div class="solid-card" style="margin: 0 12px; padding: 65px 16px 20px; margin-top: -55px; position:relative; z-index: 1;">
+                                <div style="text-align: center; margin-bottom: 2px; display:flex; justify-content:center; align-items:center; gap:6px;">
+                                    <h1 style="font-size: 20px; font-weight: 700; color: #fff; margin: 0; letter-spacing: -0.5px;">Ana Martínez</h1>
+                                    <i class="fa-solid fa-star" style="font-size:12px;color:#8B5CF6;"></i>
+                                </div>
+
+                                <div style="display: flex; justify-content: center; align-items: center; gap: 4px; margin-bottom: 16px;">
+                                    <i class="fa-solid fa-map-marker-alt" style="font-size:10px;color:#8A8B94;"></i>
+                                    <span style="font-size: 11px; color: #8A8B94;">Monterrey, N.L.</span>
+                                </div>
+
+                                {{-- 3 Stat Cards --}}
+                                <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+                                    <div class="stat-box" style="flex:1;">
+                                        <span style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2;">$1,800.00<br>MXN / hora</span>
+                                        <span style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Por hora</span>
+                                    </div>
+                                    <div class="stat-box" style="flex:1;">
+                                        <span style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2;">Pago extra por traslado.</span>
+                                        <span style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Notas</span>
+                                    </div>
+                                    <div class="stat-box" style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:4px;">
+                                            <span style="font-size: 13px; font-weight: 700; color: #fff;">4.9</span>
+                                            <i class="fa-solid fa-star" style="font-size:10px;color:#EAB308;"></i>
+                                        </div>
+                                        <span style="font-size: 10px; color: #8A8B94; margin-top: 4px;">Valoración</span>
+                                    </div>
+                                </div>
+
+                                {{-- Tabs --}}
+                                <div style="display: flex;">
+                                    <div class="tab-btn active">Acerca de</div>
+                                    <div class="tab-btn">Contacto</div>
+                                </div>
+                                <div style="height:1px; background: #262732; margin-bottom: 12px;"></div>
+
+                                {{-- Description --}}
+                                <div style="font-size: 11px; color: #A0A1AB; line-height: 1.5; padding: 0 4px;">
+                                    Violinista clásica con 10 años de experiencia en bodas, XV años y eventos corporativos. Trabajo con pistas o grupos.
+                                </div>
+
+                                {{-- Action buttons --}}
+                                <div style="display:flex; gap:10px; margin-top:16px; align-items:center;">
+                                    <div style="flex:1; background: #8B5CF6 !important; color:#fff !important; border: none !important; border-radius: 24px; font-weight:600; font-size:12px; display:flex; align-items:center; justify-content:center; gap:8px; height:38px;">
+                                        <i class="fa-solid fa-calendar" style="font-size:12px;"></i> Solicitar contratación
+                                    </div>
+                                    <div style="width:38px;height:38px; border-radius:50%; border:1px solid #4A4B56 !important; background:transparent !important; color:#8A8B94 !important; display:flex; align-items:center; justify-content:center;">
+                                        <i class="fa-regular fa-heart" style="font-size:14px;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {{-- Galeria Layout Mock --}}
+                            <div class="solid-card" style="margin: 16px 12px 0; padding: 16px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <span style="font-size:14px; font-weight:600; color:#fff;">Galeria</span>
+                                    <div style="background:#262732; border-radius:20px; display:flex; padding:2px;">
+                                        <span style="background:#8B5CF6; color:#fff; font-size:10px; font-weight:600; padding:4px 12px; border-radius:16px;">Fotos</span>
+                                        <span style="color:#8A8B94; font-size:10px; padding:4px 12px; font-weight:500;">Videos</span>
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;" class="hide-scroll">
+                                    <img src="https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=300&q=80" style="width:120px; height:140px; border-radius:16px; object-fit:cover; filter: grayscale(100%);">
+                                    <img src="https://images.unsplash.com/photo-1520483601560-389dff434fdf?auto=format&fit=crop&w=300&q=80" style="width:70px; height:140px; border-radius:16px; object-fit:cover;">
+                                </div>
+                            </div>
                         </div>
-                        <div class="app-body">
-                            <div class="app-hero" style="border-radius:0;">
-                                <div style="width:80px;height:80px;margin:0 auto;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0ea5e9);color:#fff;font-size:26px;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.3);">
-                                    AM
-                                </div>
-                                <h2 style="margin:10px 0 2px;font-size:17px;font-weight:800;color:#fff;">Ana Martínez</h2>
-                                <p style="font-size:12px;color:rgba(255,255,255,.75);margin:0;">📍 Monterrey, N.L.</p>
-                                <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;">
-                                    <span style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:999px;">Violín</span>
-                                    <span style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:600;padding:3px 10px;border-radius:999px;">Clásica</span>
-                                </div>
-                            </div>
-                            <div style="display:flex;border-bottom:1px solid #f0f0f0;">
-                                <div style="flex:1;text-align:center;padding:12px 0;">
-                                    <div style="font-size:16px;font-weight:800;color:#6c3fc5;">⭐ 4.9</div>
-                                    <div style="font-size:10px;color:#9ca3af;margin-top:2px;">Calificación</div>
-                                </div>
-                                <div style="flex:1;text-align:center;padding:12px 0;border-left:1px solid #f0f0f0;border-right:1px solid #f0f0f0;">
-                                    <div style="font-size:16px;font-weight:800;color:#6c3fc5;">1,204</div>
-                                    <div style="font-size:10px;color:#9ca3af;margin-top:2px;">Vistas</div>
-                                </div>
-                                <div style="flex:1;text-align:center;padding:12px 0;">
-                                    <div style="font-size:16px;font-weight:800;color:#6c3fc5;">$1,800</div>
-                                    <div style="font-size:10px;color:#9ca3af;margin-top:2px;">MXN/hr</div>
-                                </div>
-                            </div>
-                            <div style="padding:14px 16px;border-bottom:1px solid #f0f0f0;">
-                                <h4 style="font-size:12px;font-weight:700;color:#374151;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Acerca de</h4>
-                                <p style="font-size:13px;color:#4b5563;line-height:1.6;">Violinista clásica con 10 años de experiencia en bodas, XV años y eventos corporativos. Trabajo con pistas o grupos.</p>
-                            </div>
-                            <div style="padding:16px 16px 24px;">
-                                <button style="width:100%;padding:13px;background:linear-gradient(135deg,#6c3fc5,#2f93f5);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;box-shadow:0 4px 16px rgba(108,63,197,.35);cursor:pointer;">Solicitar contratación</button>
-                            </div>
-                        </div>
+
                         <div class="phone-home-indicator"></div>
                     </div>
                 </div>
