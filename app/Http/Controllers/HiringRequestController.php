@@ -219,36 +219,53 @@ public function store(StoreHiringRequestRequest $request)
     return $this->successResponse(new HiringRequestResource($hiringRequest), 'Status updated successfully');
 }
 
-    public function respondToCounterOffer(Request $request, $id)
-    {
-        // Resolved by FirebaseGuard via firebase.auth middleware
-        $client = $request->user();
+   public function respondToCounterOffer(Request $request, $id)
+{
+    $client = $request->user();
 
-        if (!$client) {
-            return response()->json(['success' => false, 'message' => 'No autenticado.'], 401);
-        }
-
-        // Scope the lookup to this client's requests only
-        $hiringRequest = HiringRequest::where('id', $id)
-            ->where('client_id', $client->id)
-            ->firstOrFail();
-
-        $request->validate([
-            'status' => 'required|in:accepted,rejected'
-        ]);
-
-        $hiringRequest->status = $request->status;
-
-        // If the client accepts, the counter offer becomes the official budget
-        if ($request->status === 'accepted' && $hiringRequest->counter_offer) {
-            $hiringRequest->budget = $hiringRequest->counter_offer;
-        }
-
-        $hiringRequest->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Respuesta guardada correctamente'
-        ]);
+    if (!$client) {
+        return response()->json(['success' => false, 'message' => 'No autenticado.'], 401);
     }
+
+    $hiringRequest = HiringRequest::with('musicianProfile.user')
+        ->where('id', $id)
+        ->where('client_id', $client->id)
+        ->firstOrFail();
+
+    $request->validate([
+        'status' => 'required|in:accepted,rejected'
+    ]);
+
+    $hiringRequest->status = $request->status;
+
+    if ($request->status === 'accepted' && $hiringRequest->counter_offer) {
+        $hiringRequest->budget = $hiringRequest->counter_offer;
+    }
+
+    $hiringRequest->save();
+
+    // 👇 AGREGAR ESTO: Enviar correo al músico si el cliente aceptó
+    if ($request->status === 'accepted') {
+        try {
+            $musicianEmail = $hiringRequest->musicianProfile->user->email;
+            $musicianName = $hiringRequest->musicianProfile->stage_name;
+            $clientName = $client->nombre . ' ' . $client->apellido;
+
+            \Illuminate\Support\Facades\Mail::to($musicianEmail)
+                ->send(new \App\Mail\CounterOfferAcceptedEmail(
+                    $musicianName, 
+                    $clientName, 
+                    $hiringRequest->event_date,
+                    $hiringRequest->budget // Mandamos el presupuesto ya actualizado
+                ));
+        } catch (\Exception $e) {
+            \Log::error('No se pudo enviar el correo de contraoferta aceptada: ' . $e->getMessage());
+        }
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Respuesta guardada correctamente'
+    ]);
+}
 }
