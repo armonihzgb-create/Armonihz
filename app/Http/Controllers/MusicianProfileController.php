@@ -188,8 +188,8 @@ class MusicianProfileController extends Controller
             ];
         }
 
-        // 2. Contrataciones ya aceptadas
-        $hiringRequests = $profile->hiringRequests()->where('status', 'accepted')->get();
+        // 2. Contrataciones ya aceptadas o en estado de contraoferta
+        $hiringRequests = $profile->hiringRequests()->whereIn('status', ['accepted', 'counter_offer'])->get();
         foreach ($hiringRequests as $hr) {
             $busyDates[] = [
                 'start' => $hr->event_date->format('Y-m-d\TH:i:s'), // <-- Agregada la \T
@@ -197,38 +197,24 @@ class MusicianProfileController extends Controller
             ];
         }
 
-        // 3. Castings Aceptados
-        $castingApps = $profile->castingApplications()->where('status', 'accepted')->with('event')->get();
+        // 3. Castings Aceptados (o completados)
+        $castingApps = $profile->castingApplications()->whereIn('status', ['accepted', 'completed'])->with('event')->get();
 
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
                 try {
-                    $fechaString = trim($app->event->fecha);
-                    $duracionString = trim($app->event->duracion);
-
-                    if (str_contains($duracionString, ' a ')) {
-                        $parts = explode(' a ', $duracionString);
-                        $startTimeString = trim($parts[0]);
-                        $endTimeString = trim($parts[1]);
-
-                        $start = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $fechaString . ' ' . $startTimeString);
-                        $end = \Carbon\Carbon::createFromFormat('d/m/Y H:i', $fechaString . ' ' . $endTimeString);
-
-                        if ($end->lessThan($start)) {
-                            $end->addDay();
-                        }
-                    } else {
-                        $start = \Carbon\Carbon::createFromFormat('d/m/Y', $fechaString)->startOfDay();
-                        $duration = (int) $duracionString ?: 3;
-                        $end = $start->copy()->addHours($duration);
-                    }
+                    // Usamos la función global a prueba de balas
+                    [$start, $end] = \App\Models\ClientEvent::parseDateTimeRange(
+                        $app->event->fecha,
+                        $app->event->duracion
+                    );
 
                     $busyDates[] = [
-                        'start' => $start->format('Y-m-d\TH:i:s'), // <-- Agregada la \T
-                        'end' => $end->format('Y-m-d\TH:i:s'),   // <-- Agregada la \T
+                        'start' => $start->format('Y-m-d\TH:i:s'), // <-- Agregada la \T vital para Android
+                        'end'   => $end->format('Y-m-d\TH:i:s'),   // <-- Agregada la \T
                     ];
                 } catch (\Exception $e) {
-                    \Log::error("Error en getAvailability: " . $e->getMessage());
+                    \Log::error("Error en getAvailability parseando casting: " . $e->getMessage());
                 }
             }
         }
