@@ -162,10 +162,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::patch('/castings/{id}/status', [\App\Http\Controllers\Web\AdminController::class, 'updateCastingStatus'])->name('admin.castings.status');
                 Route::delete('/castings/{id}', [\App\Http\Controllers\Web\AdminController::class, 'destroyCasting'])->name('admin.castings.destroy');
 
-                Route::get('/promotions', function () {
-                    return view('admin.promotions.index');
-                }
-                )->name('admin.promotions.index');
+                // Rutas de Promociones (Admin)
+                Route::get('/promotions', [\App\Http\Controllers\Web\AdminController::class, 'promotionsIndex'])->name('admin.promotions.index');
+                Route::patch('/promotions/{id}/status', [\App\Http\Controllers\Web\AdminController::class, 'updatePromotionStatus'])->name('admin.promotions.status');
 
                 Route::get('/musicians/{status?}/{search?}', [\App\Http\Controllers\Web\AdminController::class, 'musiciansIndex'])
                     ->where('status', 'pending|approved|rejected|unverified')

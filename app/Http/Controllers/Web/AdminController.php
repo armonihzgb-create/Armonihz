@@ -322,4 +322,68 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'El reporte ha sido marcado como «' . $label . '» correctamente.');
     }
+
+    public function promotionsIndex(Request $request)
+    {
+        // Traemos las promociones con sus músicos, ordenando primero las pendientes
+        $promotions = Promotion::with('musicianProfile.user')
+            ->orderByRaw("FIELD(status, 'pendiente', 'aprobado', 'rechazado', 'finalizado')")
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        // Calculamos los ingresos del mes basándonos en los planes aprobados
+        $ingresosMes = Promotion::where('status', 'aprobado')
+            ->whereMonth('created_at', now()->month)
+            ->get()
+            ->sum(function ($promo) {
+                if ($promo->plan_type === 'Basico') return 99;
+                if ($promo->plan_type === 'Estandar') return 299;
+                if ($promo->plan_type === 'Premium') return 699;
+                return 0;
+            });
+
+        return view('admin.promotions.index', compact('promotions', 'ingresosMes'));
+    }
+
+    public function updatePromotionStatus(Request $request, $id)
+    {
+        $request->validate([
+            'action' => 'required|in:approve,reject,stop'
+        ]);
+
+        $promotion = Promotion::findOrFail($id);
+
+        if ($request->action === 'approve') {
+            // Asignar días según el plan
+            $days = 0;
+            if ($promotion->plan_type === 'Basico') $days = 7;
+            if ($promotion->plan_type === 'Estandar') $days = 30;
+            if ($promotion->plan_type === 'Premium') $days = 90;
+
+            $promotion->update([
+                'status'      => 'aprobado',
+                'is_active'   => true,
+                'valid_from'  => now(),
+                'valid_until' => now()->addDays($days)
+            ]);
+
+            return redirect()->back()->with('success', 'Pago validado. La promoción ha sido activada por ' . $days . ' días.');
+        } 
+        
+        elseif ($request->action === 'reject') {
+            $promotion->update([
+                'status'    => 'rechazado',
+                'is_active' => false
+            ]);
+            return redirect()->back()->with('success', 'El comprobante ha sido rechazado.');
+        }
+
+        elseif ($request->action === 'stop') {
+            $promotion->update([
+                'status'    => 'finalizado',
+                'is_active' => false
+            ]);
+            return redirect()->back()->with('success', 'La promoción ha sido detenida manualmente.');
+        }
+    }
 }
