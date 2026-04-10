@@ -30,6 +30,9 @@ class MusicianProfileResource extends JsonResource
             'spotify' => $this->spotify,
             'coverage_notes' => $this->coverage_notes,
 
+            // 👉 ESTA ES LA LÍNEA NUEVA:
+            'has_active_promotion' => (bool) ($this->has_active_promotion ?? false),
+
             'rating_average' => round($this->reviews_avg_rating ?? 0, 1),
 
             'user' => $this->whenLoaded('user', function () {
