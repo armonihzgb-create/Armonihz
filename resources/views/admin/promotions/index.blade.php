@@ -42,8 +42,9 @@
                     </td>
                     <td style="padding: 16px; font-size: 14px;">
                         {{ $promo->plan_type }}
-                        <div style="color: var(--text-dim); font-size: 12px;">
-                            @if($promo->plan_type == 'Basico') $99 MXN
+                    <div style="color: var(--text-dim); font-size: 12px;">
+                            @if($promo->plan_type == 'Flash') $29 MXN
+                            @elseif($promo->plan_type == 'Basico') $99 MXN
                             @elseif($promo->plan_type == 'Estandar') $299 MXN
                             @else $699 MXN
                             @endif
