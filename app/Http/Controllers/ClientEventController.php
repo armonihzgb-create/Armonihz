@@ -11,38 +11,52 @@ class ClientEventController extends Controller
 {
     // Obtener los eventos del cliente logueado
    // Obtener los eventos del cliente logueado
-public function index(Request $request)
-{
-    $firebaseUid = $request->attributes->get('firebase_uid');
+// Obtener los eventos del cliente logueado
+    public function index(Request $request)
+    {
+        $firebaseUid = $request->attributes->get('firebase_uid');
 
-    // 🔵 1. Cargamos las relaciones 'genre' y 'client'
-    $eventos = ClientEvent::with(['genre', 'client']) 
-        ->where('firebase_uid', $firebaseUid)
-        ->orderBy('created_at', 'desc')
-        ->get();
+        // 🔵 1. Cargamos las relaciones 'genre', 'client' y AHORA 'applications'
+        // Cargar 'applications' aquí hace que todo sea 10x más rápido (Evita el problema de N+1 queries)
+        $eventos = ClientEvent::with(['genre', 'client', 'applications']) 
+            ->where('firebase_uid', $firebaseUid)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    $formattedEvents = $eventos->map(function ($evento) {
-        return [
-            'id' => $evento->id,
-            'titulo' => $evento->titulo,
-            'tipoMusica' => $evento->genre ? $evento->genre->name : $evento->tipo_musica,
-            'fecha' => $evento->fecha,
-            'ubicacion' => $evento->ubicacion,
-            'status' => $evento->status,
-            'duracion' => $evento->duracion,
-            'descripcion' => $evento->descripcion,
-            'presupuesto' => (float) $evento->presupuesto,
-            'propuestas' => $evento->applications()->count(),
-            
-            // 🔵 2. Agregamos el nombre del cliente
-            'nombre_cliente' => $evento->client->nombre ?? 'Usuario Anónimo',
-           'email' => $evento->email ?? ($evento->client->email ?? null),
-           'telefono' => $evento->telefono ?? ($evento->client->telefono ?? null)
-        ];
-    });
+        $formattedEvents = $eventos->map(function ($evento) {
 
-    return response()->json($formattedEvents);
-}
+            // 🔥 LA MAGIA: Buscamos si hay una propuesta ganadora y revisamos su estado
+            $winningApp = $evento->applications->whereIn('status', ['accepted', 'completed'])->first();
+            $finalStatus = $evento->status;
+
+            // Si el músico ya le dio a "Finalizar" a su propuesta, forzamos el estado del evento a 'completed'
+            if ($winningApp && $winningApp->status === 'completed') {
+                $finalStatus = 'completed';
+            }
+
+            return [
+                'id' => $evento->id,
+                'titulo' => $evento->titulo,
+                'tipoMusica' => $evento->genre ? $evento->genre->name : $evento->tipo_musica,
+                'fecha' => $evento->fecha,
+                'ubicacion' => $evento->ubicacion,
+                'status' => $finalStatus, // 👈 Enviamos el estado corregido a Android
+                'duracion' => $evento->duracion,
+                'descripcion' => $evento->descripcion,
+                'presupuesto' => (float) $evento->presupuesto,
+                
+                // Le quitamos los paréntesis a count() porque ya cargamos la relación arriba
+                'propuestas' => $evento->applications->count(), 
+                
+                // 🔵 2. Agregamos el nombre y contacto del cliente
+                'nombre_cliente' => $evento->client->nombre ?? 'Usuario Anónimo',
+                'email' => $evento->email ?? ($evento->client->email ?? null),
+                'telefono' => $evento->telefono ?? ($evento->client->telefono ?? null)
+            ];
+        });
+
+        return response()->json($formattedEvents);
+    }
 
     /**
      * Get all applications for a specific client event.
