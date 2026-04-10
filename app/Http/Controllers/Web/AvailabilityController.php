@@ -87,7 +87,7 @@ class AvailabilityController extends Controller
             ];
         }
 
-        // 3. Castings Aceptados
+    // 3. Castings Aceptados
         $castingApps = $profile->castingApplications()->where('status', 'accepted')->with('event')->get();
         foreach ($castingApps as $app) {
             if ($app->event && $app->event->fecha) {
@@ -97,14 +97,22 @@ class AvailabilityController extends Controller
                         $app->event->duracion
                     );
 
+                    // 👇 1. ARMAMOS EL HORARIO COMO EN LAS CONTRATACIONES
+                    $horario = $start->format('H:i') . ' a ' . $end->format('H:i');
+
                     $events[] = [
                         'id' => 'casting_' . $app->id,
-                        'title' => '🎤 Casting: ' . $app->event->titulo,
+                        // 👇 2. LE INYECTAMOS EL HORARIO AL TÍTULO
+                        'title' => '🎤 ' . $horario . ' - Casting: ' . $app->event->titulo,
                         'start' => $start->format('Y-m-d\TH:i:s'),
                         'end' => $end->format('Y-m-d\TH:i:s'),
                         'backgroundColor' => '#9333ea',
                         'borderColor' => 'transparent',
-                        'extendedProps' => ['source' => 'system', 'description' => 'Casting aceptado.'],
+                        'extendedProps' => [
+                            'source' => 'system', 
+                            'description' => 'Casting aceptado.',
+                            'horario' => $horario // Inyectado para tu modal web
+                        ],
                         'real_id' => $app->event->id,
                         'event_source' => 'casting',
                         'event_type' => 'busy',
