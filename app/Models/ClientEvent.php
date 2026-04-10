@@ -46,41 +46,48 @@ public function genre()
       return $this->belongsTo(Genre::class, 'tipo_musica');
     }
 
-    // ────────────────────────────────────────────────────────────────────────
+   // ────────────────────────────────────────────────────────────────────────
     // Shared date/time parsing helper (DRY)
     // ────────────────────────────────────────────────────────────────────────
 
     /**
      * Parse the event's fecha + duracion strings into Carbon start/end objects.
      *
-     * The 'fecha' column stores dates as 'd/m/Y' strings.
-     * The 'duracion' column stores either:
-     *   - A range like "20:30 a 22:30" (preferred), or
-     *   - A bare hour count like "3" (legacy).
-     *
-     * Handles midnight-crossing events (e.g. 23:00 a 01:00) automatically.
-     *
-     * @param  string  $fecha     Raw value from ClientEvent::$fecha
-     * @param  string  $duracion  Raw value from ClientEvent::$duracion
+     * @param  string  $fecha   Raw value from ClientEvent::$fecha
+     * @param  string  $duracion Raw value from ClientEvent::$duracion
      * @return array{0: Carbon, 1: Carbon}  [$start, $end]
      */
     public static function parseDateTimeRange(string $fecha, string $duracion): array
     {
-        // — Parse the date ———————————————————————————————
+        // — 1. Parse the date ———————————————————————————————
+        // Tu app móvil ahora guarda en 'Y-m-d' (Ej: 2026-04-26) pero antes
+        // guardaba en 'd/m/Y'. Carbon::parse() maneja automáticamente 'Y-m-d'.
+        // Lo dejamos preparado para ambos casos por si tienes eventos antiguos.
         try {
-            $start = Carbon::createFromFormat('d/m/Y', trim($fecha));
-        } catch (\Exception) {
-            $start = Carbon::parse(trim($fecha));
+            if (str_contains($fecha, '/')) {
+                $start = Carbon::createFromFormat('d/m/Y', trim($fecha));
+            } else {
+                $start = Carbon::parse(trim($fecha)); 
+            }
+        } catch (\Exception $e) {
+            $start = Carbon::now()->startOfDay(); // Fallback seguro
         }
+        
         $end = clone $start;
 
-        // — Parse the time range ————————————————————————————
-        $duracion = trim($duracion);
+        // — 2. Parse the time range ————————————————————————————
+        // Limpiamos cualquier tipo de separador y lo convertimos a un guion simple.
+        // Esto cubre: "16:00 a 20:00", "16:00 - 20:00", "16:00 – 20:00" y "16:00 — 20:00"
+        $duracionLimpia = str_replace([' a ', ' al ', '–', '—'], '-', trim($duracion));
 
-        if (str_contains($duracion, ' a ')) {
-            [$startTime, $endTime] = explode(' a ', $duracion);
-            $start->setTimeFromTimeString(trim($startTime));
-            $end->setTimeFromTimeString(trim($endTime));
+        if (str_contains($duracionLimpia, '-')) {
+            $partes = explode('-', $duracionLimpia);
+            
+            $startTime = trim($partes[0]);
+            $endTime = isset($partes[1]) ? trim($partes[1]) : '23:59';
+
+            $start->setTimeFromTimeString($startTime);
+            $end->setTimeFromTimeString($endTime);
 
             // Handle midnight-crossing (e.g. 23:00 → 01:00)
             if ($end->lessThan($start)) {
@@ -89,7 +96,7 @@ public function genre()
         } else {
             // Legacy format: bare number = duration in hours
             $start->startOfDay();
-            $hours = (int) $duracion ?: 3;
+            $hours = (int) $duracionLimpia ?: 3;
             $end->startOfDay()->addHours($hours);
         }
 
