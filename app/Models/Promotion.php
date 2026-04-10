@@ -17,6 +17,10 @@ class Promotion extends Model
         'valid_until',
         'is_active',
         'views',
+        // --- Nuevos campos agregados para el flujo de pagos ---
+        'status',
+        'receipt_path',
+        'plan_type',
     ];
 
     protected $casts = [
