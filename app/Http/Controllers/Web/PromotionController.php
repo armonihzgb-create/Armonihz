@@ -53,13 +53,16 @@ class PromotionController extends Controller
             return back()->with('error', 'Error del servidor: No se pudo guardar el comprobante.');
         }
 
-        // 3. Crear el registro en estado "pendiente"
+      // 3. Crear el registro en estado "pendiente"
         Promotion::create([
             'musician_profile_id' => $profile->id,
             'plan_type'           => $request->input('plan_type'),
             'receipt_path'        => $path,
             'status'              => 'pendiente',
             'is_active'           => false,
+            // Agregamos valores por defecto para que MySQL no se queje
+            'title'               => 'Plan ' . $request->input('plan_type'),
+            'description'         => 'Suscripción a promoción de tipo ' . $request->input('plan_type'),
             // valid_from y valid_until quedan nulos por ahora
         ]);
 
