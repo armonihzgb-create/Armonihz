@@ -1795,8 +1795,8 @@
             @endif
         </div>
         <br><br>
-        <p class="cta-note"><i class="fa-solid fa-shield-halved" style="margin-right:4px;"></i> Gratis para siempre ·
-            Sin tarjeta de crédito · Cancela cuando quieras</p>
+        <p class="cta-note"><i class="fa-solid fa-globe" style="margin-right:4px;"></i> Perfiles profesionales · 
+            Agenda inteligente · Conexión inmediata</p>
     </section>
 
     <!-- FOOTER -->
