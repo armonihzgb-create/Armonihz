@@ -51,9 +51,9 @@
                     </td>
                     <td style="padding: 16px;">
                         @if($promo->receipt_path)
-                            <a href="{{ asset('storage/' . $promo->receipt_path) }}" target="_blank" style="color: #3b82f6; text-decoration: underline; font-size: 13px;">
-                                Ver Ticket
-                            </a>
+                         <a href="{{ url('file/' . $promo->receipt_path) }}" target="_blank" style="color: #3b82f6; text-decoration: underline; font-size: 13px;">
+                            Ver Ticket
+                        </a>
                         @else
                             <span style="color: #94a3b8; font-size: 13px;">Sin ticket</span>
                         @endif
