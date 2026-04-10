@@ -142,6 +142,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::get('/promote', [PromotionController::class , 'create'])->name('promotions.create');
             Route::get('/my-promotions', [PromotionController::class , 'index'])->name('promotions.index');
+            // 👉 AGREGA ESTA LÍNEA AQUÍ:
+            Route::post('/promotions', [PromotionController::class, 'store'])->name('promotions.store');
         }
         );
 
