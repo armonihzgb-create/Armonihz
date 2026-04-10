@@ -112,26 +112,63 @@ public function store(StoreHiringRequestRequest $request)
             return response()->json(['success' => false, 'message' => 'Cliente no encontrado.'], 404);
         }
 
-        // 🔥 CORRECCIÓN: VALIDACIÓN DE TRASLAPE EN LA BASE DE DATOS
+        // 🔥 CORRECCIÓN: VALIDACIÓN DE TRASLAPE TOTAL (Hiring, Castings y Calendario)
         $musicianId = $request->input('musician_profile_id');
-        $startTime = $request->input('event_date');
-        $endTime = $request->input('end_time');
+        $startTime = \Carbon\Carbon::parse($request->input('event_date'));
+        $endTime = \Carbon\Carbon::parse($request->input('end_time'));
 
-        $hasOverlap = HiringRequest::where('musician_profile_id', $musicianId)
-            ->where(function ($query) use ($startTime, $endTime) {
-                // Fórmula de traslape: (InicioNuevo < FinExistente) Y (FinNuevo > InicioExistente)
-                $query->where('event_date', '<', $endTime)
-                      ->where('end_time', '>', $startTime);
-            })
-            // Solo validamos contra eventos que estén pendientes o ya aceptados.
-            // Ignoramos los cancelados o rechazados porque esos liberan el horario.
+        $hasOverlap = false;
+
+        // 1. Validar contra otras Contrataciones Directas (Hiring Requests)
+        if (\App\Models\HiringRequest::where('musician_profile_id', $musicianId)
             ->where('status', 'accepted')
-            ->exists();
+            ->where('event_date', '<', $endTime)
+            ->where('end_time', '>', $startTime)
+            ->exists()) {
+            $hasOverlap = true;
+        }
+
+        // 2. Validar contra Bloqueos Manuales del Calendario
+        if (!$hasOverlap && \App\Models\MusicianCalendarEvent::where('musician_profile_id', $musicianId)
+            ->where('start', '<', $endTime)
+            ->where('end', '>', $startTime)
+            ->exists()) {
+            $hasOverlap = true;
+        }
+
+        // 3. Validar contra Castings Aceptados
+        if (!$hasOverlap) {
+            // Nota: Si en tu base de datos la columna en CastingApplication se llama 'musician_id', 
+            // cambia 'musician_profile_id' por 'musician_id' en la siguiente línea.
+            $castings = \App\Models\CastingApplication::with('event')
+                ->where('musician_profile_id', $musicianId) 
+                ->whereIn('status', ['accepted', 'completed'])
+                ->get();
+
+            foreach ($castings as $casting) {
+                if ($casting->event && $casting->event->fecha) {
+                    try {
+                        [$castStart, $castEnd] = \App\Models\ClientEvent::parseDateTimeRange(
+                            $casting->event->fecha,
+                            $casting->event->duracion
+                        );
+
+                        // Fórmula de traslape: (Inicio A < Fin B) y (Fin A > Inicio B)
+                        if ($castStart->lessThan($endTime) && $castEnd->greaterThan($startTime)) {
+                            $hasOverlap = true;
+                            break;
+                        }
+                    } catch (\Exception $e) {
+                        continue; // Ignorar si hay un error parseando una fecha corrupta antigua
+                    }
+                }
+            }
+        }
 
         if ($hasOverlap) {
             return response()->json([
                 'success' => false,
-                'message' => 'El músico ya tiene un evento confirmado en este horario. Por favor, elige otra hora.'
+                'message' => 'El músico ya tiene un evento o casting confirmado en este horario. Por favor, elige otra hora.'
             ], 422); // 422 Unprocessable Entity
         }
         // 🔥 FIN DE LA CORRECCIÓN
