@@ -333,10 +333,11 @@ class AdminController extends Controller
             ->paginate(15);
 
         // Calculamos los ingresos del mes basándonos en los planes aprobados
-        $ingresosMes = Promotion::where('status', 'aprobado')
+      $ingresosMes = Promotion::where('status', 'aprobado')
             ->whereMonth('created_at', now()->month)
             ->get()
             ->sum(function ($promo) {
+                if ($promo->plan_type === 'Flash') return 29; // 👉 NUEVO
                 if ($promo->plan_type === 'Basico') return 99;
                 if ($promo->plan_type === 'Estandar') return 299;
                 if ($promo->plan_type === 'Premium') return 699;
@@ -354,9 +355,10 @@ class AdminController extends Controller
 
         $promotion = Promotion::findOrFail($id);
 
-        if ($request->action === 'approve') {
+      if ($request->action === 'approve') {
             // Asignar días según el plan
             $days = 0;
+            if ($promotion->plan_type === 'Flash') $days = 1;
             if ($promotion->plan_type === 'Basico') $days = 7;
             if ($promotion->plan_type === 'Estandar') $days = 30;
             if ($promotion->plan_type === 'Premium') $days = 90;

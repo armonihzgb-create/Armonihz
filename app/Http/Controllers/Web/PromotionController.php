@@ -30,7 +30,7 @@ class PromotionController extends Controller
     {
         // 1. Validar los datos recibidos del formulario
         $request->validate([
-            'plan_type' => 'required|string|in:Basico,Estandar,Premium',
+            'plan_type' => 'required|string|in:Flash,Basico,Estandar,Premium',
             'receipt'   => 'required|file|mimes:jpeg,png,jpg,pdf|max:5120', // Máximo 5MB
         ]);
 
