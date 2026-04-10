@@ -355,22 +355,42 @@ class AdminController extends Controller
 
         $promotion = Promotion::findOrFail($id);
 
-      if ($request->action === 'approve') {
-            // Asignar días según el plan
+        if ($request->action === 'approve') {
+            // 1. Asignar días según el plan (¡Incluyendo tu nuevo plan Flash!)
             $days = 0;
             if ($promotion->plan_type === 'Flash') $days = 1;
             if ($promotion->plan_type === 'Basico') $days = 7;
             if ($promotion->plan_type === 'Estandar') $days = 30;
             if ($promotion->plan_type === 'Premium') $days = 90;
 
+            // 2. LÓGICA DE ACUMULACIÓN (La magia ocurre aquí)
+            // Buscamos si el músico tiene promociones futuras o activas
+            $ultimaPromocion = Promotion::where('musician_profile_id', $promotion->musician_profile_id)
+                ->where('status', 'aprobado')
+                ->where('valid_until', '>', now())
+                ->orderBy('valid_until', 'desc')
+                ->first();
+
+            // Si tiene una vigente, la nueva empieza en el segundo exacto que termina la anterior.
+            // Si no tiene, empieza ahora mismo.
+            $fechaInicio = $ultimaPromocion ? $ultimaPromocion->valid_until : now();
+            
+            // Calculamos el final sumando los días a la fecha de inicio
+            $fechaFin = $fechaInicio->copy()->addDays($days);
+
             $promotion->update([
                 'status'      => 'aprobado',
                 'is_active'   => true,
-                'valid_from'  => now(),
-                'valid_until' => now()->addDays($days)
+                'valid_from'  => $fechaInicio,
+                'valid_until' => $fechaFin
             ]);
 
-            return redirect()->back()->with('success', 'Pago validado. La promoción ha sido activada por ' . $days . ' días.');
+            // Mensaje dinámico para que sepas si se activó hoy o se encoló
+            $mensaje = $ultimaPromocion 
+                ? "Pago validado. La promoción se ha puesto en cola y comenzará el " . $fechaInicio->format('d/m/Y')
+                : "Pago validado. La promoción ha sido activada inmediatamente por " . $days . " días.";
+
+            return redirect()->back()->with('success', $mensaje);
         } 
         
         elseif ($request->action === 'reject') {

@@ -27,8 +27,9 @@ class PromotionController extends Controller
                 $q->where('user_id', $user->id);
             });
         }
-        else {
+       else {
             $query->where('is_active', true)
+                ->where('valid_from', '<=', now())
                 ->where('valid_until', '>', now());
         }
 
