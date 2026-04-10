@@ -179,12 +179,13 @@ public function syncClient(Request $request)
         }
 
         $nombreCompleto = trim($request->name ?? '');
-        $partes = explode(' ', $nombreCompleto, 2);
 
-        $nombre   = !empty($request->nombre)   ? $request->nombre   : ($partes[0] ?? '');
-        $apellido = !empty($request->apellido) ? $request->apellido : ($partes[1] ?? '');
+        $nombre   = $request->nombre;
+        $apellido = $request->apellido;
         
-        // Extraemos la URL de la foto de Google que manda la app
+        // 🔥 NUEVO: Atrapamos el booleano que nos manda Android
+        $terminos_aceptados = $request->terminos_aceptados ?? false;
+        
         $googlePhotoUrl = $request->photoUrl ?? $request->picture ?? null;
 
         $user = User::where('email', $request->email)->first();
@@ -192,13 +193,12 @@ public function syncClient(Request $request)
         if (!$user) {
             $user = User::create([
                 'email'        => $request->email,
-                'name'         => $nombreCompleto,
+                'name'         => $nombreCompleto, 
                 'firebase_uid' => $firebaseUid,
                 'role'         => 'cliente',
                 'password'     => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(16)),
             ]);
         } else {
-            // Actualizamos name solo si está vacío o si se quedó como 'Usuario'
             $nuevoName = (empty($user->name) || $user->name === 'Usuario') ? $nombreCompleto : $user->name;
             $user->update([
                 'name'         => $nuevoName,
@@ -216,20 +216,24 @@ public function syncClient(Request $request)
                 $changed = true;
             }
 
-            // 🔥 LA MAGIA AQUÍ: Si dice 'Usuario', lo sobreescribimos con el nombre real
-            if (empty($cliente->nombre) || $cliente->nombre === 'Usuario') {
+            if (!empty($nombre) && (empty($cliente->nombre) || $cliente->nombre === 'Usuario')) {
                 $cliente->nombre = $nombre;
                 $changed = true;
             }
 
-            if (empty($cliente->apellido)) {
+            if (!empty($apellido) && empty($cliente->apellido)) {
                 $cliente->apellido = $apellido;
                 $changed = true;
             }
 
-            // Guardamos la foto de Google como respaldo si no la tiene
             if (empty($cliente->google_picture) && $googlePhotoUrl) {
                 $cliente->google_picture = $googlePhotoUrl;
+                $changed = true;
+            }
+
+            // 🔥 NUEVO: Si Android nos dice que ya aceptó, actualizamos el candado en MySQL
+            if ($terminos_aceptados && !$cliente->terminos_aceptados) {
+                $cliente->terminos_aceptados = true;
                 $changed = true;
             }
 
@@ -239,12 +243,14 @@ public function syncClient(Request $request)
 
         } else {
             Client::create([
-                'firebase_uid'   => $firebaseUid,
-                'user_id'        => $user->id,
-                'nombre'         => $nombre,
-                'apellido'       => $apellido,
-                'email'          => $request->email,
-                'google_picture' => $googlePhotoUrl
+                'firebase_uid'       => $firebaseUid,
+                'user_id'            => $user->id,
+                'nombre'             => $nombre,     
+                'apellido'           => $apellido,   
+                'email'              => $request->email,
+                'google_picture'     => $googlePhotoUrl,
+                // 🔥 NUEVO: Guardamos el candado al crear el registro
+                'terminos_aceptados' => $terminos_aceptados 
             ]);
         }
 
