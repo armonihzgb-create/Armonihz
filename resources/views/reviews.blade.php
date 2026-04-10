@@ -128,8 +128,8 @@
 
             @foreach($reviews as $rv)
             @php
-                $clientName = $rv->client->name ?? 'Cliente Anónimo';
-                $initials = strtoupper(substr($clientName, 0, 1));
+                $clientName = $rv->client ? trim($rv->client->nombre . ' ' . $rv->client->apellido) : 'Cliente Anónimo';
+                $initials = $rv->client ? strtoupper(substr($rv->client->nombre, 0, 1) . substr($rv->client->apellido, 0, 1)) : 'CA';
                 $bg = '#ede9fe'; $color = '#6c3fc5';
                 
                 $eventName = 'Contratación Directa';

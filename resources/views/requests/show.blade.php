@@ -87,11 +87,6 @@
                     <div class="rqs-avatar">{{ $initials }}</div>
                     <div>
                         <span class="rqs-client-name">{{ $clientName }}</span>
-                        <span class="rqs-client-verified">
-                            <i data-lucide="badge-check" style="width:13px;height:13px;color:#2563eb;"></i>
-                            Cliente Verificado
-                        </span>
-                        <span class="rqs-stars">⭐⭐⭐⭐⭐ <small>(Nuevo)</small></span>
                     </div>
                 </div>
 
