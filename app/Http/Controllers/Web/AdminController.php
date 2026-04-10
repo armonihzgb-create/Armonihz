@@ -9,6 +9,7 @@ use App\Models\ClientEvent;
 use App\Models\HiringRequest;
 use App\Models\CastingApplication;
 use App\Models\Report; 
+use App\Models\Promotion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
