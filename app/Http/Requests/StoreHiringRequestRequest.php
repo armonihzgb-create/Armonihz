@@ -23,7 +23,7 @@ class StoreHiringRequestRequest extends FormRequest
     {
         return [
             'musician_profile_id' => 'required|exists:musician_profiles,id',
-            'event_date' => 'required|date|after:today',
+            'event_date' => 'required|date|after_or_equal:today',
             'event_location' => 'required|string|max:255',
             'description' => 'required|string',
             'budget' => 'required|numeric|min:0',
