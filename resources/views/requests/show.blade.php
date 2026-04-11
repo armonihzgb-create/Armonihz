@@ -24,6 +24,7 @@
             'accepted' => ['color' => '#16a34a', 'bg' => '#f0fdf4', 'border' => '#bbf7d0', 'text' => '✅ Solicitud Confirmada'],
             'rejected' => ['color' => '#dc2626', 'bg' => '#fef2f2', 'border' => '#fecaca', 'text' => '❌ Solicitud Rechazada'],
             'completed' => ['color' => '#6c3fc5', 'bg' => '#f5f3ff', 'border' => '#ddd6fe', 'text' => '⭐ Evento Finalizado'],
+            'counter_offer' => ['color' => '#6366f1', 'bg' => '#eef2ff', 'border' => '#e0e7ff', 'text' => '🔄 Revisión de contraoferta'],
             default    => ['color' => '#64748b', 'bg' => '#f1f5f9', 'border' => '#e2e8f0', 'text' => '❔ Estado Desconocido']
         };
     @endphp

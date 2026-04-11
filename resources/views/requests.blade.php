@@ -141,6 +141,8 @@
                                         'pending'  => ['class' => 'warning',  'icon' => 'clock',          'label' => 'Pendiente'],
                                         'accepted' => ['class' => 'success',  'icon' => 'check-circle-2', 'label' => 'Confirmada'],
                                         'rejected' => ['class' => 'danger',   'icon' => 'x-circle',       'label' => 'Rechazada'],
+                                        'completed' => ['class' => 'resolved', 'icon' => 'star',          'label' => 'Finalizada'],
+                                        'counter_offer' => ['class' => 'reviewed', 'icon' => 'refresh-cw', 'label' => 'Contraoferta'],
                                     ];
                                     $cfg = $statusConfig[$req->status] ?? ['class' => 'secondary', 'icon' => 'minus', 'label' => ucfirst($req->status)];
                                 @endphp

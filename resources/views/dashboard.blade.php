@@ -126,6 +126,7 @@
                                         @elseif($req->status === 'completed')  Evento finalizado
                                         @elseif($req->status === 'cancelled')  Solicitud cancelada
                                         @elseif($req->status === 'rejected')   Solicitud rechazada
+                                        @elseif($req->status === 'counter_offer') Contraoferta enviada
                                         @else {{ ucfirst($req->status) }}
                                         @endif
                                     </strong>
@@ -139,6 +140,7 @@
                                         @elseif($req->status === 'completed')  Finalizado
                                         @elseif($req->status === 'cancelled')  Cancelado
                                         @elseif($req->status === 'rejected')   Rechazada
+                                        @elseif($req->status === 'counter_offer') Contraoferta
                                         @else {{ ucfirst($req->status) }}
                                         @endif
                                     </strong>

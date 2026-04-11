@@ -46,7 +46,7 @@
                 <i data-lucide="eye" style="width:18px;height:18px;color:#16a34a;"></i>
             </div>
             <div>
-                <div class="mm-stat-value" style="color:#16a34a;">120</div>
+                <div class="mm-stat-value" style="color:#16a34a;">{{ $profile->profile_views ?? 0 }}</div>
                 <div class="mm-stat-label">Vistas del portafolio</div>
             </div>
         </div>
