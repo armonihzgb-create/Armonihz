@@ -119,8 +119,8 @@
         .pm-new-btn:hover { background: #1e293b; }
         .pm-new-btn i { width: 16px; height: 16px; }
 
-        .pm-table-container { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .pm-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .pm-table-container { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .pm-table { width: 100%; min-width: 650px; border-collapse: collapse; text-align: left; }
         .pm-table th { background: #f8fafc; padding: 16px 24px; font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; }
         .pm-table td { padding: 16px 24px; font-size: 14.5px; color: #334155; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         .pm-table tr:last-child td { border-bottom: none; }

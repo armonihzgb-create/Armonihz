@@ -223,8 +223,14 @@
 
 @media (max-width: 640px) {
     .requests-page-header { flex-direction: column; align-items: flex-start; }
-    .requests-header-badge { width: 100%; justify-content: center; }
+    .requests-header-badge { width: 100%; justify-content: center; margin-top: 10px; }
+    .filter-tabs { flex-direction: column; width: 100%; }
+    .filter-tab { width: 100%; justify-content: center; }
+    .rq-empty-card { padding: 32px 20px; }
+    .rq-empty-title { font-size: 24px; }
 }
+
+.table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 /* ── TABS ─────────────────────────────────────────────────── */
 .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -247,7 +253,7 @@
 
 /* ── TABLA ────────────────────────────────────────────────── */
 .requests-box { overflow: hidden; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); background: #fff; }
-.requests-table { table-layout: auto; width: 100%; border-collapse: collapse; text-align: left; }
+.requests-table { table-layout: auto; width: 100%; min-width: 800px; border-collapse: collapse; text-align: left; }
 .requests-table thead th {
     font-size: 13px; font-weight: 700; text-transform: uppercase;
     letter-spacing: 0.05em; color: #64748b; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;
