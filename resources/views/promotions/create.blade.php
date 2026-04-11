@@ -79,23 +79,7 @@
             </div>
         </div>
 
-        {{-- Plan Premium --}}
-        <div class="promo-pricing-card">
-            <div class="promo-pricing-header">
-                <h3>Premium</h3>
-                <div class="promo-price"><span>$</span>699<small>MXN</small></div>
-                <p>Dedicación completa para profesionales.</p>
-            </div>
-            <div class="promo-pricing-body">
-                <ul>
-                    <li><i data-lucide="check"></i> <strong>90 días</strong> de promoción</li>
-                    <li><i data-lucide="check"></i> Posicionamiento máximo absoluto</li>
-                    <li><i data-lucide="check"></i> Insignia de "Destacado" dorada</li>
-                    <li><i data-lucide="check"></i> Ahorras $488 MXN</li>
-                </ul>
-                <button class="promo-select-btn" onclick="openPaymentModal('Premium')">Pagar Plan</button>
-            </div>
-        </div>
+
     </div>
 
     {{-- Modal de Pago (Oculto por defecto) --}}
@@ -147,7 +131,7 @@
         
         .promo-error-banner { display: flex; align-items: center; gap: 12px; background: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c; padding: 16px; border-radius: 12px; margin-bottom: 24px; font-size: 14px; font-weight: 600; }
 
-       .promo-pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto 40px; }
+       .promo-pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1000px; margin: 0 auto 40px; }
         .promo-pricing-card { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 24px; overflow: hidden; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s; display: flex; flex-direction: column; }
         .promo-pricing-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); }
         .promo-pricing-card.popular { border: 2.5px solid #6c3fc5; position: relative; box-shadow: 0 12px 32px rgba(108,63,197,0.12); transform: scale(1.03); z-index: 10; }

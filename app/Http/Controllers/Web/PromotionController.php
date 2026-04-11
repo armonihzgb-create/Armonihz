@@ -28,9 +28,8 @@ class PromotionController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validar los datos recibidos del formulario
         $request->validate([
-            'plan_type' => 'required|string|in:Flash,Basico,Estandar,Premium',
+            'plan_type' => 'required|string|in:Flash,Basico,Estandar',
             'receipt'   => 'required|file|mimes:jpeg,png,jpg,pdf|max:5120', // Máximo 5MB
         ]);
 
