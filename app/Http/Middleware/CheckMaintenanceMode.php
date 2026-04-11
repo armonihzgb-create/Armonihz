@@ -35,7 +35,7 @@ class CheckMaintenanceMode
                     abort(503, 'El sistema se encuentra en mantenimiento. Por favor vuelve pronto.');
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Illuminate\Database\QueryException $e) {
             // If settings table doesn't exist yet, just continue
         }
 
