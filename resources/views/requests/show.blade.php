@@ -83,13 +83,24 @@
                     Información del Cliente
                 </h3>
 
-             <div class="rqs-client-profile">
+   <div class="rqs-client-profile">
     <div class="rqs-avatar" style="overflow: hidden;">
-        {{-- Verificamos si el cliente tiene una foto registrada --}}
-        @if($client && $client->photoUrl)
-            <img src="{{ $client->photoUrl }}" alt="Foto de {{ $clientName }}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+        @php
+            // Definimos qué foto usar basándonos en tus campos
+            $imagenFinal = null;
+            
+            if (!empty($client->fotoPerfil)) {
+                // Ajusta la URL base según cómo guardes los archivos en tu servidor
+                $imagenFinal = asset('storage/' . $client->fotoPerfil);
+            } elseif (!empty($client->google_picture)) {
+                $imagenFinal = $client->google_picture;
+            }
+        @endphp
+
+        @if($imagenFinal)
+            <img src="{{ $imagenFinal }}" alt="Foto de {{ $clientName }}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
         @else
-            {{-- Si no tiene foto, mostramos las iniciales moradas que ya tenías --}}
+            {{-- Si ambas están vacías (NULL), mostramos las iniciales --}}
             {{ $initials }}
         @endif
     </div>
