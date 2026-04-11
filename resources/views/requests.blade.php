@@ -2,74 +2,74 @@
 
 @section('dashboard-content')
 
-    {{-- CABECERA (ESTILO PROMOCIONES) --}}
-    <div class="promo-page-header">
+    {{-- CABECERA (ESTILO PROMOCIONES MEJORADO) --}}
+    <div class="requests-page-header">
         <div>
-            <div class="promo-eyebrow">
-                <i data-lucide="inbox" style="width:14px;height:14px;color:#6c3fc5;"></i>
+            <div class="requests-eyebrow">
+                <i data-lucide="inbox" style="width:16px;height:16px;color:#6c3fc5;"></i>
                 BANDEJA DE ENTRADA
             </div>
-            <h1 class="promo-page-title">Solicitudes de Contratación</h1>
-            <p class="promo-page-subtitle">Gestiona las propuestas que los clientes te han enviado.</p>
+            <h1 class="requests-page-title">Solicitudes de Contratación</h1>
+            <p class="requests-page-subtitle">Gestiona las propuestas que los clientes te han enviado.</p>
         </div>
         
-        <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;font-size:13px;color:#64748b;height:fit-content;">
-            <i data-lucide="music" style="width:14px;height:14px;color:#6366f1;"></i>
+        <div class="requests-header-badge">
+            <i data-lucide="music" style="width:16px;height:16px;color:#6366f1;"></i>
             Eventos a la medida
         </div>
     </div>
 
     {{-- TABS + CONTADORES --}}
-    <div style="margin-bottom: 24px;">
+    <div style="margin-bottom: 32px;">
         <div class="filter-tabs">
             <a href="{{ route('requests.index') }}" class="filter-tab {{ is_null($status) ? 'active' : '' }}">
-                <i data-lucide="layout-grid" style="width:14px;height:14px;"></i>
+                <i data-lucide="layout-grid" style="width:16px;height:16px;"></i>
                 Todas <span class="tab-counter">{{ $counts['all'] }}</span>
             </a>
             <a href="{{ route('requests.index', 'pending') }}" class="filter-tab {{ $status === 'pending' ? 'active' : '' }}">
-                <i data-lucide="alert-circle" style="width:14px;height:14px;"></i>
+                <i data-lucide="clock" style="width:16px;height:16px;"></i>
                 Pendientes <span class="tab-counter pending">{{ $counts['pending'] }}</span>
             </a>
             <a href="{{ route('requests.index', 'accepted') }}" class="filter-tab {{ $status === 'accepted' ? 'active' : '' }}">
-                <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
+                <i data-lucide="check-circle-2" style="width:16px;height:16px;"></i>
                 Confirmadas <span class="tab-counter resolved">{{ $counts['accepted'] }}</span>
             </a>
         </div>
     </div>
 
     {{-- TABLA --}}
-    <div class="dashboard-box" style="overflow: hidden;">
+    <div class="dashboard-box requests-box">
         <div class="table-responsive">
-            <table class="admin-table reports-table">
+            <table class="requests-table">
                 <thead>
                     <tr>
-                        <th style="min-width:150px;">
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <i data-lucide="user" style="width:13px;height:13px;color:#94a3b8;"></i> Cliente
-                            </div>
-                        </th>
                         <th style="min-width:200px;">
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <i data-lucide="map-pin" style="width:13px;height:13px;color:#94a3b8;"></i> Evento / Detalles
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <i data-lucide="user" style="width:16px;height:16px;color:#94a3b8;"></i> Cliente
                             </div>
                         </th>
-                        <th style="min-width:110px;">
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <i data-lucide="calendar" style="width:13px;height:13px;color:#94a3b8;"></i> Fecha
+                        <th style="min-width:250px;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <i data-lucide="map-pin" style="width:16px;height:16px;color:#94a3b8;"></i> Evento / Detalles
                             </div>
                         </th>
-                        <th style="min-width:110px;">
-                            <div style="display:flex;align-items:center;gap:6px;">
-                                <i data-lucide="dollar-sign" style="width:13px;height:13px;color:#94a3b8;"></i> Presupuesto
+                        <th style="min-width:140px;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <i data-lucide="calendar" style="width:16px;height:16px;color:#94a3b8;"></i> Fecha
                             </div>
                         </th>
-                        <th style="min-width:110px;">Estado</th>
-                        <th style="min-width:130px; text-align:right;">Acciones</th>
+                        <th style="min-width:140px;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <i data-lucide="wallet" style="width:16px;height:16px;color:#94a3b8;"></i> Presupuesto
+                            </div>
+                        </th>
+                        <th style="min-width:130px;">Estado</th>
+                        <th style="min-width:140px; text-align:right;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($requests as $req)
-                        <tr class="report-row">
+                        <tr class="request-row">
                            {{-- CLIENTE --}}
                             <td>
                                 <div class="user-cell">
@@ -88,50 +88,53 @@
                                     @endphp
                                     
                                     {{-- Mostrar la foto o las iniciales --}}
-                                    <div class="avatar-circle client-avatar" style="overflow: hidden; padding: 0;">
+                                    <div class="avatar-circle client-avatar">
                                         @if($imagenFinal)
-                                            <img src="{{ $imagenFinal }}" alt="{{ $clientName }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                            <img src="{{ $imagenFinal }}" alt="{{ $clientName }}">
                                         @else
                                             {{ $initials }}
                                         @endif
                                     </div>
 
-                                    <div>
-                                        <strong style="font-size:13px;">{{ $clientName }}</strong>
-                                        <span class="sub-text" style="display:block;">{{ $req->created_at->diffForHumans() }}</span>
+                                    <div class="client-info">
+                                        <strong class="client-name">{{ $clientName }}</strong>
+                                        <span class="client-time"><i data-lucide="clock-4" style="width:12px;height:12px;margin-right:3px;"></i>{{ $req->created_at->diffForHumans() }}</span>
                                     </div>
                                 </div>
                             </td>
 
                             {{-- EVENTO (truncado con expandir) --}}
                             <td>
-                                <div style="margin-bottom: 4px; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: #6c3fc5; text-transform: uppercase;">
-                                    <i data-lucide="music" style="width:11px;height:11px;"></i> Evento local
+                                <div class="event-type-badge">
+                                    <i data-lucide="music-4"></i> Evento local
                                 </div>
-                                @php $fullReason = $req->description; $short = Str::limit($fullReason, 80); @endphp
+                                @php $fullReason = $req->description; $short = Str::limit($fullReason, 100); @endphp
                                 <p class="reason-short" id="reason-short-{{ $req->id }}">{{ $short }}</p>
-                                @if(strlen($fullReason) > 80)
+                                @if(strlen($fullReason) > 100)
                                     <p class="reason-full" id="reason-full-{{ $req->id }}" style="display:none;">{{ $fullReason }}</p>
                                     <button class="expand-btn" onclick="toggleReason({{ $req->id }})">
-                                        <i data-lucide="chevron-down" style="width:12px;height:12px;" id="expand-icon-{{ $req->id }}"></i>
-                                        <span id="expand-label-{{ $req->id }}">Ver más</span>
+                                        <i data-lucide="chevron-down" id="expand-icon-{{ $req->id }}"></i>
+                                        <span id="expand-label-{{ $req->id }}">Leer más</span>
                                     </button>
                                 @endif
-                                <div style="margin-top: 6px; font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 4px;">
-                                    <i data-lucide="map-pin" style="width:12px;height:12px;"></i> {{ $req->event_location }}
+                                <div class="event-location-text">
+                                    <i data-lucide="map-pin"></i> {{ $req->event_location }}
                                 </div>
                             </td>
 
                             {{-- FECHA --}}
                             <td>
-                                <span style="font-size:13px;font-weight:600;color:#334155;display:block;">{{ $req->event_date->format('d/m/Y') }}</span>
-                                <span class="sub-text">{{ strtoupper($req->event_date->translatedFormat('M')) }} {{ $req->event_date->format('d') }}</span>
+                                <span class="event-date-primary">{{ $req->event_date->format('d/m/Y') }}</span>
+                                <span class="event-date-secondary">
+                                    <i data-lucide="calendar-days" style="width:12px;height:12px;margin-right:2px;"></i>
+                                    {{ strtoupper($req->event_date->translatedFormat('M')) }} {{ $req->event_date->format('d') }}
+                                </span>
                             </td>
 
                             {{-- PRESUPUESTO --}}
                             <td>
-                                <span style="font-size:14px;font-weight:800;color:#15803d;display:block;">${{ number_format($req->budget, 0) }}</span>
-                                <span class="sub-text" style="color: #86efac; font-weight: 600;">MXN</span>
+                                <span class="budget-primary">${{ number_format($req->budget, 0) }}</span>
+                                <span class="budget-secondary">MXN</span>
                             </td>
 
                             {{-- ESTADO --}}
@@ -147,7 +150,7 @@
                                     $cfg = $statusConfig[$req->status] ?? ['class' => 'secondary', 'icon' => 'minus', 'label' => ucfirst($req->status)];
                                 @endphp
                                 <span class="report-status-pill {{ $cfg['class'] }}">
-                                    <i data-lucide="{{ $cfg['icon'] }}" style="width:11px;height:11px;"></i>
+                                    <i data-lucide="{{ $cfg['icon'] }}"></i>
                                     {{ $cfg['label'] }}
                                 </span>
                             </td>
@@ -155,9 +158,9 @@
                             {{-- ACCIONES --}}
                             <td>
                                 <div class="actions-col">
-                                    <a href="{{ url('/requests/' . $req->id) }}" style="text-decoration: none; display: inline-flex; width: 100%;">
+                                    <a href="{{ url('/requests/' . $req->id) }}" class="action-link">
                                         <button class="rpt-btn reviewed-btn" title="Ver Detalles">
-                                            <i data-lucide="eye" style="width:13px;height:13px;"></i> Ver detalle
+                                            <i data-lucide="eye"></i> <span>Ver detalle</span>
                                         </button>
                                     </a>
                                 </div>
@@ -165,18 +168,18 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" style="text-align:center;padding:64px 24px;color:#94a3b8;">
-                                <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
-                                    <div style="width:64px;height:64px;background:#f8fafc;border-radius:16px;display:flex;align-items:center;justify-content:center;border:1px solid #e2e8f0;">
-                                        <i data-lucide="inbox" style="width:28px;height:28px;opacity:0.3;"></i>
+                            <td colspan="6" style="text-align:center;padding:80px 24px;">
+                                <div class="empty-state-wrapper">
+                                    <div class="empty-state-icon">
+                                        <i data-lucide="inbox"></i>
                                     </div>
-                                    <p style="margin:0;font-size:14px;font-weight:600;color:#475569;">
+                                    <h3 class="empty-state-title">
                                         @if($status === 'pending') No tienes solicitudes pendientes.
                                         @elseif($status === 'accepted') No tienes solicitudes confirmadas.
                                         @else Aún no tienes solicitudes
                                         @endif
-                                    </p>
-                                    <p style="margin:0;font-size:12px;color:#94a3b8;">Las propuestas de contratación aparecerán aquí.</p>
+                                    </h3>
+                                    <p class="empty-state-text">Las nuevas propuestas de contratación de clientes aparecerán aquí. ¡Mantente atento!</p>
                                 </div>
                             </td>
                         </tr>
@@ -184,102 +187,147 @@
                 </tbody>
             </table>
         </div>
-        
     </div>
 
 <style>
-/* ── ESTILOS DE LA VISTA GENERAL (CABECERA) ─────────────────────────────────────────────────── */
-.promo-page-header {
+/* ── ESTILOS GENERALES ─────────────────────────────────────────────────── */
+.requests-page-header {
     display: flex; justify-content: space-between; align-items: flex-start;
-    gap: 20px; margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid #f1f5f9;
+    gap: 24px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #e2e8f0;
 }
-.promo-eyebrow {
-    display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800;
-    letter-spacing: .08em; color: #6c3fc5; text-transform: uppercase; margin-bottom: 6px;
+.requests-eyebrow {
+    display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800;
+    letter-spacing: .1em; color: #6c3fc5; text-transform: uppercase; margin-bottom: 8px;
 }
-.promo-page-title { font-size: 26px; font-weight: 900; color: #0f172a; margin: 0 0 6px; letter-spacing: -0.5px; }
-.promo-page-subtitle { font-size: 15px; color: #64748b; margin: 0; }
+.requests-page-title { font-size: 30px; font-weight: 900; color: #0f172a; margin: 0 0 8px; letter-spacing: -0.5px; }
+.requests-page-subtitle { font-size: 16px; color: #475569; margin: 0; }
+
+.requests-header-badge {
+    display:inline-flex; align-items:center; gap:10px; padding:12px 20px; 
+    background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; 
+    font-size:15px; font-weight:600; color:#475569; height:fit-content;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
 
 @media (max-width: 640px) {
-    .promo-page-header { flex-direction: column; }
+    .requests-page-header { flex-direction: column; }
+    .requests-header-badge { width: 100%; justify-content: center; }
 }
 
 /* ── TABS ─────────────────────────────────────────────────── */
-.filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
 .filter-tab {
-    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 15px; border-radius: 10px; font-size: 13px; font-weight: 600;
-    color: #64748b; transition: all 0.2s; border: 1px solid transparent; background: transparent;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 12px; font-size: 15px; font-weight: 600;
+    color: #475569; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1.5px solid transparent; background: transparent;
 }
-.filter-tab:hover { background: #f8fafc; color: #1e293b; }
+.filter-tab:hover { background: #f8fafc; color: #0f172a; border-color: #e2e8f0; }
 .filter-tab.active {
-    background: #fff; color: #1e293b;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-color: #e2e8f0;
+    background: #fff; color: #0f172a;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: #cbd5e1;
 }
 .tab-counter {
-    background: #f1f5f9; color: #64748b;
-    padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    background: #e2e8f0; color: #475569;
+    padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 800;
 }
-.tab-counter.pending  { background: #fef9c3; color: #b45309; }
-.tab-counter.reviewed { background: #dbeafe; color: #1d4ed8; }
-.tab-counter.resolved { background: #dcfce7; color: #15803d; }
+.tab-counter.pending  { background: #fef08a; color: #854d0e; }
+.tab-counter.resolved { background: #bbf7d0; color: #166534; }
 
 /* ── TABLA ────────────────────────────────────────────────── */
-.reports-table { table-layout: auto; width: 100%; border-collapse: collapse; }
-.reports-table thead th {
-    font-size: 11px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.05em; color: #94a3b8; text-align: left;
-    padding: 14px 16px; border-bottom: 2px solid #f1f5f9;
+.requests-box { overflow: hidden; border-radius: 16px; border: 1.5px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+.requests-table { table-layout: auto; width: 100%; border-collapse: collapse; background: #fff; }
+.requests-table thead th {
+    font-size: 13px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: #64748b; text-align: left;
+    padding: 18px 24px; border-bottom: 2px solid #f1f5f9; background: #f8fafc;
 }
-.report-row { transition: background 0.15s; border-bottom: 1px solid #f1f5f9; }
-.report-row:hover { background: #f8fafc; }
-.report-row td { vertical-align: top; padding: 16px; }
-.report-row:last-child { border-bottom: none; }
+.request-row { transition: all 0.2s ease; border-bottom: 1px solid #f1f5f9; }
+.request-row:hover { background: #f8fafc; transform: scale(1.002); box-shadow: 0 4px 12px rgba(0,0,0,0.03); z-index: 1; position: relative;}
+.request-row td { vertical-align: top; padding: 24px; }
+.request-row:last-child { border-bottom: none; }
 
-/* Avatares */
-.user-cell { display: flex; align-items: center; gap: 12px; }
+/* Avatares e Info de Cliente */
+.user-cell { display: flex; align-items: center; gap: 16px; }
 .avatar-circle {
-    width: 40px; height: 40px; border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;
+    width: 48px; height: 48px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;
+    overflow: hidden; padding: 0; font-size: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-.client-avatar  { background: linear-gradient(135deg,#818cf8,#6366f1); color: #fff; font-size: 13px; }
-.sub-text { font-size: 12px; color: #94a3b8; }
+.avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+.client-avatar  { background: linear-gradient(135deg,#818cf8,#6366f1); color: #fff; }
+.client-info { display: flex; flex-direction: column; gap: 4px; }
+.client-name { font-size: 15px; color: #0f172a; }
+.client-time { font-size: 13px; color: #64748b; display: flex; align-items: center; }
 
-/* Motivo con expandir */
+/* Motivo y Evento */
+.event-type-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; 
+    color: #6c3fc5; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;
+    background: #f3e8ff; padding: 4px 10px; border-radius: 8px;
+}
+.event-type-badge i { width: 14px; height: 14px; }
+
 .reason-short, .reason-full {
-    font-size: 13px; color: #334155; line-height: 1.55;
-    margin: 0 0 4px; white-space: pre-wrap; word-break: break-word;
+    font-size: 15px; color: #334155; line-height: 1.6;
+    margin: 0 0 8px; white-space: pre-wrap; word-break: break-word;
 }
 .expand-btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 11px; font-weight: 600; color: #6366f1;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700; color: #6366f1;
     background: none; border: none; padding: 0; cursor: pointer;
-    transition: opacity 0.15s;
+    transition: color 0.2s; margin-bottom: 8px;
 }
-.expand-btn:hover { opacity: 0.75; }
+.expand-btn i { width: 15px; height: 15px; }
+.expand-btn:hover { color: #4f46e5; }
+
+.event-location-text {
+    font-size: 13px; color: #64748b; display: flex; align-items: center; gap: 6px; font-weight: 500;
+}
+.event-location-text i { width: 14px; height: 14px; }
+
+/* Fecha y Presupuesto */
+.event-date-primary { font-size: 16px; font-weight: 700; color: #0f172a; display: block; margin-bottom: 4px; }
+.event-date-secondary { font-size: 13px; color: #64748b; font-weight: 600; display: flex; align-items: center; }
+
+.budget-primary { font-size: 18px; font-weight: 900; color: #16a34a; display: block; margin-bottom: 2px; }
+.budget-secondary { color: #4ade80; font-weight: 700; font-size: 13px; }
 
 /* Status pill */
 .report-status-pill {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 800; letter-spacing: 0.3px;
 }
-.report-status-pill.warning  { background: #fef9c3; color: #b45309; }
-.report-status-pill.danger   { background: #fee2e2; color: #991b1b; }
-.report-status-pill.success  { background: #dcfce7; color: #15803d; }
-.report-status-pill.secondary { background: #f1f5f9; color: #64748b; }
+.report-status-pill i { width: 14px; height: 14px; }
+.report-status-pill.warning  { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+.report-status-pill.danger   { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.report-status-pill.success  { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.report-status-pill.secondary { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.report-status-pill.reviewed { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+.report-status-pill.resolved { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; }
 
 /* Botones de acción */
-.actions-col {
-    display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
-}
+.actions-col { display: flex; align-items: flex-end; justify-content: flex-end; }
+.action-link { text-decoration: none; width: 100%; display: block; }
 .rpt-btn {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
-    cursor: pointer; border: 1.5px solid transparent; transition: all 0.15s;
-    white-space: nowrap; width: 100%;  justify-content: center;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px; border-radius: 12px; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%; border: 1.5px solid transparent; background: #fff;
 }
-.reviewed-btn { background: #f8fafc; color: #334155; border-color: #e2e8f0; }
-.reviewed-btn:hover { background: #f1f5f9; }
+.rpt-btn i { width: 16px; height: 16px; }
+.reviewed-btn { color: #6366f1; border-color: #c7d2fe; box-shadow: 0 2px 4px rgba(99, 102, 241, 0.05); }
+.reviewed-btn:hover { background: #6366f1; color: #fff; border-color: #6366f1; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2); transform: translateY(-2px); }
+
+/* Empty state */
+.empty-state-wrapper { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.empty-state-icon {
+    width: 80px; height: 80px; background: #f1f5f9; border-radius: 20px;
+    display: flex; align-items: center; justify-content: center; border: 1.5px solid #e2e8f0;
+}
+.empty-state-icon i { width: 36px; height: 36px; color: #94a3b8; }
+.empty-state-title { margin: 0; font-size: 18px; font-weight: 800; color: #334155; }
+.empty-state-text { margin: 0; font-size: 14px; color: #64748b; max-width: 300px; line-height: 1.5; }
 
 </style>
 
@@ -295,7 +343,7 @@ function toggleReason(id) {
     short.style.display = isOpen ? 'block' : 'none';
     full.style.display  = isOpen ? 'none'  : 'block';
     icon.setAttribute('data-lucide', isOpen ? 'chevron-down' : 'chevron-up');
-    label.textContent = isOpen ? 'Ver más' : 'Ver menos';
+    label.textContent = isOpen ? 'Leer más' : 'Ocultar';
     lucide.createIcons();
 }
 </script>
