@@ -1618,7 +1618,6 @@
             // disable submit button if match fails or requirements not met?
             // The backend handles the hard validation, but this gives visual feedback.
         }
-        }
         @endif
 
         function formatPhone(input) {
