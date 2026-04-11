@@ -90,19 +90,28 @@
                     </div>
                 </div>
 
-                <div class="rqs-client-stats">
-                    <div class="rqs-client-stat">
-                        <span class="rqs-stat-label">Eventos</span>
-                        <span class="rqs-stat-value">1</span>
+               <div class="rqs-client-stats" style="grid-template-columns: 1fr 1fr; gap: 14px; text-align: left;">
+                    
+                    {{-- Ocupa las dos columnas para que el correo largo no se corte --}}
+                    <div class="rqs-client-stat" style="grid-column: span 2;">
+                        <span class="rqs-stat-label">Correo Electrónico</span>
+                        <span class="rqs-stat-value" style="font-size: 13px; word-break: break-all;">
+                            {{ $client->email ?? 'No registrado' }}
+                        </span>
                     </div>
+
                     <div class="rqs-client-stat">
-                        <span class="rqs-stat-label">Contacto</span>
-                        <span class="rqs-stat-value">App Móvil</span>
+                        <span class="rqs-stat-label">Teléfono</span>
+                        <span class="rqs-stat-value">
+                            {{ $client->telefono ?? 'Sin número' }}
+                        </span>
                     </div>
+
                     <div class="rqs-client-stat">
                         <span class="rqs-stat-label">Miembro desde</span>
                         <span class="rqs-stat-value">{{ ucfirst($memberSince) }}</span>
                     </div>
+
                 </div>
             </div>
 
