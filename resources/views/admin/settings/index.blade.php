@@ -15,23 +15,24 @@
             </button>
         </div>
 
-    <div class="grid-settings">
+    <div class="settings-wrapper">
         
-        {{-- COLUMNA IZQUIERDA --}}
         <div class="settings-column">
-            
-            {{-- Tarjeta: Comisiones (ELIMINADA por solicitud) --}}
-
-            {{-- Tarjeta: Mantenimiento --}}
-            <div class="dashboard-box">
-                <div class="box-header">
-                    <h3>🛠️ Estado del Sistema</h3>
+            <div class="dashboard-box premium-box">
+                <div class="box-header-fancy">
+                    <div class="icon-wrapper">
+                        <i data-lucide="shield-alert"></i>
+                    </div>
+                    <div class="header-text">
+                        <h3>Gestión de Acceso Global</h3>
+                        <p>Controla el flujo de registro y el entorno público del sistema en tiempo real.</p>
+                    </div>
                 </div>
                 
-                <div class="toggle-row">
-                    <div>
+                <div class="toggle-card">
+                    <div class="toggle-info">
                         <strong>Modo Mantenimiento</strong>
-                        <p class="text-dim text-small">Desactiva el acceso a usuarios no administradores.</p>
+                        <p>Desactiva el acceso a usuarios no administradores y muestra una pantalla de "Vuelve pronto" en verde. Ideal para realizar optimizaciones o mantenimientos sin afectar a usuarios activos.</p>
                     </div>
                     <label class="switch">
                         <input type="checkbox" name="maintenance_mode" {{ \App\Models\Setting::get('maintenance_mode', '0') == '1' ? 'checked' : '' }}>
@@ -39,10 +40,10 @@
                     </label>
                 </div>
 
-                <div class="toggle-row mt-4">
-                    <div>
+                <div class="toggle-card">
+                    <div class="toggle-info">
                         <strong>Registro de nuevos usuarios</strong>
-                        <p class="text-dim text-small">Permitir que nuevos músicos o clientes se registren.</p>
+                        <p>Permite que nuevos músicos o clientes abran cuentas en Armonihz. Apágalo para pausar el enrolamiento sin desconectar a los perfiles ya existentes.</p>
                     </div>
                     <label class="switch">
                         <input type="checkbox" name="registration_enabled" {{ \App\Models\Setting::get('registration_enabled', '1') == '1' ? 'checked' : '' }}>
@@ -50,117 +51,144 @@
                     </label>
                 </div>
             </div>
-
-        </div>
-
-        {{-- COLUMNA DERECHA --}}
-        <div class="settings-column">
-            
-            {{-- Tarjeta: Notificaciones --}}
-            <div class="dashboard-box">
-                <div class="box-header">
-                    <h3>🔔 Notificaciones Administrativas</h3>
-                </div>
-                
-                <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="notify_new_musician" {{ \App\Models\Setting::get('notify_new_musician', '1') == '1' ? 'checked' : '' }}>
-                        <span>Notificar nuevo registro de músico</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="notify_report" {{ \App\Models\Setting::get('notify_report', '1') == '1' ? 'checked' : '' }}>
-                        <span>Notificar reporte de usuario</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" name="notify_casting" {{ \App\Models\Setting::get('notify_casting', '0') == '1' ? 'checked' : '' }}>
-                        <span>Notificar nuevo casting publicado</span>
-                    </label>
-                </div>
-            </div>
-
-            {{-- Tarjeta: Soporte --}}
-            <div class="dashboard-box">
-                <div class="box-header">
-                    <h3>📞 Contacto de Soporte</h3>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Email de soporte</label>
-                    <input type="email" name="support_email" value="{{ \App\Models\Setting::get('support_email', 'soporte@armonihz.com') }}" required>
-                </div>
-                
-                <div class="form-group mt-3">
-                    <label class="form-label">Teléfono de contacto</label>
-                    <input type="text" name="support_phone" value="{{ \App\Models\Setting::get('support_phone', '+52 55 1234 5678') }}">
-                </div>
-            </div>
-
         </div>
 
     </div>
     </form>
 
+    @section('head')
     <style>
-        .grid-settings {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 6px;
+        .settings-wrapper {
+            max-width: 800px; /* Centrado y estrecho */
+            margin: 0 auto;
+            margin-top: 16px;
         }
 
-        .toggle-row {
+        .premium-box {
+            padding: 36px 40px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03);
+        }
+
+        .box-header-fancy {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 28px;
+        }
+
+        .icon-wrapper {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            color: #16a34a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(22, 163, 74, 0.15);
+        }
+
+        .icon-wrapper i { width: 26px; height: 26px; }
+
+        .header-text h3 {
+            font-size: 19px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 6px 0;
+            letter-spacing: -0.01em;
+        }
+
+        .header-text p {
+            font-size: 14.5px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .toggle-card {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 24px;
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
         }
-        
-        .text-small { font-size: 12px; margin: 2px 0 0 0; }
-        .mb-4 { margin-bottom: 24px; }
-        .mt-2 { margin-top: 8px; }
-        .mt-3 { margin-top: 12px; }
-        .mt-4 { margin-top: 16px; }
 
-        /* Switch Toggle */
+        .toggle-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .toggle-card:hover {
+            background: #ffffff;
+            border-color: #e2e8f0;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.03);
+            transform: translateY(-2px);
+        }
+
+        .toggle-info strong {
+            display: block;
+            font-size: 15.5px;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .toggle-info p {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.6;
+            max-width: 540px;
+        }
+
+        /* Switch Toggle Premium */
         .switch {
             position: relative;
             display: inline-block;
-            width: 44px;
-            height: 24px;
+            width: 50px;
+            height: 28px;
+            flex-shrink: 0;
+            margin-left: 24px;
         }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute;
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc;
+            background-color: #cbd5e1;
             transition: .4s;
-            border-radius: 24px;
+            border-radius: 34px;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
+            height: 22px;
+            width: 22px;
             left: 3px;
             bottom: 3px;
             background-color: white;
-            transition: .4s;
+            transition: .4s cubic-bezier(0.4, 0.0, 0.2, 1);
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         input:checked + .slider { background-color: var(--accent-blue); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
-        /* Checkbox list */
-        .checkbox-group { display: flex; flex-direction: column; gap: 12px; }
-        .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
-        .checkbox-item input { width: 16px; height: 16px; margin: 0; }
+        @media (max-width: 640px) {
+            .toggle-card { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px; }
+            .switch { margin-left: 0; }
+            .premium-box { padding: 24px 20px; }
+            .box-header-fancy { flex-direction: column; align-items: flex-start; gap: 16px; }
+        }
     </style>
+    @endsection
 
 @endsection
