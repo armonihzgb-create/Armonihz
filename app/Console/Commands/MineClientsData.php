@@ -30,7 +30,7 @@ class MineClientsData extends Command
         $this->info("Iniciando Minería de Datos: Algoritmo K-Means...");
 
         // 1. EXTRACCIÓN Y LIMPIEZA
-        $clients = Client::with('user.clientRequests')->get();
+        $clients = Client::with('clientRequests')->get();
         $dataset = [];
         $samples = [];
         $mapping = [];
@@ -39,9 +39,7 @@ class MineClientsData extends Command
         $minBudget = PHP_INT_MAX; $maxBudget = 0;
 
         foreach ($clients as $client) {
-            if (!$client->user) continue;
-            
-            $requests = $client->user->clientRequests->where('status', 'completed');
+            $requests = $client->clientRequests->where('status', 'completed');
             $freq = $requests->count();
             
             // Limpieza: descartamos inactivos por completo

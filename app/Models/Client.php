@@ -48,4 +48,9 @@ public function favoriteMusicians()
             'musician_profile_id'
         )->withTimestamps();
     }
+
+    public function clientRequests()
+    {
+        return $this->hasMany(HiringRequest::class, 'client_id');
+    }
 }
