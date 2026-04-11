@@ -70,17 +70,35 @@
                 <tbody>
                     @forelse($requests as $req)
                         <tr class="report-row">
-                            {{-- CLIENTE --}}
+                           {{-- CLIENTE --}}
                             <td>
                                 <div class="user-cell">
                                     @php 
                                         $initials = strtoupper(substr($req->client->nombre ?? 'C', 0, 1) . substr($req->client->apellido ?? 'A', 0, 1)); 
                                         $clientName = $req->client->nombre ? ($req->client->nombre . ' ' . $req->client->apellido) : 'Cliente Anónimo';
+                                        
+                                        // Definimos qué foto usar
+                                        $imagenFinal = null;
+                                        if (!empty($req->client->fotoPerfil)) {
+                                            $cleanPath = ltrim($req->client->fotoPerfil, '/');
+                                            $imagenFinal = url('/file/' . $cleanPath);
+                                        } elseif (!empty($req->client->google_picture)) {
+                                            $imagenFinal = $req->client->google_picture;
+                                        }
                                     @endphp
-                                    <div class="avatar-circle client-avatar">{{ $initials }}</div>
+                                    
+                                    {{-- Mostrar la foto o las iniciales --}}
+                                    <div class="avatar-circle client-avatar" style="overflow: hidden; padding: 0;">
+                                        @if($imagenFinal)
+                                            <img src="{{ $imagenFinal }}" alt="{{ $clientName }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                        @else
+                                            {{ $initials }}
+                                        @endif
+                                    </div>
+
                                     <div>
                                         <strong style="font-size:13px;">{{ $clientName }}</strong>
-                                        <span class="sub-text">{{ $req->created_at->diffForHumans() }}</span>
+                                        <span class="sub-text" style="display:block;">{{ $req->created_at->diffForHumans() }}</span>
                                     </div>
                                 </div>
                             </td>
