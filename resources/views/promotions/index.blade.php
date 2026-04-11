@@ -104,7 +104,8 @@
         </div>
     @endforelse
 
-    <style>
+    @section('head')
+<style>
         /* Alertas */
         .pm-alert { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; font-weight: 600; font-size: 14.5px; }
         .pm-alert i { width: 20px; height: 20px; flex-shrink: 0; }
@@ -154,5 +155,7 @@
             .pm-table-header { flex-direction: column; align-items: flex-start; gap: 16px; }
             .pm-table-container { overflow-x: auto; }
         }
-    </style>
+</style>
+@endsection
+
 @endsection

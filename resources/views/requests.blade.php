@@ -199,6 +199,7 @@
         </div>
     @endforelse
 
+@section('head')
 <style>
 /* ── ESTILOS GENERALES ─────────────────────────────────────────────────── */
 .requests-page-header {
@@ -334,7 +335,9 @@
 .rq-preview-btn i { width: 16px; height: 16px; }
 
 </style>
+@endsection
 
+@section('scripts')
 <script>
 function toggleReason(id) {
     const short  = document.getElementById('reason-short-' + id);
@@ -351,5 +354,6 @@ function toggleReason(id) {
     lucide.createIcons();
 }
 </script>
+@endsection
 
 @endsection
