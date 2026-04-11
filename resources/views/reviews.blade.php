@@ -126,7 +126,7 @@
                 </div>
             @endif
 
-            @foreach($reviews as $rv)
+          @foreach($reviews as $rv)
             @php
                 $clientName = $rv->client ? trim($rv->client->nombre . ' ' . $rv->client->apellido) : 'Cliente Anónimo';
                 $initials = $rv->client ? strtoupper(substr($rv->client->nombre, 0, 1) . substr($rv->client->apellido, 0, 1)) : 'CA';
@@ -138,14 +138,32 @@
                 } elseif ($rv->hiringRequest) {
                     $eventName = 'Contratación Directa';
                 }
+
+                // Definimos qué foto usar basándonos en tu base de datos
+                $imagenFinal = null;
+                if ($rv->client) {
+                    if (!empty($rv->client->fotoPerfil)) {
+                        $cleanPath = ltrim($rv->client->fotoPerfil, '/');
+                        $imagenFinal = url('/file/' . $cleanPath);
+                    } elseif (!empty($rv->client->google_picture)) {
+                        $imagenFinal = $rv->client->google_picture;
+                    }
+                }
             @endphp
             <div class="rv-card">
                 {{-- Card top --}}
                 <div class="rv-card-top">
                     <div class="rv-reviewer">
-                        <div class="rv-avatar" style="background:{{ $bg }};color:{{ $color }};">
-                            {{ $initials }}
+                        
+                        {{-- Avatar dinámico --}}
+                        <div class="rv-avatar" style="background:{{ $bg }}; color:{{ $color }}; overflow: hidden; padding: 0;">
+                            @if($imagenFinal)
+                                <img src="{{ $imagenFinal }}" alt="{{ $clientName }}" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit;">
+                            @else
+                                {{ $initials }}
+                            @endif
                         </div>
+
                         <div>
                             <span class="rv-reviewer-name">{{ $clientName }}</span>
                             <span class="rv-reviewer-date">
