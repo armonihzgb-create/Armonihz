@@ -83,16 +83,20 @@
                     Información del Cliente
                 </h3>
 
-   <div class="rqs-client-profile">
+  <div class="rqs-client-profile">
     <div class="rqs-avatar" style="overflow: hidden;">
         @php
-            // Definimos qué foto usar basándonos en tus campos
             $imagenFinal = null;
             
+            // 1. Priorizamos la foto subida por el usuario
             if (!empty($client->fotoPerfil)) {
-                // Ajusta la URL base según cómo guardes los archivos en tu servidor
-                $imagenFinal = asset('storage/' . $client->fotoPerfil);
-            } elseif (!empty($client->google_picture)) {
+                // Removemos cualquier barra extra al inicio por si acaso
+                $cleanPath = ltrim($client->fotoPerfil, '/');
+                // Usamos tu ruta especial /file/
+                $imagenFinal = url('/file/' . $cleanPath);
+            } 
+            // 2. Si no hay foto propia, usamos la de Google
+            elseif (!empty($client->google_picture)) {
                 $imagenFinal = $client->google_picture;
             }
         @endphp
