@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             \App\Http\Middleware\CheckUserIsActive::class,
+            \App\Http\Middleware\CheckMaintenanceMode::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

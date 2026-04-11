@@ -2,15 +2,18 @@
 
 @section('admin-content')
 
-    <div class="page-header">
-        <div>
+    <form method="POST" action="{{ route('admin.settings.update') }}">
+        @csrf
+
+        <div class="page-header">
+            <div>
             <h2>Configuración</h2>
             <p class="dashboard-subtitle">Ajustes generales de la plataforma</p>
         </div>
-        <button class="primary-btn">
-            <i data-lucide="save"></i> Guardar Cambios
-        </button>
-    </div>
+            <button type="submit" class="primary-btn">
+                <i data-lucide="save"></i> Guardar Cambios
+            </button>
+        </div>
 
     <div class="grid-settings">
         
@@ -31,7 +34,7 @@
                         <p class="text-dim text-small">Desactiva el acceso a usuarios no administradores.</p>
                     </div>
                     <label class="switch">
-                        <input type="checkbox">
+                        <input type="checkbox" name="maintenance_mode" {{ \App\Models\Setting::get('maintenance_mode', '0') == '1' ? 'checked' : '' }}>
                         <span class="slider round"></span>
                     </label>
                 </div>
@@ -42,7 +45,7 @@
                         <p class="text-dim text-small">Permitir que nuevos músicos o clientes se registren.</p>
                     </div>
                     <label class="switch">
-                        <input type="checkbox" checked>
+                        <input type="checkbox" name="registration_enabled" {{ \App\Models\Setting::get('registration_enabled', '1') == '1' ? 'checked' : '' }}>
                         <span class="slider round"></span>
                     </label>
                 </div>
@@ -61,15 +64,15 @@
                 
                 <div class="checkbox-group">
                     <label class="checkbox-item">
-                        <input type="checkbox" checked>
+                        <input type="checkbox" name="notify_new_musician" {{ \App\Models\Setting::get('notify_new_musician', '1') == '1' ? 'checked' : '' }}>
                         <span>Notificar nuevo registro de músico</span>
                     </label>
                     <label class="checkbox-item">
-                        <input type="checkbox" checked>
+                        <input type="checkbox" name="notify_report" {{ \App\Models\Setting::get('notify_report', '1') == '1' ? 'checked' : '' }}>
                         <span>Notificar reporte de usuario</span>
                     </label>
                     <label class="checkbox-item">
-                        <input type="checkbox">
+                        <input type="checkbox" name="notify_casting" {{ \App\Models\Setting::get('notify_casting', '0') == '1' ? 'checked' : '' }}>
                         <span>Notificar nuevo casting publicado</span>
                     </label>
                 </div>
@@ -83,18 +86,19 @@
                 
                 <div class="form-group">
                     <label class="form-label">Email de soporte</label>
-                    <input type="email" value="soporte@armonihz.com">
+                    <input type="email" name="support_email" value="{{ \App\Models\Setting::get('support_email', 'soporte@armonihz.com') }}" required>
                 </div>
                 
                 <div class="form-group mt-3">
                     <label class="form-label">Teléfono de contacto</label>
-                    <input type="text" value="+52 55 1234 5678">
+                    <input type="text" name="support_phone" value="{{ \App\Models\Setting::get('support_phone', '+52 55 1234 5678') }}">
                 </div>
             </div>
 
         </div>
 
     </div>
+    </form>
 
     <style>
         .grid-settings {

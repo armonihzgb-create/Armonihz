@@ -32,6 +32,10 @@ class AuthController extends Controller
 
     public function showRegister()
     {
+        if (\App\Models\Setting::get('registration_enabled', '1') == '0') {
+            return redirect()->route('login')->with('error', 'El registro de nuevos usuarios se encuentra pausado temporalmente.');
+        }
+
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
@@ -89,6 +93,10 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        if (\App\Models\Setting::get('registration_enabled', '1') == '0') {
+            return redirect()->route('login')->with('error', 'El registro de nuevos usuarios se encuentra pausado temporalmente.');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users',
@@ -149,6 +157,10 @@ class AuthController extends Controller
 
     public function showClientRegister()
     {
+        if (\App\Models\Setting::get('registration_enabled', '1') == '0') {
+            return redirect()->route('login')->with('error', 'El registro de nuevos usuarios se encuentra pausado temporalmente.');
+        }
+
         if (Auth::check()) {
             return redirect()->route('dashboard');
         }
@@ -157,6 +169,10 @@ class AuthController extends Controller
 
     public function registerClient(Request $request)
     {
+        if (\App\Models\Setting::get('registration_enabled', '1') == '0') {
+            return redirect()->route('login')->with('error', 'El registro de nuevos usuarios se encuentra pausado temporalmente.');
+        }
+
         $request->validate([
             'nombre' => 'required|string|max:100',
             'apellido' => 'required|string|max:100',
@@ -446,19 +462,25 @@ class AuthController extends Controller
             return back()->withErrors(['auth' => 'No se pudo obtener la cuenta de Google (faltan datos).']);
         }
 
-        $user = User::firstOrCreate(
-        ['email' => $email],
-        [
-            'name' => $name,
-            'google_id' => $uid,
-            'firebase_uid' => $uid,
-            'role' => 'musico',
-            'password' => bcrypt(Str::random(24)),
-            'is_active' => true,
-            'is_verified' => false,
-            'email_verified_at' => now(),
-        ]
-        );
+        $user = User::where('email', $email)->first();
+        
+        if (!$user) {
+            if (\App\Models\Setting::get('registration_enabled', '1') == '0') {
+                return redirect()->route('login')->withErrors(['auth' => 'El registro de nuevos usuarios se encuentra pausado temporalmente.']);
+            }
+            
+            $user = User::create([
+                'name' => $name,
+                'email' => $email,
+                'google_id' => $uid,
+                'firebase_uid' => $uid,
+                'role' => 'musico',
+                'password' => bcrypt(Str::random(24)),
+                'is_active' => true,
+                'is_verified' => false,
+                'email_verified_at' => now(),
+            ]);
+        }
 
         // If the user was just created, we MUST create their MusicianProfile
         // Otherwise they will get "Attempt to read property 'instagram' on null" on the dashboard/profile

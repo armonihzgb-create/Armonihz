@@ -170,9 +170,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
                     ->where('status', 'pending|approved|rejected|unverified')
                     ->name('admin.musicians.index');
 
-                Route::get('/settings', function () {
-                    return view('admin.settings.index');
-                })->name('admin.settings.index');
+                Route::get('/settings', [\App\Http\Controllers\Web\AdminController::class, 'settings'])->name('admin.settings.index');
+                Route::post('/settings', [\App\Http\Controllers\Web\AdminController::class, 'updateSettings'])->name('admin.settings.update');
 
                 // Gestión de reportes
                 Route::get('/reports/{status?}', [\App\Http\Controllers\Web\AdminController::class, 'reportsIndex'])

@@ -10,6 +10,7 @@ use App\Models\HiringRequest;
 use App\Models\CastingApplication;
 use App\Models\Report; 
 use App\Models\Promotion;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -408,5 +409,35 @@ class AdminController extends Controller
             ]);
             return redirect()->back()->with('success', 'La promoción ha sido detenida manualmente.');
         }
+    }
+    public function settings()
+    {
+        return view('admin.settings.index');
+    }
+
+    public function updateSettings(Request $request)
+    {
+        // Checkboxes and switches
+        $keys = [
+            'maintenance_mode' => $request->has('maintenance_mode') ? '1' : '0',
+            'registration_enabled' => $request->has('registration_enabled') ? '1' : '0',
+            'notify_new_musician' => $request->has('notify_new_musician') ? '1' : '0',
+            'notify_report' => $request->has('notify_report') ? '1' : '0',
+            'notify_casting' => $request->has('notify_casting') ? '1' : '0',
+        ];
+
+        // Text inputs
+        if ($request->has('support_email')) {
+            $keys['support_email'] = $request->input('support_email');
+        }
+        if ($request->has('support_phone')) {
+            $keys['support_phone'] = $request->input('support_phone');
+        }
+
+        foreach ($keys as $key => $value) {
+            Setting::set($key, $value);
+        }
+
+        return redirect()->back()->with('success', 'Configuraciones guardadas correctamente.');
     }
 }
