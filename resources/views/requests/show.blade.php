@@ -83,12 +83,20 @@
                     Información del Cliente
                 </h3>
 
-                <div class="rqs-client-profile">
-                    <div class="rqs-avatar">{{ $initials }}</div>
-                    <div>
-                        <span class="rqs-client-name">{{ $clientName }}</span>
-                    </div>
-                </div>
+             <div class="rqs-client-profile">
+    <div class="rqs-avatar" style="overflow: hidden;">
+        {{-- Verificamos si el cliente tiene una foto registrada --}}
+        @if($client && $client->photoUrl)
+            <img src="{{ $client->photoUrl }}" alt="Foto de {{ $clientName }}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+        @else
+            {{-- Si no tiene foto, mostramos las iniciales moradas que ya tenías --}}
+            {{ $initials }}
+        @endif
+    </div>
+    <div>
+        <span class="rqs-client-name">{{ $clientName }}</span>
+    </div>
+</div>
 
                <div class="rqs-client-stats" style="grid-template-columns: 1fr 1fr; gap: 14px; text-align: left;">
                     
