@@ -34,6 +34,14 @@ class ProfileViewController extends Controller
         // Atomic increment to avoid race conditions
         $profile->increment('profile_views');
 
+        // Incrementar también las vistas de las promociones activas
+        $profile->promotions()
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('valid_until')->orWhere('valid_until', '>=', now());
+            })
+            ->increment('views');
+
         return $this->successResponse(
         ['profile_views' => $profile->fresh()->profile_views],
             'View recorded',
