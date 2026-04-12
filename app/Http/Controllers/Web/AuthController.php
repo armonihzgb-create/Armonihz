@@ -306,22 +306,12 @@ class AuthController extends Controller
         $request->validate([
             'token'    => 'required',
             'email'    => 'required|email',
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'regex:/[a-z]/',
-                'regex:/[A-Z]/',
-                'regex:/[0-9]/',
-                'regex:/[^A-Za-z0-9]/',
-                'confirmed'
-            ],
+            'password' => 'required|string|min:8|confirmed',
         ], [
             'email.required'    => 'El correo electrónico es obligatorio.',
             'email.email'       => 'Ingresa un correo electrónico válido.',
             'password.required' => 'La contraseña es obligatoria.',
             'password.min'      => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.regex'    => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial.',
             'password.confirmed'=> 'Las contraseñas no coinciden.',
         ]);
 
