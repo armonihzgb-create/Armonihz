@@ -43,7 +43,7 @@ class ChangePasswordRequest extends FormRequest
             'current_password.current_password' => 'La contraseña actual es incorrecta.',
             'password.required'                => 'La nueva contraseña es obligatoria.',
             'password.min'                     => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.regex'                   => 'La contraseña debe contener al menos una mayúscula, un número y un carácter especial.',
+            'password.regex'                   => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial.',
             'password.confirmed'               => 'Las contraseñas no coinciden.',
             'password.different'               => 'La nueva contraseña no puede ser igual a la actual.',
         ];
