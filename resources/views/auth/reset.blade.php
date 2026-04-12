@@ -84,10 +84,11 @@
                         </div>
                         <span class="strength-label" id="strength-label"></span>
 
-                        {{-- Requisitos --}}
+                      {{-- Requisitos --}}
                         <div class="pwd-requirements" id="pwd-requirements">
                             <span id="req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
                             <span id="req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
+                            <span id="req-lower"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra minúscula</span>
                             <span id="req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
                             <span id="req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
                         </div>
@@ -204,21 +205,23 @@ function checkStrength(val) {
     const rules = [
         { id:'req-length',  ok: val.length >= 8 },
         { id:'req-upper',   ok: /[A-Z]/.test(val) },
+        { id:'req-lower',   ok: /[a-z]/.test(val) }, // NUEVA REGLA MINÚSCULA
         { id:'req-number',  ok: /[0-9]/.test(val) },
         { id:'req-special', ok: /[^A-Za-z0-9]/.test(val) },
     ];
     if (val.length > 0) {
         req.classList.add('visible');
-        rules.forEach(r => { const el=document.getElementById(r.id); el.classList.toggle('ok',r.ok); el.classList.toggle('fail',!r.ok); });
+        rules.forEach(r => { const el=document.getElementById(r.id); if(el) { el.classList.toggle('ok',r.ok); el.classList.toggle('fail',!r.ok); }});
     } else {
         req.classList.remove('visible');
-        rules.forEach(r => { const el=document.getElementById(r.id); el.classList.remove('ok','fail'); });
+        rules.forEach(r => { const el=document.getElementById(r.id); if(el) el.classList.remove('ok','fail'); });
     }
     let score = rules.filter(r => r.ok).length;
     const levels = [
-        { w:'25%', bg:'#ef4444', txt:'Muy débil', color:'#ef4444' },
-        { w:'50%', bg:'#f97316', txt:'Débil',     color:'#f97316' },
-        { w:'75%', bg:'#eab308', txt:'Regular',   color:'#eab308' },
+        { w:'20%', bg:'#ef4444', txt:'Muy débil', color:'#ef4444' },
+        { w:'40%', bg:'#f97316', txt:'Débil',     color:'#f97316' },
+        { w:'60%', bg:'#eab308', txt:'Regular',   color:'#eab308' },
+        { w:'80%', bg:'#3b82f6', txt:'Buena',     color:'#3b82f6' },
         { w:'100%', bg:'#22c55e', txt:'Fuerte',   color:'#22c55e' },
     ];
     if (val.length === 0) { bar.style.width='0'; lbl.textContent=''; return; }
