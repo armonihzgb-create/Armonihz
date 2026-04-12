@@ -1456,7 +1456,7 @@
                 <button onclick="closePasswordModal()" style="background:transparent;border:none;color:#94a3b8;cursor:pointer;font-size:20px;line-height:1;">&times;</button>
             </div>
             
-            <form action="{{ route('profile.password') }}" method="POST">
+        <form action="{{ route('profile.password') }}" method="POST">
                 @csrf
                 @method('PUT')
                 
@@ -1469,24 +1469,21 @@
                 </div>
                 
                 <div style="margin-bottom:16px;">
-    <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#475569;">Nueva Contraseña</label>
-    <div style="position:relative;">
-        <input type="password" id="profile-new-pwd" name="password" required placeholder="Mínimo 8 caracteres" oninput="checkProfileStrength(this.value); checkProfileMatch();" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;box-sizing:border-box;">
-    </div>
-    
-    <div class="strength-bar-wrap"><div class="strength-bar" id="profile-strength-bar"></div></div>
-    <span class="strength-label" id="profile-strength-label"></span>
-    
-    <div class="pwd-requirements" id="profile-pwd-requirements">
-        <span id="prof-req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
-        <span id="prof-req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
-        <span id="prof-req-lower"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra minúscula</span>
-        <span id="prof-req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
-        <span id="prof-req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
-    </div>
-
-    @error('password')<span style="display:block;color:#ef4444;font-size:12px;margin-top:4px;">{{ $message }}</span>@enderror
-</div>
+                    <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#475569;">Nueva Contraseña</label>
+                    <div style="position:relative;">
+                        <input type="password" id="profile-new-pwd" name="password" required placeholder="Mínimo 8 caracteres" oninput="checkProfileStrength(this.value); checkProfileMatch();" style="width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    
+                    <div class="strength-bar-wrap"><div class="strength-bar" id="profile-strength-bar"></div></div>
+                    <span class="strength-label" id="profile-strength-label" style="font-size: 12px; margin-bottom: 8px;"></span>
+                    
+                    <div class="pwd-requirements" id="profile-pwd-requirements">
+                        <span id="prof-req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
+                        <span id="prof-req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
+                        <span id="prof-req-lower"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra minúscula</span>
+                        <span id="prof-req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
+                        <span id="prof-req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
+                    </div>
 
                     @error('password')<span style="display:block;color:#ef4444;font-size:12px;margin-top:4px;">{{ $message }}</span>@enderror
                 </div>
