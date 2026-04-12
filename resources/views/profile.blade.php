@@ -1477,12 +1477,13 @@
                     <div class="strength-bar-wrap"><div class="strength-bar" id="profile-strength-bar"></div></div>
                     <span class="strength-label" id="profile-strength-label"></span>
                     
-                    <div class="pwd-requirements" id="profile-pwd-requirements">
-                        <span id="prof-req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
-                        <span id="prof-req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
-                        <span id="prof-req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
-                        <span id="prof-req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
-                    </div>
+                <div class="pwd-requirements" id="profile-pwd-requirements">
+    <span id="prof-req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
+    <span id="prof-req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
+    <span id="prof-req-lower"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra minúscula</span>
+    <span id="prof-req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
+    <span id="prof-req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
+</div>
 
                     @error('password')<span style="display:block;color:#ef4444;font-size:12px;margin-top:4px;">{{ $message }}</span>@enderror
                 </div>
@@ -1552,52 +1553,57 @@
         @endif
 
 
-        function checkProfileStrength(val) {
-            const bar = document.getElementById('profile-strength-bar');
-            const lbl = document.getElementById('profile-strength-label');
-            const req = document.getElementById('profile-pwd-requirements');
+     function checkProfileStrength(val) {
+    const bar = document.getElementById('profile-strength-bar');
+    const lbl = document.getElementById('profile-strength-label');
+    const req = document.getElementById('profile-pwd-requirements');
 
-            const rules = [
-                { id:'prof-req-length',  ok: val.length >= 8 },
-                { id:'prof-req-upper',   ok: /[A-Z]/.test(val) },
-                { id:'prof-req-number',  ok: /[0-9]/.test(val) },
-                { id:'prof-req-special', ok: /[^A-Za-z0-9]/.test(val) },
-            ];
-            
-            if (val.length > 0) {
-                req.classList.add('visible');
-                rules.forEach(r => {
-                    const el = document.getElementById(r.id);
-                    if(el){
-                        el.classList.toggle('ok',   r.ok);
-                        el.classList.toggle('fail', !r.ok);
-                    }
-                });
-            } else {
-                req.classList.remove('visible');
-                rules.forEach(r => {
-                    const el = document.getElementById(r.id);
-                    if(el) el.classList.remove('ok','fail');
-                });
+    // 1. AÑADIMOS LA REGLA DE LA MINÚSCULA AL ARREGLO
+    const rules = [
+        { id:'prof-req-length',  ok: val.length >= 8 },
+        { id:'prof-req-upper',   ok: /[A-Z]/.test(val) },
+        { id:'prof-req-lower',   ok: /[a-z]/.test(val) }, // NUEVA REGLA
+        { id:'prof-req-number',  ok: /[0-9]/.test(val) },
+        { id:'prof-req-special', ok: /[^A-Za-z0-9]/.test(val) },
+    ];
+    
+    if (val.length > 0) {
+        req.classList.add('visible');
+        rules.forEach(r => {
+            const el = document.getElementById(r.id);
+            if(el){
+                el.classList.toggle('ok',   r.ok);
+                el.classList.toggle('fail', !r.ok);
             }
+        });
+    } else {
+        req.classList.remove('visible');
+        rules.forEach(r => {
+            const el = document.getElementById(r.id);
+            if(el) el.classList.remove('ok','fail');
+        });
+    }
 
-            let score = rules.filter(r => r.ok).length;
-            const levels = [
-                { w:'25%',  bg:'#ef4444', txt:'Muy débil', color:'#ef4444' },
-                { w:'50%',  bg:'#f97316', txt:'Débil',     color:'#f97316' },
-                { w:'75%',  bg:'#eab308', txt:'Regular',   color:'#eab308' },
-                { w:'100%', bg:'#22c55e', txt:'Fuerte',    color:'#22c55e' },
-            ];
-            
-            if (val.length === 0) { bar.style.width='0'; lbl.textContent=''; return; }
-            const lvl = levels[Math.max(0, score - 1)];
-            bar.style.width      = lvl.w;
-            bar.style.background = lvl.bg;
-            lbl.textContent      = lvl.txt;
-            lbl.style.color      = lvl.color;
+    let score = rules.filter(r => r.ok).length;
+    
+    // 2. ACTUALIZAMOS LOS NIVELES A 5 PASOS (20%, 40%, 60%, 80%, 100%)
+    const levels = [
+        { w:'20%',  bg:'#ef4444', txt:'Muy débil', color:'#ef4444' },
+        { w:'40%',  bg:'#f97316', txt:'Débil',     color:'#f97316' },
+        { w:'60%',  bg:'#eab308', txt:'Regular',   color:'#eab308' },
+        { w:'80%',  bg:'#3b82f6', txt:'Buena',     color:'#3b82f6' }, // Nuevo nivel agregado
+        { w:'100%', bg:'#22c55e', txt:'Fuerte',    color:'#22c55e' },
+    ];
+    
+    if (val.length === 0) { bar.style.width='0'; lbl.textContent=''; return; }
+    const lvl = levels[Math.max(0, score - 1)];
+    bar.style.width      = lvl.w;
+    bar.style.background = lvl.bg;
+    lbl.textContent      = lvl.txt;
+    lbl.style.color      = lvl.color;
 
-            checkProfileMatch();
-        }
+    checkProfileMatch();
+}
 
         function checkProfileMatch() {
             const p1  = document.getElementById('profile-new-pwd').value;
