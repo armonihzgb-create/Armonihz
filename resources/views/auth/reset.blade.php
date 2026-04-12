@@ -84,7 +84,7 @@
                         </div>
                         <span class="strength-label" id="strength-label"></span>
 
-                      {{-- Requisitos --}}
+                     {{-- Requisitos --}}
                         <div class="pwd-requirements" id="pwd-requirements">
                             <span id="req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
                             <span id="req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
