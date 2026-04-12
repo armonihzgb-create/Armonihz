@@ -1480,7 +1480,7 @@
                     <div class="pwd-requirements" id="profile-pwd-requirements">
                         <span id="prof-req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
                         <span id="prof-req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
-                        <span id="prof-req-lower"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra minúscula</span>
+                        <span id="prof-req-lower"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra minuscula</span>
                         <span id="prof-req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
                         <span id="prof-req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
                     </div>
