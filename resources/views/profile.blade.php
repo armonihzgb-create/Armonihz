@@ -1477,13 +1477,13 @@
                     <div class="strength-bar-wrap"><div class="strength-bar" id="profile-strength-bar"></div></div>
                     <span class="strength-label" id="profile-strength-label"></span>
                     
-                <div class="pwd-requirements" id="profile-pwd-requirements">
-    <span id="prof-req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
-    <span id="prof-req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
-    <span id="prof-req-lower"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra minúscula</span>
-    <span id="prof-req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
-    <span id="prof-req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
-</div>
+                    <div class="pwd-requirements" id="profile-pwd-requirements">
+                        <span id="prof-req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
+                        <span id="prof-req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
+                        <span id="prof-req-lower"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra minúscula</span>
+                        <span id="prof-req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
+                        <span id="prof-req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
+                    </div>
 
                     @error('password')<span style="display:block;color:#ef4444;font-size:12px;margin-top:4px;">{{ $message }}</span>@enderror
                 </div>
