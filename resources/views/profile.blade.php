@@ -1480,6 +1480,7 @@
                     <div class="pwd-requirements" id="profile-pwd-requirements">
                         <span id="prof-req-length"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Mínimo 8 caracteres</span>
                         <span id="prof-req-upper"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra mayúscula</span>
+                        <span id="prof-req-lower"   class="req-item"><i class="fa-solid fa-circle req-dot"></i> Una letra minuscula</span>
                         <span id="prof-req-number"  class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un número</span>
                         <span id="prof-req-special" class="req-item"><i class="fa-solid fa-circle req-dot"></i> Un carácter especial</span>
                     </div>
@@ -1560,6 +1561,7 @@
             const rules = [
                 { id:'prof-req-length',  ok: val.length >= 8 },
                 { id:'prof-req-upper',   ok: /[A-Z]/.test(val) },
+                { id:'prof-req-lower',   ok: /[a-z]/.test(val) },
                 { id:'prof-req-number',  ok: /[0-9]/.test(val) },
                 { id:'prof-req-special', ok: /[^A-Za-z0-9]/.test(val) },
             ];
@@ -1583,9 +1585,10 @@
 
             let score = rules.filter(r => r.ok).length;
             const levels = [
-                { w:'25%',  bg:'#ef4444', txt:'Muy débil', color:'#ef4444' },
-                { w:'50%',  bg:'#f97316', txt:'Débil',     color:'#f97316' },
-                { w:'75%',  bg:'#eab308', txt:'Regular',   color:'#eab308' },
+                { w:'20%',  bg:'#ef4444', txt:'Muy débil', color:'#ef4444' },
+                { w:'40%',  bg:'#f97316', txt:'Débil',     color:'#f97316' },
+                { w:'60%',  bg:'#eab308', txt:'Regular',   color:'#eab308' },
+                { w:'80%',  bg:'#84cc16', txt:'Buena',     color:'#84cc16' },
                 { w:'100%', bg:'#22c55e', txt:'Fuerte',    color:'#22c55e' },
             ];
             
@@ -1617,7 +1620,6 @@
             
             // disable submit button if match fails or requirements not met?
             // The backend handles the hard validation, but this gives visual feedback.
-        }
         }
         @endif
 
